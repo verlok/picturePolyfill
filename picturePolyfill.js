@@ -2,7 +2,7 @@
 
 	var timerId;
 
-	RIM = {};
+	window.RIM = {};
 
 	function init() {
 
@@ -87,9 +87,9 @@
 		}, 500);
 	});
 
-	RIM.responsiveImages = init;
+	window.RIM.responsiveImages = init;
 
 }());
 
 // Execute the function right at page landing
-RIM.responsiveImages();
+window.RIM.responsiveImages();
