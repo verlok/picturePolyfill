@@ -19,13 +19,13 @@ function responsiveImages() {
 	function parseSourceElement(sourceElement, ignoreMedia) {
 		var media, i, ratio, srcSetElements, srcSetElement, matchedSrc, srcSetAttribute;
 		media = sourceElement.getAttribute('media');
-		if (ignoreMedia || !media || matchMedia(media).matches) {
+		if (ignoreMedia || !media || window.matchMedia(media).matches) {
 			srcSetAttribute = sourceElement.getAttribute('srcset');
 			// Get the right source based on pixel ratio
 			srcSetElements = srcSetAttribute.split(',');
 			for (i=0; i<srcSetElements.length; i+=1) {
 				srcSetElement = srcSetElements[i].trim().split(' ');
-				ratio = parseInt(srcSetElement[1]) || 1;
+				ratio = parseInt(srcSetElement[1], 10) || 1;
 				if (ratio === pixelRatio) {
 					matchedSrc = srcSetElement[0];
 				}
@@ -57,7 +57,7 @@ function responsiveImages() {
 		pictureElement = pictureElements[i];
 		
 		// If browser doesn't support matchMedia - NOTE: Paul Irish's polyfill is provided in "external/matchMedia.js"
-		srcAttribute = (false && window.matchMedia) ?
+		srcAttribute = (window.matchMedia) ?
 			parseSourceElements(pictureElement.getElementsByTagName('source'), false) :
 			parseSourceElement(pictureElement.querySelector('source[data-default]'), true);
 			
