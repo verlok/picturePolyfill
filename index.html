@@ -6,26 +6,46 @@
 	<link rel="stylesheet" href="index.css"/>
 </head>
 <body>
-	<h1>picturePolyfill usage example</h1>
-	<p>The following link contains a <strong>responsive image</strong> created using a &lt;span&gt; element, inline JSON (instead of source markup), and a javascript picture polyfill.<br/>
-		The JS creates the images at first load and updates their source after 50ms from browser resize (to prevent many HTTP requests when browser resizes smoothly).<br/>
-		Image sources are picked depending on window min-width and pixelRatio (retina display support).</p>
-	<a href="#">
-		<span data-alt="A beautiful image" data-picture='[
-			{                                "srcset": ["img/320x320.gif",   "img/320x320x2.gif"]},
-			{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
-			{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
-			{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif", "img/1024x1024x2.gif"], "standard": true},
-			{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif", "img/1280x1280x2.gif"]},
-			{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif", "img/1440x1440x2.gif"]},
-			{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif", "img/1920x1920x2.gif"]}
-	    ]'>
-			<noscript>
-				<img src="img/1280x1280.gif" alt="A beautiful image"/>
-			</noscript>
-	    </span>
-	</a>
-
+	<div id="container">
+		<h1>picturePolyfill Demo</h1>
+		<p>The following link contains two <strong>responsive images</strong> created using a <code>&lt;span&gt;</code> element, inline JSON (instead of source markup), and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a>.</p>
+		<div class="element">
+			<h2>With HD (Retina) display support...</h2>
+			<a href="#someLink">
+				<span data-alt="A beautiful image" data-picture='[
+					{                                "srcset": ["img/320x320.gif",   "img/320x320x2.gif"]},
+					{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
+					{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
+					{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif", "img/1024x1024x2.gif"], "standard": true},
+					{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif", "img/1280x1280x2.gif"]},
+					{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif", "img/1440x1440x2.gif"]},
+					{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif", "img/1920x1920x2.gif"]}
+			    ]'>
+					<noscript>
+						<img src="img/1280x1280.gif" alt="A beautiful image"/>
+					</noscript>
+				</span>
+			</a>
+		</div>
+		<div class="element">
+			<h2>...without HD (Retina) display support</h2>
+			<a href="#someLink">
+				<span data-alt="A beautiful image" data-picture='[
+					{                                "srcset": ["img/320x320.gif"]},
+					{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif"]},
+					{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif"]},
+					{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif"], "standard": true},
+					{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif"]},
+					{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif"]},
+					{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif"]}
+			    ]'>
+					<noscript>
+						<img src="img/1280x1280.gif" alt="A beautiful image"/>
+					</noscript>
+				</span>
+			</a>
+		</div>
+	</div>
 	<!--script src="external/matchMedia.js"></script-->
 	<script src="picturePolyfill.js"></script>
 </body>

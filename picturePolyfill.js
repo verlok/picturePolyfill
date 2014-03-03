@@ -1,32 +1,33 @@
+/*! PicturePolyfill - Responsive Images that work today. (and mimic the proposed Picture element with span elements). Author: Andrea Verlicchi | License: MIT/GPLv2 */
+
 (function() {
 
 	var timerId,
-		pixelRatio = window.devicePixelRatio || 1,
-		options;
+		pixelRatio = window.devicePixelRatio || 1;
 
-	function init(opt) {
-		options = opt;
-		parseDOM();
+	function searchFromRight(arr, pos) {
+		while (arr[pos]==null && pos>0) {pos-=1;}
+		return arr[pos];
 	}
 
 	// Parse srcset attribute and get the proper src attribute
 	function getSrcAttributeFromData(data) {
-		var media, i, matchedSrc;
+		var media, matchedSrc;
 
-		for (i=0; i<data.length; i+=1) {
+		for (var i=0, len=data.length; i<len; i+=1) {
 			media = data[i].media;
 			if (!media || window.matchMedia(media).matches) {
-				// Get the right source based on pixel ratio
-				matchedSrc = data[i].srcset[pixelRatio-1];
+				// Get the right src or srcset (based on pixel ratio)
+				matchedSrc = searchFromRight(data[i].srcset, pixelRatio-1);
 			}
 		}
 		return matchedSrc;
 	}
 
 	function getStandardImageFromData(data) {
-		var i, dataElement;
+		var dataElement;
 
-		for (i=0; i<data.length; i+=1) {
+		for (var i=0, len=data.length; i<len; i+=1) {
 			dataElement = data[i];
 			if (dataElement.standard) {
 				return dataElement.srcset[0];
@@ -56,23 +57,18 @@
 
 		var imageHolders = document.querySelectorAll('[data-picture]'),
 			imageHolder, imageElement,
-			srcAttribute, pictureData,
-			i;
+			srcAttribute, pictureData;
 
 		// Finding all the elements with data-image
-		for (i=0; i<imageHolders.length; i+=1) {
+		for (var i=0, len=imageHolders.length; i<len; i+=1) {
 
 			imageHolder = imageHolders[i];
 			pictureData = JSON.parse(imageHolder.getAttribute('data-picture'));
 
 			// Take the source from the matched media, or standard media
-			srcAttribute = (!window.matchMedia) ?
-				getStandardImageFromData(pictureData) :
-				getSrcAttributeFromData(pictureData);
-
-			// Fallback
-			// TODO: get from the options, to be passed in from an init function
-			srcAttribute = srcAttribute || options.fallbackSrc;
+			srcAttribute = (window.matchMedia) ?
+				getSrcAttributeFromData(pictureData) : 
+				getStandardImageFromData(pictureData);
 
 			// Select the image, or create it
 			imageElement = getOrCreateImage(imageHolder);
@@ -88,15 +84,13 @@
 			clearTimeout(timerId);
 			timerId = setTimeout(function() {
 				parseDOM();
-			}, 50);
+			}, 100);
 		});
 	}
 
-	window.picturePolyfill = init;
+	window.picturePolyfill = parseDOM;
 
 }());
 
 // Execute the function right at page landing
-window.picturePolyfill({
-	fallbackSrc: 'http://placehold.it/300x300'
-});
+window.picturePolyfill();

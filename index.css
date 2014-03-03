@@ -1,4 +1,4 @@
-span, img, a {
+.element a, .element span, .element img {
 	display: block;
 }
 
