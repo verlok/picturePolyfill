@@ -23,12 +23,12 @@
 		return matchedSrc;
 	}
 
-	function getDefaultImageFromData(data) {
+	function getStandardImageFromData(data) {
 		var i, dataElement;
 
 		for (i=0; i<data.length; i+=1) {
 			dataElement = data[i];
-			if (dataElement.default) {
+			if (dataElement.standard) {
 				return dataElement.srcset[0];
 			}
 		}
@@ -65,9 +65,9 @@
 			imageHolder = imageHolders[i];
 			pictureData = JSON.parse(imageHolder.getAttribute('data-picture'));
 
-			// Take the source from the matched media, or default media
+			// Take the source from the matched media, or standard media
 			srcAttribute = (!window.matchMedia) ?
-				getDefaultImageFromData(pictureData) :
+				getStandardImageFromData(pictureData) :
 				getSrcAttributeFromData(pictureData);
 
 			// Fallback
