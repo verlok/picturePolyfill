@@ -92,11 +92,11 @@
 		});
 	}
 
-	window.responsiveImages = init;
+	window.picturePolyfill = init;
 
 }());
 
 // Execute the function right at page landing
-window.responsiveImages({
+window.picturePolyfill({
 	fallbackSrc: 'http://placehold.it/300x300'
 });
