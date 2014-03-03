@@ -1,3 +1,5 @@
+/*! PicturePolyfill - Responsive Images that work today. (and mimic the proposed Picture element with span elements). Author: Andrea Verlicchi | License: MIT/GPLv2 */
+
 (function() {
 
 	var timerId,
@@ -66,12 +68,11 @@
 			pictureData = JSON.parse(imageHolder.getAttribute('data-picture'));
 
 			// Take the source from the matched media, or standard media
-			srcAttribute = (!window.matchMedia) ?
-				getStandardImageFromData(pictureData) :
-				getSrcAttributeFromData(pictureData);
+			srcAttribute = (window.matchMedia) ?
+				getSrcAttributeFromData(pictureData) : 
+				getStandardImageFromData(pictureData);
 
 			// Fallback
-			// TODO: get from the options, to be passed in from an init function
 			srcAttribute = srcAttribute || options.fallbackSrc;
 
 			// Select the image, or create it
@@ -97,6 +98,4 @@
 }());
 
 // Execute the function right at page landing
-window.picturePolyfill({
-	fallbackSrc: 'http://placehold.it/300x300'
-});
+window.picturePolyfill();
