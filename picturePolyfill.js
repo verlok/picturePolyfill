@@ -1,95 +1,102 @@
 (function() {
 
-	var timerId;
+	var timerId,
+		pixelRatio = window.devicePixelRatio || 1,
+		options;
 
-	window.RIM = {};
+	function init(opt) {
+		options = opt;
+		parseDOM();
+	}
 
-	function init() {
+	// Parse srcset attribute and get the proper src attribute
+	function getSrcAttributeFromData(data) {
+		var media, i, matchedSrc;
 
-		var pictureElements = document.getElementsByTagName('picture'),
-			pictureElement,
-			imgElement, srcAttribute, i,
-			pixelRatio = window.devicePixelRatio || 1;
-
-		// Parse source elements and call parseSourceElement on each one
-		function parseSourceElements(sourceElements, ignoreMedia) {
-			var matchedSrc = null, i;
-			for (i=0; i<sourceElements.length; i+=1) {
-				// Get the right srcSet based on media queries
-				matchedSrc = parseSourceElement(sourceElements[i], ignoreMedia) || matchedSrc;
-			}
-			return matchedSrc;
-		}
-
-		// Parse source element and get the proper src attribute
-		function parseSourceElement(sourceElement, ignoreMedia) {
-			var media, i, ratio, srcSetElements, srcSetElement, matchedSrc, srcSetAttribute;
-			media = sourceElement.getAttribute('media');
-			if (ignoreMedia || !media || window.matchMedia(media).matches) {
-				srcSetAttribute = sourceElement.getAttribute('srcset');
+		for (i=0; i<data.length; i+=1) {
+			media = data[i].media;
+			if (!media || window.matchMedia(media).matches) {
 				// Get the right source based on pixel ratio
-				srcSetElements = srcSetAttribute.split(',');
-				for (i=0; i<srcSetElements.length; i+=1) {
-					srcSetElement = srcSetElements[i].trim().split(' ');
-					ratio = parseInt(srcSetElement[1], 10) || 1;
-					if (ratio === pixelRatio) {
-						matchedSrc = srcSetElement[0];
-					}
-				}
+				matchedSrc = data[i].srcset[pixelRatio-1];
 			}
-			return matchedSrc;
 		}
+		return matchedSrc;
+	}
 
-		function getOrCreateImage(picture) {
-			var imageElements, imageElement;
-			imageElements = picture.getElementsByTagName('img');
+	function getDefaultImageFromData(data) {
+		var i, dataElement;
 
-			// If image already exist, return it
-			if (imageElements.length) {
-				imageElement = imageElements[0];
+		for (i=0; i<data.length; i+=1) {
+			dataElement = data[i];
+			if (dataElement.default) {
+				return dataElement.srcset[0];
 			}
-			// Else create the image
-			else {
-				imageElement = document.createElement('img');
-				imageElement.setAttribute('alt', picture.getAttribute('data-alt'));
-				picture.appendChild(imageElement);
-			}
-			return imageElement;
 		}
+		return dataElement.srcset[0];
+	}
 
-		// Loop through all picture elements
-		for (i=0; i<pictureElements.length; i+=1) {
+	function getOrCreateImage(imageHolder) {
+		var imageElements, imageElement;
+		imageElements = imageHolder.getElementsByTagName('img');
 
-			pictureElement = pictureElements[i];
-			
-			// If browser doesn't support matchMedia - NOTE: Paul Irish's polyfill is provided in "external/matchMedia.js"
-			srcAttribute = (window.matchMedia) ?
-				parseSourceElements(pictureElement.getElementsByTagName('source'), false) :
-				parseSourceElement(pictureElement.querySelector('source[data-default]'), true);
-				
-			// Fallback image
+		// If image already exist, return it
+		if (imageElements.length) {
+			imageElement = imageElements[0];
+		}
+		// Else create the image
+		else {
+			imageElement = document.createElement('img');
+			imageElement.setAttribute('alt', imageHolder.getAttribute('data-alt'));
+			imageHolder.appendChild(imageElement);
+		}
+		return imageElement;
+	}
+
+	function parseDOM() {
+
+		var imageHolders = document.querySelectorAll('[data-picture]'),
+			imageHolder, imageElement,
+			srcAttribute, pictureData,
+			i;
+
+		// Finding all the elements with data-image
+		for (i=0; i<imageHolders.length; i+=1) {
+
+			imageHolder = imageHolders[i];
+			pictureData = JSON.parse(imageHolder.getAttribute('data-picture'));
+
+			// Take the source from the matched media, or default media
+			srcAttribute = (!window.matchMedia) ?
+				getDefaultImageFromData(pictureData) :
+				getSrcAttributeFromData(pictureData);
+
+			// Fallback
 			// TODO: get from the options, to be passed in from an init function
-			srcAttribute = srcAttribute || "http://placehold.it/1x1";
+			srcAttribute = srcAttribute || options.fallbackSrc;
 
 			// Select the image, or create it
-			imgElement = getOrCreateImage(pictureElement);
+			imageElement = getOrCreateImage(imageHolder);
 
 			// Set the img source
-			imgElement.setAttribute('src', srcAttribute);
+			imageElement.setAttribute('src', srcAttribute);
 		}
 	}
 
 	// On resize
-	window.addEventListener('resize', function() {
-		clearTimeout(timerId);
-		timerId = setTimeout(function() {
-			init();
-		}, 500);
-	});
+	if (window.addEventListener) {
+		window.addEventListener('resize', function() {
+			clearTimeout(timerId);
+			timerId = setTimeout(function() {
+				parseDOM();
+			}, 50);
+		});
+	}
 
-	window.RIM.responsiveImages = init;
+	window.responsiveImages = init;
 
 }());
 
 // Execute the function right at page landing
-window.RIM.responsiveImages();
+window.responsiveImages({
+	fallbackSrc: 'http://placehold.it/300x300'
+});
