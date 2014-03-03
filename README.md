@@ -27,11 +27,11 @@ To support HD (Retina) images, mark up your responsive images like this.
 		{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif", "img/1280x1280x2.gif"]},
 		{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif", "img/1440x1440x2.gif"]},
 		{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif", "img/1920x1920x2.gif"]}
-    ]'>
+	]'>
 		<noscript>
 			<img src="img/1280x1280.gif" alt="A beautiful image"/>
 		</noscript>
-    </span>
+	</span>
 ```
 
 ### Without HD (Retina) support
@@ -40,27 +40,26 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
 
 ```html
 	<span data-alt="A beautiful image" data-picture='[
-		{                                "src": "img/320x320.gif"},
-		{"media": "(min-width: 321px)",  "src": "img/768x768.gif"},
-		{"media": "(min-width: 481px)",  "src": "img/768x768.gif"},
-		{"media": "(min-width: 769px)",  "src": "img/1024x1024.gif", "standard": true},
-		{"media": "(min-width: 1025px)", "src": "img/1280x1280.gif"},
-		{"media": "(min-width: 1281px)", "src": "img/1440x1440.gif"},
-		{"media": "(min-width: 1441px)", "src": "img/1920x1920.gif"}
-    ]'>
+		{                                "srcset": ["img/320x320.gif"]},
+		{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif"]},
+		{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif"]},
+		{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif"], "standard": true},
+		{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif"]},
+		{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif"]},
+		{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif"]}
+	]'>
 		<noscript>
 			<img src="img/1280x1280.gif" alt="A beautiful image"/>
 		</noscript>
-    </span>
+	</span>
 ```
 
 ### The `data-picture` attribute array
 
 The `data-picture` attribute accepts an array. In each element, it accepts:
 * `media`: any and all CSS3 media queries—such as `min-width` or `max-width`
-* `src`: the `src` attribute to be assigned to the generated `img` at the matched media query
-* `srcset`: an array of `src` values to support HD (Retina) displays. The first value is for standard displays, the second for HD displays (Retina; double density), and more if you want to support triple density (or above) displays 
-* `standard`: a boolean value, `true` if you want this to be the image picked by browsers without media query support, like IE 8 or below
+* `srcset`: an array of urls to images. To support only standard displays, pass an array of only one value. To support HD (Retina) displays, pass more values: the first value for standard displays, the second value for HD displays (Retina; double density), and more for triple and quad density.
+* `standard`: a boolean value, `true` if you want this to be the image picked by browsers without media query support (like IE 8 or below), these browser will always load the first `srcset` element.
 
 ### Notes on the markup above...
 
@@ -74,7 +73,7 @@ The `data-picture` attribute accepts an array. In each element, it accepts:
 ## How the `img` is appended and updated
 
 Upon finding a matching media in the `data-picture` array, picturePolyfill will generate an `img` element and inside that span. 
-The `img`'s `src` attribute is updated at browser resize, after a small delay (50ms) to prevent the script to be executed too many times during smooth (animated or manually dragged) browser resize.
+The `img`'s `src` attribute is updated at browser resize, after a small delay (100ms) to prevent the script to be executed too many times during smooth (animated or manually dragged) browser resize.
 
 
 ## picturePolyfill advantages
