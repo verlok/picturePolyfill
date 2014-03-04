@@ -64,7 +64,7 @@
 				break;
 			}
 		}
-		return dataElement.srcset[0];
+		return getSrcFromSrcSet(dataElement.srcset, 0);
 	}
 
 	/**
