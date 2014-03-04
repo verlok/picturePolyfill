@@ -5,7 +5,7 @@
 	var timerId,
 		pixelRatio = window.devicePixelRatio || 1;
 
-	function searchFromRight(arr, pos) {
+	function getSrcFromSrcset(arr, pos) {
 		if (typeof arr === 'string') {
 			return arr;
 		}
@@ -21,7 +21,7 @@
 			media = data[i].media;
 			if (!media || window.matchMedia(media).matches) {
 				// Get the right src or srcset (based on pixel ratio)
-				matchedSrc = searchFromRight(data[i].srcset, pixelRatio-1);
+				matchedSrc = getSrcFromSrcset(data[i].srcset, pixelRatio-1);
 			}
 		}
 		return matchedSrc;
@@ -33,7 +33,7 @@
 		for (var i=0, len=data.length; i<len; i+=1) {
 			dataElement = data[i];
 			if (dataElement.standard) {
-				return dataElement.srcset[0];
+				break;
 			}
 		}
 		return dataElement.srcset[0];
