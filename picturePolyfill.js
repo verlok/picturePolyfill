@@ -59,23 +59,18 @@
 	function parseDOM() {
 
 		var imageHolders = document.querySelectorAll('[data-picture]'),
-			imageHolder, imageElement,
-			srcAttribute, pictureData;
+			imageHolder, pictureData;
 
 		// Finding all the elements with data-image
 		for (var i=0, len=imageHolders.length; i<len; i+=1) {
-
 			imageHolder = imageHolders[i];
 			try {
 				pictureData = JSON.parse(imageHolder.getAttribute('data-picture'));
-
 				// Take the source from the matched media, or standard media
-				srcAttribute = (window.matchMedia) ?
+				// Update the image, or create it
+				createOrUpdateImage(imageHolder, (window.matchMedia) ?
 					getSrcAttributeFromData(pictureData) : 
-					getStandardImageFromData(pictureData);
-
-				// Select the image, or create it
-				imageElement = createOrUpdateImage(imageHolder, srcAttribute);
+					getStandardImageFromData(pictureData));
 			} 
 			catch(e){
 				window.console.log(e);
