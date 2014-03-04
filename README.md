@@ -67,6 +67,8 @@ The `data-picture` attribute accepts an array. In each element, it accepts:
 * `srcset`: the image URL (string) at the corresponding `media`, or an array of image URLs. To support only standard displays, just pass in a string. To support HD (Retina) displays, pass an array of values: the first value for standard displays, the second value for HD displays (Retina; double density), and more for triple and quad density.
 * `standard`: a boolean value, `true` if you want this to be the image picked by browsers without media query support (like IE 8 or below). If srcset is an array, these browser will always load the first `srcset` element.
 
+**Note:** As the data-picture` attribute array is read from left to right, array elements with `media` property set to `min-width` must be placed in increasing `min-width` order, e.g. 321px, 481px, 769px, etc.
+
 ### Notes on the markup above...
 
 * The `data-picture` attribute must contain a JSON array which can contain any number of elements. The above example may contain more than the average situation may call for. I recommend to generate this array using a helper on a server side language (like PHP or similar).
