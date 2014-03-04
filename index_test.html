@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Responsive images with picturePolyfill - by Andrea Verlicchi</title>
+	<link rel="stylesheet" href="index.css"/>
+</head>
+<body>
+	<div id="container">
+		<h1>picturePolyfill Test</h1>
+		<p>To test script solidness.</p>
+		<div class="element">
+			<h2>SrcSet not array</h2>
+			<a href="#someLink">
+				<span data-alt="A beautiful image" data-picture='[
+					{                                "srcset": "img/320x320.gif"},
+					{"media": "(min-width: 321px)",  "srcset": "img/768x768.gif"}
+			    ]'>
+					<noscript>
+						<img src="img/1280x1280.gif" alt="A beautiful image"/>
+					</noscript>
+				</span>
+			</a>
+
+			<h2>Bad formatted data-picture JSON</h2>
+			<a href="#someLink">
+				<span data-alt="A beautiful image" data-picture='[
+					{                                "srcset": "img/320x320.gif",
+					{"media": "(min-width: 321px)",  "srcset": "img/768x768.gif"}
+			    ]'>
+					<noscript>
+						<img src="img/1280x1280.gif" alt="A beautiful image"/>
+					</noscript>
+				</span>
+			</a>
+
+			<h2>Good formatted data-picture JSON</h2>
+			<a href="#someLink">
+				<span data-alt="A beautiful image" data-picture='[
+					{                                "srcset": ["img/320x320.gif"]},
+					{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif", "img/768x768x2.gif"]}
+			    ]'>
+					<noscript>
+						<img src="img/1280x1280.gif" alt="A beautiful image"/>
+					</noscript>
+				</span>
+			</a>
+		</div>
+	</div>
+	<!--script src="external/matchMedia.js"></script-->
+	<script src="picturePolyfill.js"></script>
+</body>
+</html>
