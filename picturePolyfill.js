@@ -3,7 +3,8 @@
 (function() {
 
 	var timerId,
-		pixelRatio = window.devicePixelRatio || 1;
+		pixelRatio = window.devicePixelRatio || 1,
+		mediaQueriesSupported = window.matchMedia && window.matchMedia("only all") !== null && window.matchMedia("only all").matches;;
 
 	function getSrcFromSrcset(arr, pos) {
 		if (typeof arr === 'string') {
@@ -68,7 +69,7 @@
 				pictureData = JSON.parse(imageHolder.getAttribute('data-picture'));
 				// Take the source from the matched media, or standard media
 				// Update the image, or create it
-				createOrUpdateImage(imageHolder, (window.matchMedia) ?
+				createOrUpdateImage(imageHolder, (mediaQueriesSupported) ?
 					getSrcAttributeFromData(pictureData) : 
 					getStandardImageFromData(pictureData));
 			} 
