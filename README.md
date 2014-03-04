@@ -67,7 +67,7 @@ The `data-picture` attribute accepts an array. In each element, it accepts:
 * `srcset`: the image URL (string) at the corresponding `media`, or an array of image URLs. To support only standard displays, just pass in a string. To support HD (Retina) displays, pass an array of values: the first value for standard displays, the second value for HD displays (Retina; double density), and more for triple and quad density.
 * `standard`: a boolean value, `true` if you want this to be the image picked by browsers without media query support (like IE 8 or below). If srcset is an array, these browser will always load the first `srcset` element.
 
-**Note:** As the data-picture` attribute array is read from left to right, array elements with `media` property set to `min-width` must be placed in increasing `min-width` order, e.g. 321px, 481px, 769px, etc.
+**Note:** As the `data-picture` attribute array is read from left to right, array elements with `media` property set to `min-width` must be placed in increasing `min-width` order, e.g. 321px, 481px, 769px, etc.
 
 ### Notes on the markup above...
 
@@ -104,9 +104,9 @@ If picturePolyfill is put in the head of the document of deferred until after lo
 
 picturePolyfill is intentionally exposed to the global space, so you can
 
-* *AJAX calls*: after your new DOM has been injected on the page, just call `window.picturePolyfill()`
-* *document ready*: if you can't insert the script at the bottom of the page, to use the script at the document ready (e.g. using jQuery's `$(document).ready()` function), just call `window.picturePolyfill()`
-* *Browser resize*: the browser resize event is already managed by the script, it will update the images source 100ms after each resize event.
+* **AJAX calls**: after your new DOM has been injected on the page, just call `window.picturePolyfill()`
+* **document ready**: if you can't insert the script at the bottom of the page, to use the script at the document ready (e.g. using jQuery's `$(document).ready()` function), just call `window.picturePolyfill()`
+* **Browser resize**: the browser resize event is already managed by the script, it will update the images source 100ms after each resize event.
 
 
 ## Support
