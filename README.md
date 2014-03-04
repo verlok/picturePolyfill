@@ -111,12 +111,14 @@ picturePolyfill is intentionally exposed to the global space, so you can
 
 ## Support
 
-picturePolyfill supports a wide range of browsers, provided that you stick with the markup conventions provided.
-Talking about Internet Explorer, it supports IE 8 and above.
+picturePolyfill supports all modern browsers and Internet Explorer 8 and above.
 
-### About IE 8 desktop
+### About Internet Explorer desktop
 
-Internet Explorer 8 has no support for CSS3 Media Queries, so using picturePolyfill IE will receive the `data-picture` array element having the `standard` property set to true, or the last element of the `data-picture` attribute array.
+* **IE 10 and above**: Fully supported, as in all other modern browsers
+* **IE 9**: Supported, including the matchMedia polyfill provided in external/matchMedia.js
+* **IE 8**: Supported, but as the browser has no support for CSS3 Media Queries, the script will load the element (of the `data-picture` attribute array) which has the `standard` property set to true, or the last element of the array.
+* **IE 7 and below**: *not supported*, script will fail silently without throwing any javascript errors
 
 
 ## Size and delivery
