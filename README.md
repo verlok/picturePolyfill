@@ -46,13 +46,13 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
 
 ```html
 	<span data-alt="A beautiful image" data-picture='[
-		{                                "srcset": ["img/320x320.gif"]},
-		{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif"]},
-		{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif"]},
-		{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif"], "standard": true},
-		{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif"]},
-		{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif"]},
-		{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif"]}
+		{                                "srcset": "img/320x320.gif"},
+		{"media": "(min-width: 321px)",  "srcset": "img/768x768.gif"},
+		{"media": "(min-width: 481px)",  "srcset": "img/768x768.gif"},
+		{"media": "(min-width: 769px)",  "srcset": "img/1024x1024.gif", "standard": true},
+		{"media": "(min-width: 1025px)", "srcset": "img/1280x1280.gif"},
+		{"media": "(min-width: 1281px)", "srcset": "img/1440x1440.gif"},
+		{"media": "(min-width: 1441px)", "srcset": "img/1920x1920.gif"}
 	]'>
 		<noscript>
 			<img src="img/1280x1280.gif" alt="A beautiful image"/>
@@ -64,8 +64,8 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
 
 The `data-picture` attribute accepts an array. In each element, it accepts:
 * `media`: any and all CSS3 media queries—such as `min-width` or `max-width`
-* `srcset`: an array of urls to images. To support only standard displays, pass an array of only one value. To support HD (Retina) displays, pass more values: the first value for standard displays, the second value for HD displays (Retina; double density), and more for triple and quad density.
-* `standard`: a boolean value, `true` if you want this to be the image picked by browsers without media query support (like IE 8 or below), these browser will always load the first `srcset` element.
+* `srcset`: the image URL (string) at the corresponding `media`, or an array of image URLs. To support only standard displays, just pass in a string. To support HD (Retina) displays, pass an array of values: the first value for standard displays, the second value for HD displays (Retina; double density), and more for triple and quad density.
+* `standard`: a boolean value, `true` if you want this to be the image picked by browsers without media query support (like IE 8 or below). If srcset is an array, these browser will always load the first `srcset` element.
 
 ### Notes on the markup above...
 
