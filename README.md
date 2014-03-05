@@ -91,11 +91,11 @@ If picturePolyfill is put in the head of the document of deferred until after lo
 ```html
 	<html>
 		<head>
-			YOUR HEAD ...
+			Your HEAD content
 		</head>
 		<body>
-			YOUR BODY ...
-			<script src="picturePolyfill.js"></script>
+			Your BODY and your IMAGES
+			<script src="picturePolyfill.min.js"></script>
 		</body>
 	</html>
 ```
