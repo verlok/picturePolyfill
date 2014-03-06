@@ -115,13 +115,12 @@ picturePolyfill supports all modern browsers and Internet Explorer 8 and above.
 
 ### About Internet Explorer desktop
 
+**Note**: Internet Explorer 7 finally disappeared along with all its bugs. The most used Internet Explorer versions today (march 2014) are 11, 8, 10, then 9.
+
 * **IE 10 and above**: Fully supported, as in all other modern browsers
 * **IE 9**: Supported, including the `matchMedia` polyfill provided in external/matchMedia.js
 * **IE 8**: Supported, but as the browser has no support for CSS3 Media Queries, the script will load the element (of the `data-picture` attribute array) which has the `standard` property set to true, or the last element of the array.
-* **IE 7 and below are intentionally not supported** (missing JSON, missing querySelectorAll. Script will fail silently without throwing any javascript errors.
-
-**Note**: Internet Explorer 7 finally disappeared along with all its bugs. The most used Internet Explorer versions today (march 2014) are 11, 8, 10, then 9.
-
+* **IE 7 and below are intentionally not supported** (missing JSON, missing querySelectorAll). Script will fail silently without throwing any javascript errors.
 
 ## Size and delivery
 
