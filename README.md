@@ -82,9 +82,27 @@ The `data-picture` attribute accepts an array. In each element, it accepts:
 Upon finding a matching media in the `data-picture` array, picturePolyfill will generate an `img` element and inside that span. 
 The `img`'s `src` attribute is updated at browser resize, after a small delay (100ms) to prevent the script to be executed too many times during smooth (animated or manually dragged) browser resize.
 
-## Use picturePolyfill with a server-side scaling/cropping tool
+## Server-side scaling/cropping tool
 
 Responsive images can be quite complicated to be served because you need to scale them all at different resolutions. It's recommended to have a server-side picture scaling service to scale the images for you. 
+
+You can then implement some HTML code like the following:
+
+```html
+	<a href="#someLink2">
+		<span data-alt="A beautiful responsive image" data-picture='[
+			{                                "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=320"}, 
+			{"media": "(min-width: 481px)",  "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=512"}, 
+			{"media": "(min-width: 1025px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=640"}, 
+			{"media": "(min-width: 1281px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"},
+			{"media": "(min-width: 1921px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1400"}
+			]'>
+			<noscript>
+				<img src="img/1280x1280.gif" alt="A beautiful responsive image"/>
+			</noscript>
+		</span>
+	</a>
+```
 
 See demo [http://verlok.github.io/picturePolyfill/](http://verlok.github.io/picturePolyfill/) for an excample of this.
 
