@@ -108,11 +108,13 @@ picturePolyfill is intentionally exposed to the global space, so you can
 * **Browser resize**: the browser resize event is already managed by the script, it will update the images source 100ms after each resize event.
 
 
-## Support (aka Internet Explorer desktop)
+## Browser support
 
 `picturePolyfill` supports all modern browsers and Internet Explorer 8 and above.
 
 **Note**: The `matchMedia` polyfill (included in the `/external` folder) is necessary to support the `media` property across browsers (such as IE9), even in browsers that support media queries, although it is becoming more widely supported in new browsers. If you don't include matchMediaPolyfill, the script will load the `standard` picture format.
+
+### Internet Explorer desktop versions
 
 * **IE 10 and above**: Fully supported, as in all other modern browsers
 * **IE 9**: Supported, including the `matchMedia` polyfill provided in external/matchMedia.js
