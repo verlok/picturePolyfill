@@ -82,6 +82,13 @@ The `data-picture` attribute accepts an array. In each element, it accepts:
 Upon finding a matching media in the `data-picture` array, picturePolyfill will generate an `img` element and inside that span. 
 The `img`'s `src` attribute is updated at browser resize, after a small delay (100ms) to prevent the script to be executed too many times during smooth (animated or manually dragged) browser resize.
 
+## Use picturePolyfill with a server-side scaling/cropping tool
+
+Responsive images can be quite complicated to be served because you need to scale them all at different resolutions. It's recommended to have a server-side picture scaling service to scale the images for you. 
+
+See demo [http://verlok.github.io/picturePolyfill/](http://verlok.github.io/picturePolyfill/) for an excample of this.
+
+
 ## Usage
 
 To use picturePolyfill, just insert the script tag at the end of your html file, just right the closure of the `body` tag.
@@ -101,16 +108,16 @@ If picturePolyfill is put in the head of the document of deferred until after lo
 
 ### Later calls
 
-picturePolyfill is intentionally exposed to the global space, so you can
+picturePolyfill is intentionally exposed to the global space, so you can call it later, as you need it.	
 
 * **AJAX calls**: after your new DOM has been injected on the page, just call `window.picturePolyfill()`
-* **document ready**: if you can't insert the script at the bottom of the page, to use the script at the document ready (e.g. using jQuery's `$(document).ready()` function), just call `window.picturePolyfill()`
+* **document ready**: if you insert the `<script>` tag at the bottom of your markup, just before the </body> closing tag, you won't have to call picturePolyfill manually. If you can't do that, to use the script at the document ready (e.g. using jQuery's `$(document).ready()` function), just call `window.picturePolyfill()`
 * **Browser resize**: the browser resize event is already managed by the script, it will update the images source 100ms after each resize event.
 
 
 ## Browser support
 
-`picturePolyfill` supports all modern browsers and Internet Explorer 8 and above.
+**picturePolyfill** supports all modern browsers and Internet Explorer 8 and above.
 
 **Note**: The `matchMedia` polyfill (included in the `/external` folder) is necessary to support the `media` property across browsers (such as IE9), even in browsers that support media queries, although it is becoming more widely supported in new browsers. If you don't include matchMediaPolyfill, the script will load the `standard` picture format.
 
