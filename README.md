@@ -67,7 +67,7 @@ The `data-picture` attribute accepts an array. In each element, it accepts:
 * `srcset`: the image URL (string) at the corresponding `media`, or an array of image URLs. To support only standard displays, just pass in a string. To support HD (Retina) displays, pass an array of values: the first value for standard displays, the second value for HD displays (Retina; double density), and more for triple and quad density.
 * `standard`: a boolean value, `true` if you want this to be the image picked by browsers without media query support (like IE 8 or below). If srcset is an array, these browser will always load the first `srcset` element.
 
-**Note:** As the data-picture` attribute array is read from left to right, array elements with `media` property set to `min-width` must be placed in increasing `min-width` order, e.g. 321px, 481px, 769px, etc.
+**Note:** As the `data-picture` attribute array is read from left to right, the array elements with `media` property set to `min-width` must be placed in increasing `min-width` order, e.g. 321px, 481px, 769px, etc.
 
 ### Notes on the markup above...
 
@@ -91,11 +91,11 @@ If picturePolyfill is put in the head of the document of deferred until after lo
 ```html
 	<html>
 		<head>
-			YOUR HEAD ...
+			Your HEAD content
 		</head>
 		<body>
-			YOUR BODY ...
-			<script src="picturePolyfill.js"></script>
+			Your BODY and your IMAGES
+			<script src="picturePolyfill.min.js"></script>
 		</body>
 	</html>
 ```
@@ -104,20 +104,23 @@ If picturePolyfill is put in the head of the document of deferred until after lo
 
 picturePolyfill is intentionally exposed to the global space, so you can
 
-* *AJAX calls*: after your new DOM has been injected on the page, just call `window.picturePolyfill()`
-* *document ready*: if you can't insert the script at the bottom of the page, to use the script at the document ready (e.g. using jQuery's `$(document).ready()` function), just call `window.picturePolyfill()`
-* *Browser resize*: the browser resize event is already managed by the script, it will update the images source 100ms after each resize event.
+* **AJAX calls**: after your new DOM has been injected on the page, just call `window.picturePolyfill()`
+* **document ready**: if you can't insert the script at the bottom of the page, to use the script at the document ready (e.g. using jQuery's `$(document).ready()` function), just call `window.picturePolyfill()`
+* **Browser resize**: the browser resize event is already managed by the script, it will update the images source 100ms after each resize event.
 
 
 ## Support
 
-picturePolyfill supports a wide range of browsers, provided that you stick with the markup conventions provided.
-Talking about Internet Explorer, it supports IE 8 and above.
+picturePolyfill supports all modern browsers and Internet Explorer 8 and above.
 
-### About IE 8 desktop
+### About Internet Explorer desktop
 
-Internet Explorer 8 has no support for CSS3 Media Queries, so using picturePolyfill IE will receive the `data-picture` array element having the `standard` property set to true, or the last element of the `data-picture` attribute array.
+* **IE 10 and above**: Fully supported, as in all other modern browsers
+* **IE 9**: Supported, including the `matchMedia` polyfill provided in external/matchMedia.js
+* **IE 8**: Supported, but as the browser has no support for CSS3 Media Queries, the script will load the element (of the `data-picture` attribute array) which has the `standard` property set to true, or the last element of the array.
+* **IE 7 and below are intentionally not supported** (missing JSON, missing querySelectorAll). Script will fail silently without throwing any javascript errors.
 
+**Note**: Internet Explorer 7 finally disappeared along with all its bugs. The most used Internet Explorer versions today (march 2014) are 11, 8, 10, then 9.
 
 ## Size and delivery
 
