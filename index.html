@@ -7,43 +7,44 @@
 </head>
 <body>
 	<div id="container">
-		<h1>picturePolyfill Demo</h1>
-		<p>The following link contains two <strong>responsive images</strong> created using a <code>&lt;span&gt;</code> element, inline JSON (instead of source markup), and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a>.</p>
+		<div class="intro">
+			<h1>Responsive images using PicturePolyfill - Demo</h1>
+			<p>The following link contains two <strong>responsive images</strong> created using a <code>&lt;span&gt;</code> element, inline JSON (instead of <code>&lt;source&gt;</code> markup), and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
+		</div>
 		<div class="element">
 			<h2>With HD (Retina) display support</h2>
-			<a href="#someLink">
-				<span data-alt="A beautiful image" data-picture='[
-					{                                "srcset": ["img/320x320.gif",   "img/320x320x2.gif"]},
-					{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
-					{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
-					{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif", "img/1024x1024x2.gif"], "standard": true},
-					{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif", "img/1280x1280x2.gif"]},
-					{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif", "img/1440x1440x2.gif"]},
-					{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif", "img/1920x1920x2.gif"]}
-			    ]'>
+			<a href="#someLink1">
+				<span data-alt="A beautiful responsive image" data-picture='[
+					{"srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=160", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=320"]}, 
+					{"media": "(min-width: 481px)", "srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=512", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024"]}, 
+					{"media": "(min-width: 1025px)", "srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=640", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1280"]}, 
+					{"media": "(min-width: 1281px)", "srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=960", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920"]}, 
+					{"media": "(min-width: 1921px)", "srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=1400", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=2800"]}
+					]'>
 					<noscript>
-						<img src="img/1280x1280.gif" alt="A beautiful image"/>
+						<img src="img/1280x1280.gif" alt="A beautiful responsive image"/>
 					</noscript>
 				</span>
 			</a>
 		</div>
 		<div class="element">
 			<h2>Without HD (Retina) display support</h2>
-			<a href="#someLink">
-				<span data-alt="A beautiful image" data-picture='[
-					{                                "srcset": ["img/320x320.gif"]},
-					{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif"]},
-					{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif"]},
-					{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif"], "standard": true},
-					{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif"]},
-					{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif"]},
-					{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif"]}
-			    ]'>
+			<a href="#someLink2">
+				<span data-alt="A beautiful responsive image" data-picture='[
+					{                                "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=160"}, 
+					{"media": "(min-width: 481px)",  "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=512"}, 
+					{"media": "(min-width: 1025px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=640"}, 
+					{"media": "(min-width: 1281px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"}, 
+					{"media": "(min-width: 1921px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1400"}
+					]'>
 					<noscript>
-						<img src="img/1280x1280.gif" alt="A beautiful image"/>
+						<img src="img/1280x1280.gif" alt="A beautiful responsive image"/>
 					</noscript>
 				</span>
 			</a>
+		</div>
+		<div class="outro">
+			<p>Real time server side scaling is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
 		</div>
 	</div>
 	<script src="external/matchMedia.js"></script>
