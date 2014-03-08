@@ -4,7 +4,7 @@ A Responsive Images approach that you can use today that mimics the [proposed pi
 * Author: Andrea Verlicchi (c) 2014
 * License: MIT/GPLv2
 
-**Demo URL:** [http://verlok.github.io/picturePolyfill/](http://verlok.github.io/picturePolyfill/)
+## **[DEMO](http://verlok.github.io/picturePolyfill/)** 
 
 **Note:** picturePolyfill works best in browsers that support CSS3 media queries. The demo page references (externally) the [matchMedia polyfill](https://github.com/paulirish/matchMedia.js/) which makes matchMedia work in `media-query`-supporting browsers that don't support `matchMedia`. The `matchMedia` polyfill is not required for `picturePolyfill` to work, but it's required to support the `media` property specified in the data-picture attribute. In non-media query-supporting browsers, the `matchMedia` polyfill will allow for querying native media types, such as `screen`, `print`, etc.
 
@@ -108,7 +108,7 @@ If you want to use an image server, you can code your HTML like the following:
 
 Use an array in the srcset property and double size images to support HD/retina displays, as you can see in the "With HD (Retina) images support" section of this readme.
 
-See [this demo](http://verlok.github.io/picturePolyfill/) for an example.
+[Take a look at the demo](http://verlok.github.io/picturePolyfill/).
 
 
 ## Usage
