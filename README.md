@@ -25,19 +25,19 @@ While many other solutions exist, picturePolyfill has the added benefits:
 To support HD (Retina) images, mark up your responsive images like this.
 
 ```html
-	<span data-alt="A beautiful image" data-picture='[
-		{                                "srcset": ["img/320x320.gif",   "img/320x320x2.gif"]},
-		{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
-		{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
-		{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif", "img/1024x1024x2.gif"], "standard": true},
-		{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif", "img/1280x1280x2.gif"]},
-		{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif", "img/1440x1440x2.gif"]},
-		{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif", "img/1920x1920x2.gif"]}
-	]'>
-		<noscript>
-			<img src="img/1280x1280.gif" alt="A beautiful image"/>
-		</noscript>
-	</span>
+<span data-alt="A beautiful image" data-picture='[
+	{                                "srcset": ["img/320x320.gif",   "img/320x320x2.gif"]},
+	{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
+	{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
+	{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif", "img/1024x1024x2.gif"], "standard": true},
+	{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif", "img/1280x1280x2.gif"]},
+	{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif", "img/1440x1440x2.gif"]},
+	{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif", "img/1920x1920x2.gif"]}
+]'>
+	<noscript>
+		<img src="img/1280x1280.gif" alt="A beautiful image"/>
+	</noscript>
+</span>
 ```
 
 ### Without HD (Retina) support
@@ -45,19 +45,19 @@ To support HD (Retina) images, mark up your responsive images like this.
 If you don't need to support HD (Retina) images, you can mark up your responsive images like this.
 
 ```html
-	<span data-alt="A beautiful image" data-picture='[
-		{                                "srcset": "img/320x320.gif"},
-		{"media": "(min-width: 321px)",  "srcset": "img/768x768.gif"},
-		{"media": "(min-width: 481px)",  "srcset": "img/768x768.gif"},
-		{"media": "(min-width: 769px)",  "srcset": "img/1024x1024.gif", "standard": true},
-		{"media": "(min-width: 1025px)", "srcset": "img/1280x1280.gif"},
-		{"media": "(min-width: 1281px)", "srcset": "img/1440x1440.gif"},
-		{"media": "(min-width: 1441px)", "srcset": "img/1920x1920.gif"}
-	]'>
-		<noscript>
-			<img src="img/1280x1280.gif" alt="A beautiful image"/>
-		</noscript>
-	</span>
+<span data-alt="A beautiful image" data-picture='[
+	{                                "srcset": "img/320x320.gif"},
+	{"media": "(min-width: 321px)",  "srcset": "img/768x768.gif"},
+	{"media": "(min-width: 481px)",  "srcset": "img/768x768.gif"},
+	{"media": "(min-width: 769px)",  "srcset": "img/1024x1024.gif", "standard": true},
+	{"media": "(min-width: 1025px)", "srcset": "img/1280x1280.gif"},
+	{"media": "(min-width: 1281px)", "srcset": "img/1440x1440.gif"},
+	{"media": "(min-width: 1441px)", "srcset": "img/1920x1920.gif"}
+]'>
+	<noscript>
+		<img src="img/1280x1280.gif" alt="A beautiful image"/>
+	</noscript>
+</span>
 ```
 
 ### The `data-picture` attribute array
@@ -91,19 +91,19 @@ It's then a good practice to have a server-side picture scaling service (like [p
 If you want to use an image server, you can code your HTML like the following:
 
 ```html
-	<a href="#someLink2">
-		<span data-alt="A beautiful responsive image" data-picture='[
-			{                                "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=320"}, 
-			{"media": "(min-width: 481px)",  "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=512"}, 
-			{"media": "(min-width: 1025px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=640"}, 
-			{"media": "(min-width: 1281px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"},
-			{"media": "(min-width: 1921px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1400"}
-			]'>
-			<noscript>
-				<img src="img/1280x1280.gif" alt="A beautiful responsive image"/>
-			</noscript>
-		</span>
-	</a>
+<a href="#someLink2">
+	<span data-alt="A beautiful responsive image" data-picture='[
+		{                                "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=320"}, 
+		{"media": "(min-width: 481px)",  "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=512"}, 
+		{"media": "(min-width: 1025px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=640"}, 
+		{"media": "(min-width: 1281px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"},
+		{"media": "(min-width: 1921px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1400"}
+		]'>
+		<noscript>
+			<img src="img/1280x1280.gif" alt="A beautiful responsive image"/>
+		</noscript>
+	</span>
+</a>
 ```
 
 Use an array in the srcset property and double size images to support HD/retina displays, as you can see in the "With HD (Retina) images support" section of this readme.
@@ -117,15 +117,15 @@ To use picturePolyfill, just insert the script tag at the end of your html file,
 If picturePolyfill is put in the head of the document of deferred until after load is fired, images will not load unless the browser window is resized.
 
 ```html
-	<html>
-		<head>
-			Your HEAD content
-		</head>
-		<body>
-			Your BODY and your IMAGES
-			<script src="picturePolyfill.min.js"></script>
-		</body>
-	</html>
+<html>
+	<head>
+		Your HEAD content
+	</head>
+	<body>
+		Your BODY + your responsive images markup, as described
+		<script src="picturePolyfill.min.js"></script>
+	</body>
+</html>
 ```
 
 ### Later calls
