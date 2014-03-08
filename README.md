@@ -106,6 +106,8 @@ If you want to use an image server, you can code your HTML like the following:
 	</a>
 ```
 
+Use an array in the srcset property and double size images to support HD/retina displays, as you can see in the "With HD (Retina) images support" section of this readme.
+
 See [this demo](http://verlok.github.io/picturePolyfill/) for an example.
 
 
