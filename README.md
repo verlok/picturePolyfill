@@ -84,9 +84,11 @@ The `img`'s `src` attribute is updated at browser resize, after a small delay (1
 
 ## Server-side scaling/cropping tool
 
-Responsive images can be quite complicated to be served because you need to scale them all at different resolutions. It's recommended to have a server-side picture scaling service to scale the images for you. 
+Responsive images can be quite complicated to be served on your website if you have to: pre-scale them at many different resolutions; name them; and maybe change their size when developing a new release of your site. 
 
-You can then implement some HTML code like the following:
+It's then a good practice to have a server-side picture scaling service (like [http://www.pixtulate.com/](pixtulate) to scale the images for you, just in time, starting from only one big image.
+
+If you want to use an image server, you can code your HTML like the following:
 
 ```html
 	<a href="#someLink2">
@@ -104,7 +106,7 @@ You can then implement some HTML code like the following:
 	</a>
 ```
 
-See demo [http://verlok.github.io/picturePolyfill/](http://verlok.github.io/picturePolyfill/) for an excample of this.
+See demo [http://verlok.github.io/picturePolyfill/](http://verlok.github.io/picturePolyfill/) for an example.
 
 
 ## Usage
