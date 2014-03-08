@@ -86,7 +86,7 @@ The `img`'s `src` attribute is updated at browser resize, after a small delay (1
 
 Responsive images can be quite complicated to be served on your website if you have to: pre-scale them at many different resolutions; name them; and maybe change their size when developing a new release of your site. 
 
-It's then a good practice to have a server-side picture scaling service (like [pixtulate](http://www.pixtulate.com/) to scale the images for you, just in time, starting from only one big image.
+It's then a good practice to have a server-side picture scaling service (like [pixtulate](http://www.pixtulate.com/)) to scale the images for you, just in time, starting from only one big image.
 
 If you want to use an image server, you can code your HTML like the following:
 
