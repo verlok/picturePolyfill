@@ -94,13 +94,13 @@
 	/**
 	 * Parses the DOM looking for elements containing the "data-picture" attribute, then
 	 * generate the images or updates their src attribute.
-	 * Browser support depends on document.querySelectorAll and JSON parsing
-	 * If browser is not supported, do nothing (fail silently)
+	 * @param element the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 
-	function parseDOM() {
+	function parseDOM(element) {
 
-		var pictureData, imageHolder, imageHolders = document.querySelectorAll('[data-picture]');
+		var pictureData, imageHolder,
+			imageHolders = (element || document).querySelectorAll('[data-picture]');
 
 		// Finding all the elements with data-image
 		for (var i=0, len=imageHolders.length; i<len; i+=1) {
