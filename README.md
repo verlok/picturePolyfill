@@ -144,7 +144,7 @@ If picturePolyfill is put in the head of the document of deferred until after lo
 picturePolyfill is intentionally exposed to the global space, so you can call it later, as you need it.	
 
 * **AJAX calls**: after your new DOM has been injected on the page, just call `window.picturePolyfill()`
-* **document ready**: if you insert the `<script>` tag at the bottom of your markup, just before the </body> closing tag, you won't have to call picturePolyfill manually. If you can't do that, to use the script at the document ready (e.g. using jQuery's `$(document).ready()` function), just call `window.picturePolyfill()`
+* **document ready**: if you insert the `<script>` tag at the bottom of your markup, just before the closure of the `body` tag, you won't have to call picturePolyfill manually. If you can't do that, to use the script at the document ready (e.g. using jQuery's `$(document).ready()` function), just call `window.picturePolyfill()`
 * **Browser resize**: the browser resize event is already managed by the script, it will update the images source 100ms after each resize event.
 
 
