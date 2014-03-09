@@ -77,6 +77,17 @@ The `data-picture` attribute accepts an array. In each element, it accepts:
 * Each element of the `data-picture` array can have an optional `media` attribute to make it apply in specific media settings. Both media types and queries can be used, like a native `media` attribute, but support for media _queries_ depends on the browser (unsupporting browsers fail silently).
 * The `noscript` element wraps the fallback image for non-JavaScript environments and search engines, and including this wrapper prevents browsers from fetching the fallback image during page load (causing unnecessary overhead).
 
+### About the real `picture` element
+
+Some developers are [wondering](http://www.linkedin.com/groupItem?view=&gid=2071438&type=member&item=5846510553693986816&commentID=5848302870645993472): **will I have to re-code my HTML** when the real `picture` element will be standard and supported?
+
+Please note that there's a version of picturePolyfill, under the [usingPictureMarkup](https://github.com/verlok/picturePolyfill/tree/master/usingPictureMarkup) folder, which makes it possible to **use the real `picture` + `source` tags today**, but this version is supporting Internet Explorer 10 and above (no support for versions 8 and 9).
+
+If you need to support IE 8 and 9 the answer is yes, recoding will be necessary when the real `picture` tag will be a standard.
+
+What I suggest is to **generate the responsive images markup** using some function written in a **server side language** (like PHP or similar), with a simple configuration to **switch** to make it generate the `span[data-picture]` element today (required by picturePolyfill) or the real `picture` element when fully supported.
+
+
 ### How the `img` is appended and updated
 
 Upon finding a matching media in the `data-picture` array, picturePolyfill will generate an `img` element and inside that span. 
