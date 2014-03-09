@@ -156,12 +156,12 @@ picturePolyfill is intentionally exposed to the global space, so you can call it
 
 ### Internet Explorer desktop versions
 
-* **IE 10 and above**: Fully supported, as in all other modern browsers
-* **IE 9**: Supported, including the `matchMedia` polyfill provided in external/matchMedia.js
+* **IE 10 and above**: Fully supported, as in all other modern browsers.
+* **IE 9**: Supported, including the `matchMedia` polyfill provided in `external/matchMedia.js`
 * **IE 8**: Supported, but as the browser has no support for CSS3 Media Queries, the script will load the element (of the `data-picture` attribute array) which has the `standard` property set to true, or the last element of the array.
 * **IE 7 and below are intentionally not supported** (missing JSON, missing querySelectorAll). Script will fail silently without throwing any javascript errors.
 
-**Note**: Internet Explorer 7 finally disappeared along with all its bugs. The most used Internet Explorer versions today (march 2014) are 11, 8, 10, then 9.
+**Note**: Internet Explorer 7 finally disappeared along with all its bugs. The most used Internet Explorer versions today (march 2014) are 11, 8, 10, then 9. Please note that IE 10 and above also support the [real picture element polyfill](https://github.com/verlok/picturePolyfill/tree/master/usingPictureMarkup).
 
 ## Size and delivery
 
