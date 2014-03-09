@@ -19,11 +19,11 @@ PicturePolyfill is fast and easy to use because:
 
 ### Differences with picturefill
 
-I think picturePolyfill is better than picturefill because:
+picturePolyfill is better than picturefill because:
 
 * it gives you the **`srcset` attribute**, which gives you easier support for retina displays. picturefill requires more lines of markup code (and the `-webkit-` prefix) to support different media queries.
 * it makes you **choose a default image** that you want to show on Internet Explorer 8. picturefill always serves the smaller one 
-* it relies on a `JSON` object, that is much **faster** to be parsed then many span elements required by picturefill
+* it's **faster**, as it relies on a `JSON` object, that is much faster to be parsed then many span elements required by picturefill (see "performance" section on this readme)
 
 ## Markup pattern and explanation
 
@@ -174,12 +174,13 @@ picturePolyfill is intentionally exposed to the global space, so you can call it
 
 Currently, `picturePolyfill.js` compresses to around 620bytes (~0.6kb), after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
 
-## Script performance
+## Performance
 
 To make sure this script is performing at its best, I created some performance tests on [JSPerf](http://jsperf.com). Here they are:
 
 * [About finding matches with array vs with string assignment](http://jsperf.com/find-matches-with-array-vs-with-string-assignment)
 * [About avoid writing the entire MQ, put the min-width value only](http://jsperf.com/picturepolyfill-and-json-parse-test2)
+* [picturePolyfill vs picturefill performance test](http://jsperf.com/picturefill-vs-picturepolyfill-performance-test)
 
 ## Inspiration
 
