@@ -80,15 +80,15 @@
 
 		// If image already exist, use it
 		if (imageElements.length) {
-			imageElement = imageElements[0];
+			imageElements[0].setAttribute('src', srcAttribute);
 		}
 		// Else create the image
 		else {
 			imageElement = document.createElement('img');
 			imageElement.setAttribute('alt', imageHolder.getAttribute('data-alt'));
+			imageElement.setAttribute('src', srcAttribute);
 			imageHolder.appendChild(imageElement);
 		}
-		imageElement.setAttribute('src', srcAttribute);
 	}
 
 	/**
@@ -99,8 +99,6 @@
 	 */
 
 	function parseDOM() {
-		
-		if (!document.querySelectorAll) {return;}
 
 		var pictureData, imageHolder, imageHolders = document.querySelectorAll('[data-picture]');
 
@@ -132,18 +130,18 @@
 		window.addEventListener('resize', function() {
 			clearTimeout(timerId);
 			timerId = setTimeout(function() {
-				parseDOM();
+				window.picturePolyfill();
 			}, 100);
 		});
 	}
 	
 
 	/**
-	 * Expose the function to the global environment
+	 * Expose the function to the global environment, if browser is supported, else empty function
 	 * @type {Function}
 	 */
 	
-	window.picturePolyfill = parseDOM;
+	window.picturePolyfill = (!document.querySelectorAll) ? function(){} : parseDOM;
 
 }());
 
