@@ -98,7 +98,6 @@
 	 */
 
 	function parseDOM(element) {
-
 		var pictureData, imageHolder,
 			imageHolders = (element || document).querySelectorAll('[data-picture]');
 
@@ -129,12 +128,14 @@
 	if (window.addEventListener) {
 		window.addEventListener('resize', function() {
 			clearTimeout(timerId);
-			timerId = setTimeout(function() {
-				window.picturePolyfill();
-			}, 100);
+			timerId = setTimeout(window.picturePolyfill, 100);
 		});
+		window.addEventListener('DOMContentLoaded', function(){
+			window.picturePolyfill();
+			window.removeEventListener('load', window.picturePolyfill);
+		});
+		window.addEventListener('load', window.picturePolyfill);
 	}
-	
 
 	/**
 	 * Expose the function to the global environment, if browser is supported, else empty function
@@ -144,6 +145,3 @@
 	window.picturePolyfill = (!document.querySelectorAll) ? function(){} : parseDOM;
 
 }());
-
-// Execute the function right at page landing
-window.picturePolyfill();
