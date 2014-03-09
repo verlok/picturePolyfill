@@ -21,9 +21,9 @@ PicturePolyfill is fast and easy to use because:
 
 I think picturePolyfill is better than picturefill because:
 
-* picturePolyfill has the *`srcset`* attribute, which gives you easy support for retina displays, making that as easy as adding an element to an array. In picturefill you need to write more lines of markup code to support different media queries.
-* picturePolyfill makes you *choose a default image* that you want to show on Internet Explorer 8. picturefill always serves the smaller one 
-* picturePolyfill relies on a `JSON` object, that is much *faster* to be parsed then many span elements required by picturefill
+* it has the *`srcset`* attribute, which gives you easy support for retina displays, making that as easy as adding an element to an array. In picturefill you need to write more lines of markup code to support different media queries.
+* it makes you *choose a default image* that you want to show on Internet Explorer 8. picturefill always serves the smaller one 
+* it relies on a `JSON` object, that is much *faster* to be parsed then many span elements required by picturefill
 
 ## Markup pattern and explanation
 
