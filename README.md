@@ -10,6 +10,8 @@ A Responsive Images approach that you can use today that mimics the [proposed pi
 
 ## picturePolyfill advantages
 
+PicturePolyfill is fast and easy to use because:
+
 * **loading performance**: it serves only one image, no other double HTTP requests are made
 * **computing performance**: it doesn't execute while a smooth (animated or manually dragged) browser resize is in progress, avoiding useless DOM parsing and HTTP requests to mid-breakpoints images that the user might not need
 * **support to HD (Retina) displays** easily made (no need to prefix HD media queries with the `-webkit-` prefix)
@@ -17,9 +19,11 @@ A Responsive Images approach that you can use today that mimics the [proposed pi
 
 ### Differences with picturefill
 
-* picturePolyfill has the srcset attribute, that gives you easy support for retina displays, making that as easy as adding an element to an array. In picturefill you need to write more lines of markup code to support different media queries.
-* picturePolyfill makes you choose which image you want to show on Internet Explorer 8. picturefill always serves the smaller one 
-* picturePolyfill relies on a JSON object, that is much faster to be parsed then many span elements required by picturefill
+I think picturePolyfill is better than picturefill because:
+
+* picturePolyfill has the `srcset` attribute, which gives you easy support for retina displays, making that as easy as adding an element to an array. In picturefill you need to write more lines of markup code to support different media queries.
+* picturePolyfill makes you `choose a default image` that you want to show on Internet Explorer 8. picturefill always serves the smaller one 
+* picturePolyfill relies on a JSON object, that is much `faster` to be parsed then many span elements required by picturefill
 
 ## Markup pattern and explanation
 
