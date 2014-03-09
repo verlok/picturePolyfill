@@ -174,6 +174,12 @@ picturePolyfill is intentionally exposed to the global space, so you can call it
 
 Currently, `picturePolyfill.js` compresses to around 620bytes (~0.6kb), after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
 
+## Script performance
+
+To make sure this script is performing at its best, I created some performance tests on [JSPerf](http://jsperf.com). Here they are:
+
+* [About finding matches with array vs with string assignment](http://jsperf.com/find-matches-with-array-vs-with-string-assignment)
+* [About avoid writing the entire MQ, put the min-width value only](http://jsperf.com/picturepolyfill-and-json-parse-test2)
 
 ## Inspiration
 
