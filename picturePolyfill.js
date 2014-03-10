@@ -22,7 +22,7 @@
 		if (typeof arrayOrString === 'string') {
 			return arrayOrString;
 		}
-		while (arrayOrString[position]==null && position>0) {
+		while (arrayOrString[position]===undefined && position>0) {
 			position-=1;
 		}
 		return arrayOrString[position];
@@ -118,6 +118,14 @@
 		}
 	}
 
+	/**
+	 * Expose the function to the global environment, if browser is supported, else empty function
+	 * @type {Function}
+	 */
+	
+	window.picturePolyfill = (!document.querySelectorAll) ? function(){} : function(){
+		parseDOM(document);
+	};
 
 	/**
 	 * Manage resize event calling the parseDOM function
@@ -136,12 +144,8 @@
 		});
 		window.addEventListener('load', window.picturePolyfill);
 	}
-
-	/**
-	 * Expose the function to the global environment, if browser is supported, else empty function
-	 * @type {Function}
-	 */
-	
-	window.picturePolyfill = (!document.querySelectorAll) ? function(){} : parseDOM;
+	else if (window.attachEvent) {
+		window.attachEvent('onload', window.picturePolyfill);
+	}
 
 }());
