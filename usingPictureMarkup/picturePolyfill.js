@@ -1,95 +1,150 @@
+/* PicturePolyfill - Responsive Images that work today. (and mimic the proposed Picture element with span elements). Author: Andrea Verlicchi | License: MIT/GPLv2 */
+
 (function() {
 
-	var timerId;
+	"use strict";
 
-	window.RIM = {};
+	var timerId,
+		pixelRatio = window.devicePixelRatio || 1,          // The pixel density (2 is for HD aka Retina displays)
+		mediaQueriesSupported = window.matchMedia && window.matchMedia("only all") !== null && window.matchMedia("only all").matches;
 
-	function init() {
+	/**
+	 * Returns the proper src from the srcSet property
+	 * If arrayOrString is a string, returns it
+	 * else get the first valid element from passed position to the left
+	 * @param arrayOrString
+	 * @param position
+	 * @returns {*}
+	 */
 
-		var pictureElements = document.getElementsByTagName('picture'),
-			pictureElement,
-			imgElement, srcAttribute, i,
-			pixelRatio = window.devicePixelRatio || 1;
-
-		// Parse source elements and call parseSourceElement on each one
-		function parseSourceElements(sourceElements, ignoreMedia) {
-			var matchedSrc = null, i;
-			for (i=0; i<sourceElements.length; i+=1) {
-				// Get the right srcSet based on media queries
-				matchedSrc = parseSourceElement(sourceElements[i], ignoreMedia) || matchedSrc;
-			}
-			return matchedSrc;
+	function getSrcFromSrcSet(arrayOrString, position) {
+		if (typeof arrayOrString === 'string') {
+			return arrayOrString;
 		}
-
-		// Parse source element and get the proper src attribute
-		function parseSourceElement(sourceElement, ignoreMedia) {
-			var media, i, ratio, srcSetElements, srcSetElement, matchedSrc, srcSetAttribute;
-			media = sourceElement.getAttribute('media');
-			if (ignoreMedia || !media || window.matchMedia(media).matches) {
-				srcSetAttribute = sourceElement.getAttribute('srcset');
-				// Get the right source based on pixel ratio
-				srcSetElements = srcSetAttribute.split(',');
-				for (i=0; i<srcSetElements.length; i+=1) {
-					srcSetElement = srcSetElements[i].trim().split(' ');
-					ratio = parseInt(srcSetElement[1], 10) || 1;
-					if (ratio === pixelRatio) {
-						matchedSrc = srcSetElement[0];
-					}
-				}
-			}
-			return matchedSrc;
+		while (arrayOrString[position]===undefined && position>0) {
+			position-=1;
 		}
+		return arrayOrString[position];
+	}
 
-		function getOrCreateImage(picture) {
-			var imageElements, imageElement;
-			imageElements = picture.getElementsByTagName('img');
 
-			// If image already exist, return it
-			if (imageElements.length) {
-				imageElement = imageElements[0];
+	/**
+	 * Loop through every element of the dataPicture array, check if the media query applies and,
+	 * if so, get the src element from the srcSet property based depending on pixel ratio
+	 * @param dataPicture
+	 * @returns {string}
+	 */
+
+	function getSrcAttributeFromData(dataPicture) {
+		var media, matchedSrc;
+
+		for (var i=0, len=dataPicture.length; i<len; i+=1) {
+			media = dataPicture[i].media;
+			if (!media || window.matchMedia(media).matches) {
+				matchedSrc = getSrcFromSrcSet(dataPicture[i].srcset, pixelRatio-1);
 			}
-			// Else create the image
-			else {
-				imageElement = document.createElement('img');
-				imageElement.setAttribute('alt', picture.getAttribute('data-alt'));
-				picture.appendChild(imageElement);
-			}
-			return imageElement;
 		}
+		return matchedSrc;
+	}
 
-		// Loop through all picture elements
-		for (i=0; i<pictureElements.length; i+=1) {
 
-			pictureElement = pictureElements[i];
-			
-			// If browser doesn't support matchMedia - NOTE: Paul Irish's polyfill is provided in "external/matchMedia.js"
-			srcAttribute = (window.matchMedia) ?
-				parseSourceElements(pictureElement.getElementsByTagName('source'), false) :
-				parseSourceElement(pictureElement.querySelector('source[data-default]'), true);
-				
-			// Fallback image
-			// TODO: get from the options, to be passed in from an init function
-			srcAttribute = srcAttribute || "http://placehold.it/1x1";
+	/**
+	 * Search for the "standard: true" image in the array
+	 * @param dataPicture
+	 * @returns {string}
+	 */
 
-			// Select the image, or create it
-			imgElement = getOrCreateImage(pictureElement);
+	function getStandardImageFromData(dataPicture) {
+		var dataElement;
 
-			// Set the img source
-			imgElement.setAttribute('src', srcAttribute);
+		for (var i=0, len=dataPicture.length; i<len; i+=1) {
+			dataElement = dataPicture[i];
+			if (dataElement.standard) {
+				break;
+			}
+		}
+		return getSrcFromSrcSet(dataElement.srcset, 0);
+	}
+
+	/**
+	 * Set the src attribute of the first image element inside passed imageHolder
+	 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to imageHolder
+	 * @param imageHolder
+	 * @param srcAttribute
+	 */
+
+	function createOrUpdateImage(imageHolder, srcAttribute) {
+		var imageElements, imageElement;
+		imageElements = imageHolder.getElementsByTagName('img');
+
+		// If image already exist, use it
+		if (imageElements.length) {
+			imageElements[0].setAttribute('src', srcAttribute);
+		}
+		// Else create the image
+		else {
+			imageElement = document.createElement('img');
+			imageElement.setAttribute('alt', imageHolder.getAttribute('data-alt'));
+			imageElement.setAttribute('src', srcAttribute);
+			imageHolder.appendChild(imageElement);
 		}
 	}
 
-	// On resize
-	window.addEventListener('resize', function() {
-		clearTimeout(timerId);
-		timerId = setTimeout(function() {
-			init();
-		}, 500);
-	});
+	/**
+	 * Parses the DOM looking for elements containing the "data-picture" attribute, then
+	 * generate the images or updates their src attribute.
+	 * @param element the starting element to parse DOM into. If not passed, it parses the whole document.
+	 */
 
-	window.RIM.responsiveImages = init;
+	function parseDOM(element) {
+		var pictureData, imageHolder,
+			imageHolders = (element || document).querySelectorAll('[data-picture]');
+
+		// Finding all the elements with data-image
+		for (var i=0, len=imageHolders.length; i<len; i+=1) {
+			imageHolder = imageHolders[i];
+			try {
+				pictureData = JSON.parse(imageHolder.getAttribute('data-picture'));
+				// Take the source from the matched media, or standard media
+				// Update the image, or create it
+				createOrUpdateImage(imageHolder, (mediaQueriesSupported) ?
+					getSrcAttributeFromData(pictureData) :
+					getStandardImageFromData(pictureData));
+			}
+			catch (e) {
+				window.console.log(e);
+			}
+		}
+	}
+
+	/**
+	 * Expose the function to the global environment, if browser is supported, else empty function
+	 * @type {Function}
+	 */
+	
+	window.picturePolyfill = (!document.querySelectorAll) ? function(){} : function(){
+		parseDOM(document);
+	};
+
+	/**
+	 * Manage resize event calling the parseDOM function
+	 * only if they've passed 100 milliseconds between a resize event and another
+	 * to avoid the script to slower the browser on animated resize or browser edge dragging
+	 */
+
+	if (window.addEventListener) {
+		window.addEventListener('resize', function() {
+			clearTimeout(timerId);
+			timerId = setTimeout(window.picturePolyfill, 100);
+		});
+		window.addEventListener('DOMContentLoaded', function(){
+			window.picturePolyfill();
+			window.removeEventListener('load', window.picturePolyfill);
+		});
+		window.addEventListener('load', window.picturePolyfill);
+	}
+	else if (window.attachEvent) {
+		window.attachEvent('onload', window.picturePolyfill);
+	}
 
 }());
-
-// Execute the function right at page landing
-window.RIM.responsiveImages();
