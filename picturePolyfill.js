@@ -22,7 +22,7 @@
 		if (typeof arrayOrString === 'string') {
 			return arrayOrString;
 		}
-		while (arrayOrString[position]==null && position>0) {
+		while (arrayOrString[position]===undefined && position>0) {
 			position-=1;
 		}
 		return arrayOrString[position];
@@ -80,29 +80,26 @@
 
 		// If image already exist, use it
 		if (imageElements.length) {
-			imageElement = imageElements[0];
+			imageElements[0].setAttribute('src', srcAttribute);
 		}
 		// Else create the image
 		else {
 			imageElement = document.createElement('img');
 			imageElement.setAttribute('alt', imageHolder.getAttribute('data-alt'));
+			imageElement.setAttribute('src', srcAttribute);
 			imageHolder.appendChild(imageElement);
 		}
-		imageElement.setAttribute('src', srcAttribute);
 	}
 
 	/**
 	 * Parses the DOM looking for elements containing the "data-picture" attribute, then
 	 * generate the images or updates their src attribute.
-	 * Browser support depends on document.querySelectorAll and JSON parsing
-	 * If browser is not supported, do nothing (fail silently)
+	 * @param element the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 
-	function parseDOM() {
-		
-		if (!document.querySelectorAll) {return;}
-
-		var pictureData, imageHolder, imageHolders = document.querySelectorAll('[data-picture]');
+	function parseDOM(element) {
+		var pictureData, imageHolder,
+			imageHolders = (element || document).querySelectorAll('[data-picture]');
 
 		// Finding all the elements with data-image
 		for (var i=0, len=imageHolders.length; i<len; i+=1) {
@@ -121,6 +118,14 @@
 		}
 	}
 
+	/**
+	 * Expose the function to the global environment, if browser is supported, else empty function
+	 * @type {Function}
+	 */
+	
+	window.picturePolyfill = (!document.querySelectorAll) ? function(){} : function(){
+		parseDOM(document);
+	};
 
 	/**
 	 * Manage resize event calling the parseDOM function
@@ -131,21 +136,16 @@
 	if (window.addEventListener) {
 		window.addEventListener('resize', function() {
 			clearTimeout(timerId);
-			timerId = setTimeout(function() {
-				parseDOM();
-			}, 100);
+			timerId = setTimeout(window.picturePolyfill, 100);
 		});
+		window.addEventListener('DOMContentLoaded', function(){
+			window.picturePolyfill();
+			window.removeEventListener('load', window.picturePolyfill);
+		});
+		window.addEventListener('load', window.picturePolyfill);
 	}
-	
-
-	/**
-	 * Expose the function to the global environment
-	 * @type {Function}
-	 */
-	
-	window.picturePolyfill = parseDOM;
+	else if (window.attachEvent) {
+		window.attachEvent('onload', window.picturePolyfill);
+	}
 
 }());
-
-// Execute the function right at page landing
-window.picturePolyfill();
