@@ -1,12 +1,12 @@
 /* PicturePolyfill - Responsive Images that work today. (and mimic the proposed Picture element with span elements). Author: Andrea Verlicchi | License: MIT/GPLv2 */
 
-(function() {
+(function(w) {
 
 	"use strict";
 
 	var timerId,
-		pixelRatio = window.devicePixelRatio || 1,          // The pixel density (2 is for HD aka Retina displays)
-		mediaQueriesSupported = window.matchMedia && window.matchMedia("only all") !== null && window.matchMedia("only all").matches;
+		pixelRatio = w.devicePixelRatio || 1,          // The pixel density (2 is for HD aka Retina displays)
+		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
 
 
 	/**
@@ -41,7 +41,7 @@
 
 		for (var i=0, len=dataPicture.length; i<len; i+=1) {
 			media = dataPicture[i].media;
-			if (!media || window.matchMedia(media).matches) {
+			if (!media || w.matchMedia(media).matches) {
 				matchedSrc = getSrcFromSrcSet(dataPicture[i].srcset, pixelRatio-1);
 			}
 		}
@@ -99,7 +99,7 @@
 
 	function parseDOM(element) {
 		var pictureData, imageHolder,
-			imageHolders = (element || document).querySelectorAll('[data-picture]');
+			imageHolders = element.querySelectorAll('[data-picture]');
 
 		// Finding all the elements with data-image
 		for (var i=0, len=imageHolders.length; i<len; i+=1) {
@@ -113,7 +113,7 @@
 					getStandardImageFromData(pictureData));
 			}
 			catch (e) {
-				window.console.log(e);
+				w.console.log(e);
 			}
 		}
 	}
@@ -123,8 +123,8 @@
 	 * @type {Function}
 	 */
 	
-	window.picturePolyfill = (!document.querySelectorAll) ? function(){} : function(){
-		parseDOM(document);
+	w.picturePolyfill = (!document.querySelectorAll) ? function(){} : function(element){
+		parseDOM(element || document);
 	};
 
 	/**
@@ -133,19 +133,19 @@
 	 * to avoid the script to slower the browser on animated resize or browser edge dragging
 	 */
 
-	if (window.addEventListener) {
-		window.addEventListener('resize', function() {
+	if (w.addEventListener) {
+		w.addEventListener('resize', function() {
 			clearTimeout(timerId);
-			timerId = setTimeout(window.picturePolyfill, 100);
+			timerId = setTimeout(w.picturePolyfill, 100);
 		});
-		window.addEventListener('DOMContentLoaded', function(){
-			window.picturePolyfill();
-			window.removeEventListener('load', window.picturePolyfill);
+		w.addEventListener('DOMContentLoaded', function(){
+			w.picturePolyfill();
+			w.removeEventListener('load', w.picturePolyfill);
 		});
-		window.addEventListener('load', window.picturePolyfill);
+		w.addEventListener('load', w.picturePolyfill);
 	}
-	else if (window.attachEvent) {
-		window.attachEvent('onload', window.picturePolyfill);
+	else if (w.attachEvent) {
+		w.attachEvent('onload', w.picturePolyfill);
 	}
 
-}());
+}(this));

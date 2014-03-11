@@ -2,27 +2,53 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Responsive Images - by Andrea Verlicchi</title>
+	<title>Responsive images with picturePolyfill - by Andrea Verlicchi</title>
 	<link rel="stylesheet" href="index.css"/>
 </head>
 <body>
-	<h1>picturePolyfill usage example</h1>
-	<p>The following link contains a responsive image created using the &lt;picture&gt; element and the javascript picture polyfill.</p>
-	<p>This example works at first load, at window resize and it's based on window min-width and pixelRatio (retina display support).</p>
-	<a href="#">
-		<picture data-alt="A placeholder">
-			<source srcset="img/320x320.gif, img/320x320x2.gif 2x">
-			<source media="(min-width: 321px)"  srcset="img/480x480.gif,   img/480x480x2.gif 2x">
-			<source media="(min-width: 481px)"  srcset="img/768x768.gif,   img/768x768x2.gif 2x">
-			<source media="(min-width: 769px)"  srcset="img/1024x1024.gif, img/1024x1024x2.gif 2x" data-default>
-			<source media="(min-width: 1025px)" srcset="img/1280x1280.gif, img/1280x1280x2.gif 2x">
-			<source media="(min-width: 1281px)" srcset="img/1440x1440.gif, img/1440x1440x2.gif 2x">
-			<source media="(min-width: 1441px)" srcset="img/1920x1920.gif, img/1920x1920x2.gif 2x">
-			<noscript>
-				<img src="img/1280x1280.gif" alt="A placeholder">
-			</noscript>
-		</picture>
-	</a>
+	<div id="container">
+		<div class="intro">
+			<h1>Responsive images using PicturePolyfill - Demo</h1>
+			<p>The following link contains two <strong>responsive images</strong> created using a <code>&lt;span&gt;</code> element, inline JSON (instead of <code>&lt;source&gt;</code> markup), and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
+		</div>
+		<div class="element">
+			<h2>Without HD (Retina) display support</h2>
+			<a href="#someLink2">
+				<picture data-alt="A beautiful responsive image" data-picture='[
+					{"srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"}, 
+					{"srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=512", "media": "(min-width: 481px)"}, 
+					{"srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960", "media": "(min-width: 1025px)"}
+					]'>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480">
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)">
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960" media="(min-width: 1025px)">
+					<noscript>
+						<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" alt="A beautiful responsive image"/>
+					</noscript>
+				</picture>
+			</a>
+		</div>
+		<div class="element">
+			<h2>With HD (Retina) display support</h2>
+			<a href="#someLink1">
+				<picture data-alt="A beautiful responsive image" data-picture='[
+					{"srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=480", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"]}, 
+					{"srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=512", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1025"], "media": "(min-width: 481px)"}, 
+					{"srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=960", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920"], "media": "(min-width: 1025px)"}
+					]'>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x">
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x" media="(min-width: 481px)">
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920 2x" media="(min-width: 1025px)">
+					<noscript>
+						<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" alt="A beautiful responsive image"/>
+					</noscript>
+				</picture>
+			</a>
+		</div>
+		<div class="outro">
+			<p>Real time server side scaling is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
+		</div>
+	</div>
 	<script src="external/matchMedia.js"></script>
 	<script src="picturePolyfill.js"></script>
 </body>
