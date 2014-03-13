@@ -1,0 +1,11 @@
+{
+  "name": "pictyrePolyfill",
+  "version": "1.0.1",
+  "main": "",
+  "ignore": [
+    ".idea",
+    ".gitignore"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}
