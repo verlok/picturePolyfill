@@ -12,16 +12,12 @@
 			<p>The following link contains two <strong>responsive images</strong> created using a <code>&lt;span&gt;</code> element, inline JSON (instead of <code>&lt;source&gt;</code> markup), and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
 		</div>
 		<div class="element">
-			<h2>Without HD (Retina) display support</h2>
-			<a href="#someLink2">
-				<picture data-alt="A beautiful responsive image" data-picture='[
-					{"srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"}, 
-					{"srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=512", "media": "(min-width: 481px)"}, 
-					{"srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960", "media": "(min-width: 1025px)"}
-					]'>
-					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480">
-					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)">
-					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960" media="(min-width: 1025px)">
+			<h2>With HD (Retina) display support</h2>
+			<a href="#someLink1">
+				<picture data-alt="A beautiful responsive image">
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x"/>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x" media="(min-width: 481px)"/>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920 2x" media="(min-width: 1025px)"/>
 					<noscript>
 						<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" alt="A beautiful responsive image"/>
 					</noscript>
@@ -29,22 +25,19 @@
 			</a>
 		</div>
 		<div class="element">
-			<h2>With HD (Retina) display support</h2>
-			<a href="#someLink1">
-				<picture data-alt="A beautiful responsive image" data-picture='[
-					{"srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=480", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"]}, 
-					{"srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=512", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1025"], "media": "(min-width: 481px)"}, 
-					{"srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=960", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920"], "media": "(min-width: 1025px)"}
-					]'>
-					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x">
-					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x" media="(min-width: 481px)">
-					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920 2x" media="(min-width: 1025px)">
+			<h2>Without HD (Retina) display support</h2>
+			<a href="#someLink2">
+				<picture data-alt="A beautiful responsive image">
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)"/>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960" media="(min-width: 1025px)"/>
 					<noscript>
 						<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" alt="A beautiful responsive image"/>
 					</noscript>
 				</picture>
 			</a>
 		</div>
+		
 		<div class="outro">
 			<p>Real time server side scaling is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
 		</div>
