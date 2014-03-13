@@ -22,6 +22,7 @@
 		if (typeof arrayOrString === 'string') {
 			return arrayOrString;
 		}
+		position = Math.ceil(position);
 		while (arrayOrString[position]===undefined && position>0) {
 			position-=1;
 		}
