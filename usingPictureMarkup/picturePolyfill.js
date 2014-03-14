@@ -5,15 +5,8 @@
 	"use strict";
 
 	var timerId,
-		pixelRatio = w.devicePixelRatio || 1,          // The pixel density (2 is for HD aka Retina displays)
+		pixelRatio = Math.ceil(w.devicePixelRatio || 1), // The pixel density (2 is for HD aka Retina displays)
 		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
-
-	/**
-	 * Activate picture and source tag support for IE8
-	 */
-
-	document.createElement("picture");
-	document.createElement("source");
 
 
 	/**
@@ -23,15 +16,15 @@
 	function getSrcSetHash(srcSetAttribute) {
 		var hash = {},
 			sources = srcSetAttribute.split(',');
- 		
- 		for (var i=0, len=sources.length; i<len; i+=1) {
- 			var srcAndDensity = sources[i].trim().split(' ');
- 			var src = srcAndDensity[0].trim();
- 			var density = (parseInt(srcAndDensity[1], 10) || 1).toString();
- 			hash[density] = src;
- 		}
+		
+		for (var i=0, len=sources.length; i<len; i+=1) {
+			var srcAndDensity = sources[i].trim().split(' ');
+			var src = srcAndDensity[0].trim();
+			var density = (parseInt(srcAndDensity[1], 10) || 1).toString();
+			hash[density] = src;
+		}
 
- 		return hash;
+		return hash;
 	}
 
 
@@ -68,25 +61,6 @@
 			}
 		}
 		return matchedSrc;
-	}
-
-
-	/**
-	 * Search for the "standard: true" image in the array
-	 * @param dataPicture {element}
-	 * @returns {string}
-	 */
-
-	function getStandardImageFromData(dataPicture) {
-		var dataElement;
-
-		for (var i=0, len=dataPicture.length; i<len; i+=1) {
-			dataElement = dataPicture[i];
-			if (dataElement.standard) {
-				break;
-			}
-		}
-		return getSrcFromSrcSetArray(dataElement.srcset, 0);
 	}
 
 
@@ -155,14 +129,21 @@
 				pictureData = parseSources(pictureElement);
 				// Take the source from the matched media, or standard media
 				// Update the image, or create it
-				createOrUpdateImage(pictureElement, (mediaQueriesSupported) ?
+				createOrUpdateImage(pictureElement, (mediaQueriesSupported && pictureData.length>0) ?
 					getSrcAttributeFromData(pictureData) :
-					getStandardImageFromData(pictureData));
-			// }
+					pictureElement.getAttribute("data-defaultsrc"));
+			//}
 			//catch (e) {
-			//	w.console.log(e);
+				//w.console.log(e);
 			//}
 		}
+	}
+
+	/**
+	 * Private function to call w.picturePolyfill on the whole document
+	 */
+	function picturePolyfillDocument() {
+		w.picturePolyfill(document);
 	}
 
 	/**
@@ -174,6 +155,7 @@
 		parsePictures(element || document);
 	};
 
+
 	/**
 	 * Manage resize event calling the parsePictures function
 	 * only if they've passed 100 milliseconds between a resize event and another
@@ -183,16 +165,16 @@
 	if (w.addEventListener) {
 		w.addEventListener('resize', function() {
 			clearTimeout(timerId);
-			timerId = setTimeout(w.picturePolyfill, 100);
+			timerId = setTimeout(picturePolyfillDocument, 100);
 		});
 		w.addEventListener('DOMContentLoaded', function(){
-			w.picturePolyfill();
-			w.removeEventListener('load', w.picturePolyfill);
+			picturePolyfillDocument();
+			w.removeEventListener('load', picturePolyfillDocument);
 		});
-		w.addEventListener('load', w.picturePolyfill);
+		w.addEventListener('load', picturePolyfillDocument);
 	}
 	else if (w.attachEvent) {
-		w.attachEvent('onload', w.picturePolyfill);
+		w.attachEvent('onload', picturePolyfillDocument);
 	}
 
 }(this));
