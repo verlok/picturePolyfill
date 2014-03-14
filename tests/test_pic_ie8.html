@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Responsive images with picturePolyfill - by Andrea Verlicchi</title>
+	<link rel="stylesheet" href="../usingPictureMarkup/index.css"/>
+</head>
+<body>
+	<div id="container">
+		<div class="intro">
+			<h1>Responsive images using PicturePolyfill - Demo</h1>
+			<p>The following link contains two <strong>responsive images</strong> created using a <code>&lt;span&gt;</code> element, inline JSON (instead of <code>&lt;source&gt;</code> markup), and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
+		</div>
+		<div class="element">
+			<h2>With HD (Retina) display support</h2>
+			<a href="#someLink1">
+				<picture data-alt="A beautiful responsive image">
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x"/>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x" media="(min-width: 481px)"/>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920 2x" media="(min-width: 1025px)"/>
+					<noscript><img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" alt="A beautiful responsive image"/></noscript>
+				</picture>
+			</a>
+		</div>
+		<div class="element">
+			<h2>Without HD (Retina) display support</h2>
+			<a href="#someLink2">
+				<picture id="second" data-alt="A beautiful responsive image">
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)"/>
+					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960" media="(min-width: 1025px)"/>
+					<noscript>
+						<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" alt="A beautiful responsive image"/>
+					</noscript>
+				</picture>
+			</a>
+		</div>
+		<div class="outro">
+			<p>Real time server side scaling is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
+		</div>
+	</div>
+	<script>
+		
+		(function(){
+
+			var picture;
+
+			function replacePictureWithPictureWithImg(picture, imgSrc) {
+				var newImage = document.createElement("img"),
+					newPicture = document.createElement("picture");
+				newImage.setAttribute('src', imgSrc);
+				newPicture.appendChild(newImage);
+				picture.parentNode.replaceChild(newPicture, picture);
+			}
+
+			function updateImgSrcOrReplacePicture(picture, imgSrc) {
+				var imgs = picture.getElementsByTagName("img");
+				if (imgs.length === 0) {
+					replacePictureWithPictureWithImg(picture, imgSrc);
+				}
+				else {
+					imgs[0].setAttribute("img", imgSrc);
+				}
+			}
+
+			var appendImageIsAllowed, pictures;
+
+			pictures = document.getElementsByTagName("picture");
+
+			for (var i=0, len=pictures.length; i<len; i+=1) {
+				picture = pictures[i];
+				replacePictureWithPictureWithImg(picture, 'http://www.placehold.it/500x500');
+			}
+
+			picture = pictures[1];
+			replacePictureWithPictureWithImg(picture, 'http://www.placehold.it/500x500/f00ba5');
+			
+		}());
+
+	</script>
+</body>
+</html>
