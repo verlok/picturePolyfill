@@ -5,7 +5,7 @@
 	"use strict";
 
 	var timerId,
-		pixelRatio = w.devicePixelRatio || 1,          // The pixel density (2 is for HD aka Retina displays)
+		pixelRatio = Math.ceil(w.devicePixelRatio || 1), // The pixel density (2 is for HD aka Retina displays)
 		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
 
 
@@ -22,7 +22,6 @@
 		if (typeof arrayOrString === 'string') {
 			return arrayOrString;
 		}
-		position = Math.ceil(position);
 		while (arrayOrString[position]===undefined && position>0) {
 			position-=1;
 		}
@@ -98,7 +97,7 @@
 	 * @param element the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 
-	function parseDOM(element) {
+	function parseDOMTree(element) {
 		var pictureData, imageHolder,
 			imageHolders = element.querySelectorAll('[data-picture]');
 
@@ -120,16 +119,24 @@
 	}
 
 	/**
+	 * Private function to call w.picturePolyfill on the whole document
+	 */
+	function picturePolyfillDocument() {
+		w.picturePolyfill(document);
+	}
+
+	/**
 	 * Expose the function to the global environment, if browser is supported, else empty function
 	 * @type {Function}
 	 */
 	
 	w.picturePolyfill = (!document.querySelectorAll) ? function(){} : function(element){
-		parseDOM(element || document);
+		parseDOMTree(element || document);
 	};
 
+
 	/**
-	 * Manage resize event calling the parseDOM function
+	 * Manage resize event calling the parseDOMTree function
 	 * only if they've passed 100 milliseconds between a resize event and another
 	 * to avoid the script to slower the browser on animated resize or browser edge dragging
 	 */
@@ -137,16 +144,16 @@
 	if (w.addEventListener) {
 		w.addEventListener('resize', function() {
 			clearTimeout(timerId);
-			timerId = setTimeout(w.picturePolyfill, 100);
+			timerId = setTimeout(picturePolyfillDocument, 100);
 		});
 		w.addEventListener('DOMContentLoaded', function(){
-			w.picturePolyfill();
-			w.removeEventListener('load', w.picturePolyfill);
+			picturePolyfillDocument();
+			w.removeEventListener('load', picturePolyfillDocument);
 		});
-		w.addEventListener('load', w.picturePolyfill);
+		w.addEventListener('load', picturePolyfillDocument);
 	}
 	else if (w.attachEvent) {
-		w.attachEvent('onload', w.picturePolyfill);
+		w.attachEvent('onload', picturePolyfillDocument);
 	}
 
 }(this));

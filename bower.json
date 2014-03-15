@@ -1,11 +1,31 @@
 {
-  "name": "pictyrePolyfill",
-  "version": "1.0.1",
-  "main": "",
+  "name": "picturePolyfill",
+  "version": "1.0.0",
+  "main": "picturePolyfill.js",
   "ignore": [
     ".idea",
-    ".gitignore"
+    ".gitignore",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
   ],
-  "dependencies": {},
-  "devDependencies": {}
+  "homepage": "https://github.com/verlok/picturePolyfill",
+  "authors": [
+    "Andrea Verlicchi <andrea.verlicchi@gmail.com>"
+  ],
+  "description": "The real <picture> polyfill to use responsive images today",
+  "keywords": [
+    "picture",
+    "polyfill",
+    "picturefill",
+    "responsive",
+    "images",
+    "responsive",
+    "design",
+    "responsive",
+    "images"
+  ],
+  "license": "MIT"
 }
