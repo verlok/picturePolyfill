@@ -3,7 +3,6 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Responsive images with picturePolyfill - by Andrea Verlicchi</title>
-	<meta name="viewport" content="width=device-width">
 	<style>
 		body { margin: 0; padding: 0; text-align: center; }
 		.intro { padding: 0 16px; }
@@ -26,20 +25,18 @@
 		<div class="element">
 			<h2>With HD (Retina) display support</h2>
 			<a href="#someLink1">
-				<picture data-alt="A beautiful responsive image" data-defaultsrc="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512">
+				<picture data-alt="A beautiful responsive image">
 					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x"/>
 					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x" media="(min-width: 481px)"/>
 					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920 2x" media="(min-width: 1025px)"/>
-					<noscript>
-						<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" alt="A beautiful responsive image"/>
-					</noscript>
+					<noscript><img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" alt="A beautiful responsive image"/></noscript>
 				</picture>
 			</a>
 		</div>
 		<div class="element">
 			<h2>Without HD (Retina) display support</h2>
 			<a href="#someLink2">
-				<picture data-alt="A beautiful responsive image" data-defaultsrc="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512">
+				<picture id="second" data-alt="A beautiful responsive image">
 					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
 					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)"/>
 					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960" media="(min-width: 1025px)"/>
@@ -49,12 +46,46 @@
 				</picture>
 			</a>
 		</div>
-		
 		<div class="outro">
 			<p>Real time server side scaling is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
 		</div>
 	</div>
-	<script src="../external/matchMedia.js"></script>
-	<script src="picturePolyfill.js"></script>
+	<script>
+		
+		(function(){
+
+			function replacePictureWithPictureWithImg(picture, imgSrc) {
+				var newImage = document.createElement("img"),
+					newPicture = document.createElement("picture");
+				newImage.setAttribute('src', imgSrc);
+				newPicture.appendChild(newImage);
+				picture.parentNode.replaceChild(newPicture, picture);
+			}
+
+			function updateImgSrcOrReplacePicture(picture, imgSrc) {
+				var foundImages = picture.getElementsByTagName("img");
+				if (foundImages.length === 0) {
+					replacePictureWithPictureWithImg(picture, imgSrc);
+				}
+				else {
+					foundImages[0].setAttribute("src", imgSrc);
+				}
+			}
+
+			var picture, pictures;
+
+			pictures = document.getElementsByTagName("picture");
+
+			for (var i=0, len=pictures.length; i<len; i+=1) {
+				picture = pictures[i];
+				updateImgSrcOrReplacePicture(picture, 'http://www.placehold.it/500x500');
+			}
+
+			picture = pictures[1];
+			updateImgSrcOrReplacePicture(picture, 'http://www.placehold.it/500x500/f00ba5');
+			
+		}());
+
+	</script>
 </body>
 </html>
