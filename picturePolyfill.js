@@ -8,19 +8,33 @@
 		pixelRatio = Math.ceil(w.devicePixelRatio || 1), // The pixel density (2 is for HD aka Retina displays)
 		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
 
+	/**
+	 * Returns an array from sourceString splitting on splitString and trimming each item
+	 * @param sourceString
+	 * @param splitString
+	 * @returns {Array}
+	 */
+	function splitAndTrim(sourceString, splitString){
+		return sourceString.split(splitString).map(function(src){
+			return src.trim()
+		});
+	}
+
 
 	/**
-	 * Returns a hash density > src
+	 * Returns a hash density > sourceSet
+	 * @param srcSetAttribute
+	 * @returns {{}}
 	 */
 
 	function getSrcSetHash(srcSetAttribute) {
-		var hash = {},
-			sources = srcSetAttribute.split(',');
+		var srcSetElement, src, density, hash = {},
+			srcSetElements = splitAndTrim(srcSetAttribute, ",");
 		
-		for (var i=0, len=sources.length; i<len; i+=1) {
-			var srcAndDensity = sources[i].trim().split(' ');
-			var src = srcAndDensity[0].trim();
-			var density = (parseInt(srcAndDensity[1], 10) || 1).toString();
+		for (var i=0, len=srcSetElements.length; i<len; i+=1) {
+			srcSetElement = splitAndTrim(srcSetElements[i], " ");
+			src = srcSetElement[0].trim();
+			density = (parseInt(srcSetElement[1], 10) || 1).toString();
 			hash[density] = src;
 		}
 
@@ -92,7 +106,7 @@
 	/**
 	 * Parses the picture element looking for sources elements, then
 	 * generate the array or string for the SrcSetArray 
-	 * @param element the starting element to parse DOM into. If not passed, it parses the whole document.
+	 * @param pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 
 	function parseSources(pictureElement) {
