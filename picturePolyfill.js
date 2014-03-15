@@ -5,7 +5,7 @@
 	"use strict";
 
 	var timerId,
-		pixelRatio = Math.ceil(w.devicePixelRatio || 1), // The pixel density (2 is for HD aka Retina displays)
+		pixelRatio = ((w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1),
 		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
 
 	/**
@@ -15,14 +15,17 @@
 	 */
 
 	function getSrcSetHash(srcSetAttribute) {
-		var srcAndDensity, src, density, hash = {},
-			sources = srcSetAttribute.split(',');
+		var srcSetElement,
+			source,
+			density,
+			hash = {},
+			srcSetElements = srcSetAttribute.split(',');
 
-		for (var i=0, len=sources.length; i<len; i+=1) {
-			srcAndDensity = sources[i].trim().split(' ');
-			src = srcAndDensity[0].trim();
-			density = (parseInt(srcAndDensity[1], 10) || 1).toString();
-			hash[density] = src;
+		for (var i=0, len=srcSetElements.length; i<len; i+=1) {
+			srcSetElement = srcSetElements[i].trim().split(' ');
+			density = srcSetElement[1] ? srcSetElement[1].trim() : "1x";
+			source = srcSetElement[0].trim();
+			hash[density] = source;
 		}
 		return hash;
 	}
@@ -37,10 +40,13 @@
 	 */
 
 	function getSrcFromSrcSetArray(srcSetArray, position) {
-		while (srcSetArray[position]===undefined && position>0) {
+		var ret;
+		do {
+			ret = srcSetArray[position+'x'];
 			position-=1;
 		}
-		return srcSetArray[position];
+		while (ret===undefined && position>0);
+		return ret;
 	}
 
 
@@ -52,7 +58,8 @@
 	 */
 
 	function getSrcAttributeFromData(dataPicture) {
-		var media, matchedSrc;
+		var media,
+			matchedSrc;
 
 		for (var i=0, len=dataPicture.length; i<len; i+=1) {
 			media = dataPicture[i].media;
@@ -72,8 +79,8 @@
 	 */
 
 	function createOrUpdateImage(pictureElement, srcAttribute) {
-		var imageElements, imageElement;
-		imageElements = pictureElement.getElementsByTagName('img');
+		var imageElement,
+			imageElements = pictureElement.getElementsByTagName('img');
 
 		// If image already exist, use it
 		if (imageElements.length) {
@@ -108,7 +115,6 @@
 				'srcset': srcset
 			});
 		}
-
 		return arr;
 	}
 
@@ -119,7 +125,8 @@
 	 */
 
 	function parsePictures(element) {
-		var pictureData, pictureElement,
+		var pictureData,
+			pictureElement,
 			pictureElements = element.getElementsByTagName('picture');
 
 		for (var i=0, len=pictureElements.length; i<len; i+=1) {
@@ -169,4 +176,4 @@
 		w.attachEvent('onload', picturePolyfillDocument);
 	}
 
-}(this));
+}(window));
