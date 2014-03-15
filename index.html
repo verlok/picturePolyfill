@@ -26,10 +26,11 @@
 		<div class="element">
 			<h2>With HD (Retina) display support</h2>
 			<a href="#someLink1">
-				<picture data-alt="A beautiful responsive image" data-defaultsrc="img/768x768.gif">
-					<source srcset="img/480x480.gif, img/960x960.gif 2x"/>
+				<picture data-alt="A beautiful responsive image" data-defaultsrc="img/1440x1440.gif">
+					<source srcset="img/480x480.gif, img/480x480x2.gif 2x"/>
 					<source srcset="img/768x768.gif, img/768x768x2.gif 2x" media="(min-width: 481px)"/>
-					<source srcset="img/960x960.gif, img/960x960x2.gif 2x" media="(min-width: 1025px)"/>
+					<source srcset="img/1440x1440.gif, img/1440x1440x2.gif 2x" media="(min-width: 1025px)"/>
+					<source srcset="img/1920x1920.gif, img/1920x1920x2.gif 2x" media="(min-width: 1441px)"/>
 					<noscript>
 						<img src="img/768x768.gif" alt="A beautiful responsive image"/>
 					</noscript>
@@ -39,10 +40,11 @@
 		<div class="element">
 			<h2>Without HD (Retina) display support</h2>
 			<a href="#someLink2">
-				<picture data-alt="A beautiful responsive image" data-defaultsrc="img/768x768.gif">
+				<picture data-alt="A beautiful responsive image" data-defaultsrc="img/1440x1440.gif">
 					<source srcset="img/480x480.gif"/>
 					<source srcset="img/768x768.gif" media="(min-width: 481px)"/>
-					<source srcset="img/960x960.gif" media="(min-width: 1025px)"/>
+					<source srcset="img/1440x1440.gif" media="(min-width: 1025px)"/>
+					<source srcset="img/1920x1920.gif" media="(min-width: 1441px)"/>
 					<noscript>
 						<img src="img/768x768.gif" alt="A beautiful responsive image"/>
 					</noscript>
@@ -50,32 +52,6 @@
 			</a>
 		</div>
 		<!--
-		<div class="element">
-			<h2>With HD (Retina) display support</h2>
-			<a href="#someLink1">
-				<picture data-alt="A beautiful responsive image" data-defaultsrc="img/768x768.gif">
-					<source srcset="img/480x480.gif, img/960x960.gif 2x"/>
-					<source srcset="img/768x768.gif, img/768x768x2.gif 2x" media="(min-width: 481px)"/>
-					<source srcset="img/960x960.gif, img/960x960x2.gif 2x" media="(min-width: 1025px)"/>
-					<noscript>
-						<img src="img/768x768.gif" alt="A beautiful responsive image"/>
-					</noscript>
-				</picture>
-			</a>
-		</div>
-		<div class="element">
-			<h2>Without HD (Retina) display support</h2>
-			<a href="#someLink2">
-				<picture data-alt="A beautiful responsive image" data-defaultsrc="img/768x768.gif">
-					<source srcset="img/480x480.gif"/>
-					<source srcset="img/768x768.gif" media="(min-width: 481px)"/>
-					<source srcset="img/960x960.gif" media="(min-width: 1025px)"/>
-					<noscript>
-						<img src="img/768x768.gif" alt="A beautiful responsive image"/>
-					</noscript>
-				</picture>
-			</a>
-		</div>
 		<div class="outro">
 			<p>Real time server side scaling is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
 		</div>
