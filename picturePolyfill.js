@@ -9,35 +9,21 @@
 		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
 
 	/**
-	 * Returns an array from sourceString splitting on splitString and trimming each item
-	 * @param sourceString
-	 * @param splitString
-	 * @returns {Array}
-	 */
-	function splitAndTrim(sourceString, splitString){
-		return sourceString.split(splitString).map(function(src){
-			return src.trim()
-		});
-	}
-
-
-	/**
 	 * Returns a hash density > sourceSet
 	 * @param srcSetAttribute
 	 * @returns {{}}
 	 */
 
 	function getSrcSetHash(srcSetAttribute) {
-		var srcSetElement, src, density, hash = {},
-			srcSetElements = splitAndTrim(srcSetAttribute, ",");
-		
-		for (var i=0, len=srcSetElements.length; i<len; i+=1) {
-			srcSetElement = splitAndTrim(srcSetElements[i], " ");
-			src = srcSetElement[0].trim();
-			density = (parseInt(srcSetElement[1], 10) || 1).toString();
+		var srcAndDensity, src, density, hash = {},
+			sources = srcSetAttribute.split(',');
+
+		for (var i=0, len=sources.length; i<len; i+=1) {
+			srcAndDensity = sources[i].trim().split(' ');
+			src = srcAndDensity[0].trim();
+			density = (parseInt(srcAndDensity[1], 10) || 1).toString();
 			hash[density] = src;
 		}
-
 		return hash;
 	}
 
@@ -136,25 +122,17 @@
 		var pictureData, pictureElement,
 			pictureElements = element.getElementsByTagName('picture');
 
-		// Finding all the elements with data-image
 		for (var i=0, len=pictureElements.length; i<len; i+=1) {
 			pictureElement = pictureElements[i];
-			//try {
-				pictureData = parseSources(pictureElement);
-				// Take the source from the matched media, or standard media
-				// Update the image, or create it
-				createOrUpdateImage(pictureElement, (mediaQueriesSupported && pictureData.length>0) ?
-					getSrcAttributeFromData(pictureData) :
-					pictureElement.getAttribute("data-defaultsrc"));
-			//}
-			//catch (e) {
-				//w.console.log(e);
-			//}
+			pictureData = parseSources(pictureElement);
+			createOrUpdateImage(pictureElement, (mediaQueriesSupported && pictureData.length>0) ?
+				getSrcAttributeFromData(pictureData) :
+				pictureElement.getAttribute("data-defaultsrc"));
 		}
 	}
 
 	/**
-	 * Private function to call w.picturePolyfill on the whole document
+	 * Calls the window.picturePolyfill function on the whole DOM
 	 */
 	function picturePolyfillDocument() {
 		w.picturePolyfill(document);
