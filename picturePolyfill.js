@@ -6,14 +6,49 @@
 
 	var timerId,
 		pixelRatio = ((w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1),
-		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
+		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches,
+		browserCanAppendImagesToPictures;
+
+	/**
+	 * Detects if browser can append images to pictures
+	 * @returns {boolean}
+	 */
+	function detectIfBrowserCanAppendImagesToPictures() {
+		var newImgElement = document.createElement('img'),
+			theFirstPictureElement = document.getElementsByTagName("picture")[0];
+
+		try {
+			if (theFirstPictureElement) {
+				theFirstPictureElement.appendChild(newImgElement);
+				theFirstPictureElement.removeChild(newImgElement);
+			}
+			return true;
+		}
+		catch(e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Replaces the existing picture element with another picture element containing an image with the imgSrc source
+	 * @param picture
+	 * @param imgSrc
+	 * @param imgAlt
+	 */
+	function replacePictureWithPictureAndImg(picture, imgSrc, imgAlt) {
+		var newImage = document.createElement("img"),
+			newPicture = document.createElement("picture");
+		newImage.setAttribute('src', imgSrc);
+		newImage.setAttribute('alt', imgAlt);
+		newPicture.appendChild(newImage);
+		picture.parentNode.replaceChild(newPicture, picture);
+	}
 
 	/**
 	 * Returns a hash density > sourceSet
 	 * @param srcSetAttribute
 	 * @returns {{}}
 	 */
-
 	function getSrcSetHash(srcSetAttribute) {
 		var srcSetElement,
 			source,
@@ -30,7 +65,6 @@
 		return hash;
 	}
 
-
 	/**
 	 * Returns the proper src from the srcSet property
 	 * Get the first valid element from passed position to the left
@@ -38,7 +72,6 @@
 	 * @param position
 	 * @returns {string}
 	 */
-
 	function getSrcFromSrcSetArray(srcSetArray, position) {
 		var ret;
 		do {
@@ -49,14 +82,12 @@
 		return ret;
 	}
 
-
 	/**
 	 * Loop through every element of the dataPicture array, check if the media query applies and,
 	 * if so, get the src element from the srcSet property based depending on pixel ratio
 	 * @param dataPicture {element}
 	 * @returns {string}
 	 */
-
 	function getSrcAttributeFromData(dataPicture) {
 		var media,
 			matchedSrc;
@@ -70,52 +101,58 @@
 		return matchedSrc;
 	}
 
-
 	/**
 	 * Set the src attribute of the first image element inside passed pictureElement
 	 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
 	 * @param pictureElement
-	 * @param srcAttribute
+     * @param sourcesData
 	 */
-
-	function createOrUpdateImage(pictureElement, srcAttribute) {
-		var imageElement,
+	function createOrUpdateImage(pictureElement, sourcesData) {
+		var imageElement, srcAttribute, altAttribute,
 			imageElements = pictureElement.getElementsByTagName('img');
 
-		// If image already exist, use it
+		srcAttribute = (!mediaQueriesSupported || !sourcesData.length) ?
+			pictureElement.getAttribute("data-default-src") :
+			getSrcAttributeFromData(sourcesData);
+
+		// If image already exists, use it
 		if (imageElements.length) {
 			imageElements[0].setAttribute('src', srcAttribute);
 		}
 		// Else create the image
 		else {
-			imageElement = document.createElement('img');
-			imageElement.setAttribute('alt', pictureElement.getAttribute('data-alt'));
-			imageElement.setAttribute('src', srcAttribute);
-			pictureElement.appendChild(imageElement);
+			altAttribute = pictureElement.getAttribute('data-alt');
+			if (browserCanAppendImagesToPictures) {
+				imageElement = document.createElement('img');
+				imageElement.setAttribute('alt', altAttribute);
+				imageElement.setAttribute('src', srcAttribute);
+				pictureElement.appendChild(imageElement);
+			}
+			else {
+				replacePictureWithPictureAndImg(pictureElement, srcAttribute, altAttribute );
+			}
 		}
 	}
-
 
 	/**
 	 * Parses the picture element looking for sources elements, then
 	 * generate the array or string for the SrcSetArray
 	 * @param pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
-
 	function parseSources(pictureElement) {
-		var arr = [],
-			sourceElements = pictureElement.getElementsByTagName('source');
+		var sourcesData = [],
+			foundSources = pictureElement.getElementsByTagName('source');
 
-		for (var i=0, len = sourceElements.length; i<len; i+=1) {
-			var sourceElement = sourceElements[i];
+		for (var i=0, len = foundSources.length; i<len; i+=1) {
+			var sourceElement = foundSources[i];
 			var media = sourceElement.getAttribute('media');
 			var srcset = getSrcSetHash(sourceElement.getAttribute('srcset'));
-			arr.push({
+			sourcesData.push({
 				'media': media,
 				'srcset': srcset
 			});
 		}
-		return arr;
+		return sourcesData;
 	}
 
 	/**
@@ -123,57 +160,49 @@
 	 * generate the images or updates their src attribute.
 	 * @param element the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
-
 	function parsePictures(element) {
-		var pictureData,
+		var sourcesData,
 			pictureElement,
 			pictureElements = element.getElementsByTagName('picture');
 
 		for (var i=0, len=pictureElements.length; i<len; i+=1) {
 			pictureElement = pictureElements[i];
-			pictureData = parseSources(pictureElement);
-			createOrUpdateImage(pictureElement, (mediaQueriesSupported && pictureData.length>0) ?
-				getSrcAttributeFromData(pictureData) :
-				pictureElement.getAttribute("data-defaultsrc"));
+			sourcesData = parseSources(pictureElement); //NEXT STEP: store sources data somewhere to avoid parsing it every time
+			createOrUpdateImage(pictureElement, sourcesData);
 		}
 	}
 
 	/**
-	 * Calls the window.picturePolyfill function on the whole DOM
+	 * Initialize load and resize event handlers
 	 */
-	function picturePolyfillDocument() {
-		w.picturePolyfill(document);
+	function initialize() {
+
+		function picturePolyfillDocument() {
+			parsePictures(document);
+		}
+
+		browserCanAppendImagesToPictures = detectIfBrowserCanAppendImagesToPictures();
+
+		if (w.addEventListener) {
+			// Manage resize event only if they've passed 100 milliseconds between a resize event and another
+			// to avoid the script to slow down browsers that animate resize or when browser edge is being manually dragged
+			w.addEventListener('resize', function() {
+				clearTimeout(timerId);
+				timerId = setTimeout(picturePolyfillDocument, 100);
+			});
+			w.addEventListener('DOMContentLoaded', function(){
+				picturePolyfillDocument();
+				w.removeEventListener('load', picturePolyfillDocument);
+			});
+			w.addEventListener('load', picturePolyfillDocument);
+		}
+		else if (w.attachEvent) {
+			w.attachEvent('onload', picturePolyfillDocument);
+		}
 	}
 
-	/**
-	 * Expose the function to the global environment, if browser is supported, else empty function
-	 * @type {Function}
-	 */
-
-	w.picturePolyfill = (!document.querySelectorAll) ? function(){} : function(element){
-		parsePictures(element || document);
-	};
-
-
-	/**
-	 * Manage resize event calling the parsePictures function
-	 * only if they've passed 100 milliseconds between a resize event and another
-	 * to avoid the script to slower the browser on animated resize or browser edge dragging
-	 */
-
-	if (w.addEventListener) {
-		w.addEventListener('resize', function() {
-			clearTimeout(timerId);
-			timerId = setTimeout(picturePolyfillDocument, 100);
-		});
-		w.addEventListener('DOMContentLoaded', function(){
-			picturePolyfillDocument();
-			w.removeEventListener('load', picturePolyfillDocument);
-		});
-		w.addEventListener('load', picturePolyfillDocument);
-	}
-	else if (w.attachEvent) {
-		w.attachEvent('onload', picturePolyfillDocument);
-	}
+	// Initialize and expose picturePolyfill to the global environment, to give the user the ability to call it on a slice of DOM
+	initialize();
+	w.picturePolyfill = parsePictures;
 
 }(this));
