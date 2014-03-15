@@ -10,29 +10,44 @@
 
 
 	/**
-	 * Returns the proper src from the srcSet property
-	 * If arrayOrString is a string, returns it
-	 * else get the first valid element from passed position to the left
-	 * @param arrayOrString
-	 * @param position
-	 * @returns {*}
+	 * Returns a hash density > src
 	 */
 
-	function getSrcFromSrcSet(arrayOrString, position) {
-		if (typeof arrayOrString === 'string') {
-			return arrayOrString;
+	function getSrcSetHash(srcSetAttribute) {
+		var hash = {},
+			sources = srcSetAttribute.split(',');
+		
+		for (var i=0, len=sources.length; i<len; i+=1) {
+			var srcAndDensity = sources[i].trim().split(' ');
+			var src = srcAndDensity[0].trim();
+			var density = (parseInt(srcAndDensity[1], 10) || 1).toString();
+			hash[density] = src;
 		}
-		while (arrayOrString[position]===undefined && position>0) {
+
+		return hash;
+	}
+
+
+	/**
+	 * Returns the proper src from the srcSet property
+	 * Get the first valid element from passed position to the left
+	 * @param srcSetArray
+	 * @param position
+	 * @returns {string}
+	 */
+
+	function getSrcFromSrcSetArray(srcSetArray, position) {
+		while (srcSetArray[position]===undefined && position>0) {
 			position-=1;
 		}
-		return arrayOrString[position];
+		return srcSetArray[position];
 	}
 
 
 	/**
 	 * Loop through every element of the dataPicture array, check if the media query applies and,
 	 * if so, get the src element from the srcSet property based depending on pixel ratio
-	 * @param dataPicture
+	 * @param dataPicture {element}
 	 * @returns {string}
 	 */
 
@@ -42,7 +57,7 @@
 		for (var i=0, len=dataPicture.length; i<len; i+=1) {
 			media = dataPicture[i].media;
 			if (!media || w.matchMedia(media).matches) {
-				matchedSrc = getSrcFromSrcSet(dataPicture[i].srcset, pixelRatio-1);
+				matchedSrc = getSrcFromSrcSetArray(dataPicture[i].srcset, pixelRatio);
 			}
 		}
 		return matchedSrc;
@@ -50,33 +65,15 @@
 
 
 	/**
-	 * Search for the "standard: true" image in the array
-	 * @param dataPicture
-	 * @returns {string}
-	 */
-
-	function getStandardImageFromData(dataPicture) {
-		var dataElement;
-
-		for (var i=0, len=dataPicture.length; i<len; i+=1) {
-			dataElement = dataPicture[i];
-			if (dataElement.standard) {
-				break;
-			}
-		}
-		return getSrcFromSrcSet(dataElement.srcset, 0);
-	}
-
-	/**
-	 * Set the src attribute of the first image element inside passed imageHolder
-	 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to imageHolder
-	 * @param imageHolder
+	 * Set the src attribute of the first image element inside passed pictureElement
+	 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
+	 * @param pictureElement
 	 * @param srcAttribute
 	 */
 
-	function createOrUpdateImage(imageHolder, srcAttribute) {
+	function createOrUpdateImage(pictureElement, srcAttribute) {
 		var imageElements, imageElement;
-		imageElements = imageHolder.getElementsByTagName('img');
+		imageElements = pictureElement.getElementsByTagName('img');
 
 		// If image already exist, use it
 		if (imageElements.length) {
@@ -85,10 +82,34 @@
 		// Else create the image
 		else {
 			imageElement = document.createElement('img');
-			imageElement.setAttribute('alt', imageHolder.getAttribute('data-alt'));
+			imageElement.setAttribute('alt', pictureElement.getAttribute('data-alt'));
 			imageElement.setAttribute('src', srcAttribute);
-			imageHolder.appendChild(imageElement);
+			pictureElement.appendChild(imageElement);
 		}
+	}
+
+
+	/**
+	 * Parses the picture element looking for sources elements, then
+	 * generate the array or string for the SrcSetArray 
+	 * @param element the starting element to parse DOM into. If not passed, it parses the whole document.
+	 */
+
+	function parseSources(pictureElement) {
+		var arr = [],
+			sourceElements = pictureElement.getElementsByTagName('source');
+
+		for (var i=0, len = sourceElements.length; i<len; i+=1) {
+			var sourceElement = sourceElements[i];
+			var media = sourceElement.getAttribute('media');
+			var srcset = getSrcSetHash(sourceElement.getAttribute('srcset'));
+			arr.push({
+				'media': media,
+				'srcset': srcset
+			});
+		}
+
+		return arr;
 	}
 
 	/**
@@ -97,24 +118,24 @@
 	 * @param element the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 
-	function parseDOMTree(element) {
-		var pictureData, imageHolder,
-			imageHolders = element.querySelectorAll('[data-picture]');
+	function parsePictures(element) {
+		var pictureData, pictureElement,
+			pictureElements = element.getElementsByTagName('picture');
 
 		// Finding all the elements with data-image
-		for (var i=0, len=imageHolders.length; i<len; i+=1) {
-			imageHolder = imageHolders[i];
-			try {
-				pictureData = JSON.parse(imageHolder.getAttribute('data-picture'));
+		for (var i=0, len=pictureElements.length; i<len; i+=1) {
+			pictureElement = pictureElements[i];
+			//try {
+				pictureData = parseSources(pictureElement);
 				// Take the source from the matched media, or standard media
 				// Update the image, or create it
-				createOrUpdateImage(imageHolder, (mediaQueriesSupported) ?
+				createOrUpdateImage(pictureElement, (mediaQueriesSupported && pictureData.length>0) ?
 					getSrcAttributeFromData(pictureData) :
-					getStandardImageFromData(pictureData));
-			}
-			catch (e) {
-				w.console.log(e);
-			}
+					pictureElement.getAttribute("data-defaultsrc"));
+			//}
+			//catch (e) {
+				//w.console.log(e);
+			//}
 		}
 	}
 
@@ -131,12 +152,12 @@
 	 */
 	
 	w.picturePolyfill = (!document.querySelectorAll) ? function(){} : function(element){
-		parseDOMTree(element || document);
+		parsePictures(element || document);
 	};
 
 
 	/**
-	 * Manage resize event calling the parseDOMTree function
+	 * Manage resize event calling the parsePictures function
 	 * only if they've passed 100 milliseconds between a resize event and another
 	 * to avoid the script to slower the browser on animated resize or browser edge dragging
 	 */

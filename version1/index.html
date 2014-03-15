@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Responsive images using verlok/picturePolyfill - by Andrea Verlicchi</title>
+	<meta name="viewport" content="width=device-width">
+	<style>
+		body { margin: 0; padding: 0; text-align: center; }
+		.intro { padding: 0 16px; }
+		.outro { padding: 1px 16px; clear: both; }
+		.element a, .element span, .element img { display: block; }
+		img { width: 100%; height: auto; border: 0; }
+		.element h2 { padding: 0 16px; }
+		.element:hover h2 { text-decoration: underline; }
+		@media screen and (min-width: 481px) {
+			.element { float: left; width: 50%; }
+		}
+	</style>
+</head>
+<body>
+	<div id="container">
+		<div class="intro">
+			<h1>Responsive images using <a href="https://github.com/verlok/picturePolyfill">PicturePolyfill</a> - Demo</h1>
+			<p>The following link contains two <strong>responsive images</strong> created using a <code>&lt;span&gt;</code> element, inline JSON (instead of <code>&lt;source&gt;</code> markup), and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
+		</div>
+		<div class="element">
+			<h2>With HD (Retina) display support</h2>
+			<a href="#someLink1">
+				<span data-alt="A beautiful responsive image" data-picture='[
+					{"srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=480", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"]}, 
+					{"media": "(min-width: 481px)", "srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=512", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024"]}, 
+					{"media": "(min-width: 1025px)", "srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=640", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1280"]}, 
+					{"media": "(min-width: 1281px)", "srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=960", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920"]}, 
+					{"media": "(min-width: 1921px)", "srcset": ["http://demo.api.pixtulate.com/demo/large-2.jpg?w=1400", "http://demo.api.pixtulate.com/demo/large-2.jpg?w=2800"]}
+					]'>
+					<noscript>
+						<img src="../img/1280x1280.gif" alt="A beautiful responsive image"/>
+					</noscript>
+				</span>
+			</a>
+		</div>
+		<div class="element">
+			<h2>Without HD (Retina) display support</h2>
+			<a href="#someLink2">
+				<span data-alt="A beautiful responsive image" data-picture='[
+					{                                "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"},
+					{"media": "(min-width: 481px)",  "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=512"},
+					{"media": "(min-width: 1025px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=640"},
+					{"media": "(min-width: 1281px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"},
+					{"media": "(min-width: 1921px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1400"}
+					]'>
+					<noscript>
+						<img src="../img/1280x1280.gif" alt="A beautiful responsive image"/>
+					</noscript>
+				</span>
+			</a>
+		</div>
+		<div class="outro">
+			<p>Real time server side scaling is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
+		</div>
+	</div>
+	<script src="../external/matchMedia.js"></script>
+	<script src="picturePolyfill.js"></script>
+</body>
+</html>
