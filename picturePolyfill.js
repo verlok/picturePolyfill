@@ -5,8 +5,8 @@
 	"use strict";
 
 	var timerId,
-		pixelRatio = ((w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1),
-		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches,
+		pixelRatio,
+		mediaQueriesSupported,
 		browserCanAppendImagesToPictures;
 
 	/**
@@ -173,7 +173,7 @@
 	}
 
 	/**
-	 * Initialize load and resize event handlers
+	 * Initialize  and resize event handlers
 	 */
 	function initialize() {
 
@@ -181,6 +181,8 @@
 			parsePictures(document);
 		}
 
+		pixelRatio = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
+		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
 		browserCanAppendImagesToPictures = detectIfBrowserCanAppendImagesToPictures();
 
 		if (w.addEventListener) {
@@ -201,8 +203,10 @@
 		}
 	}
 
-	// Initialize and expose picturePolyfill to the global environment, to give the user the ability to call it on a slice of DOM
 	initialize();
+
+	// Exposing picturePolyfill to the global environment,
+	// to gain the ability to call picturePolyfill on a slice of DOM (eg: after an AJAX call)
 	w.picturePolyfill = parsePictures;
 
 }(this));
