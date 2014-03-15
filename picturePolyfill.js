@@ -98,7 +98,7 @@
 
 	/**
 	 * Parses the picture element looking for sources elements, then
-	 * generate the array or string for the SrcSetArray 
+	 * generate the array or string for the SrcSetArray
 	 * @param pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 
@@ -149,7 +149,7 @@
 	 * Expose the function to the global environment, if browser is supported, else empty function
 	 * @type {Function}
 	 */
-	
+
 	w.picturePolyfill = (!document.querySelectorAll) ? function(){} : function(element){
 		parsePictures(element || document);
 	};
@@ -176,4 +176,4 @@
 		w.attachEvent('onload', picturePolyfillDocument);
 	}
 
-}(window));
+}(this));
