@@ -54,8 +54,6 @@
 		
 		(function(){
 
-			var picture;
-
 			function replacePictureWithPictureWithImg(picture, imgSrc) {
 				var newImage = document.createElement("img"),
 					newPicture = document.createElement("picture");
@@ -65,26 +63,26 @@
 			}
 
 			function updateImgSrcOrReplacePicture(picture, imgSrc) {
-				var imgs = picture.getElementsByTagName("img");
-				if (imgs.length === 0) {
+				var foundImages = picture.getElementsByTagName("img");
+				if (foundImages.length === 0) {
 					replacePictureWithPictureWithImg(picture, imgSrc);
 				}
 				else {
-					imgs[0].setAttribute("img", imgSrc);
+					foundImages[0].setAttribute("src", imgSrc);
 				}
 			}
 
-			var appendImageIsAllowed, pictures;
+			var picture, pictures;
 
 			pictures = document.getElementsByTagName("picture");
 
 			for (var i=0, len=pictures.length; i<len; i+=1) {
 				picture = pictures[i];
-				replacePictureWithPictureWithImg(picture, 'http://www.placehold.it/500x500');
+				updateImgSrcOrReplacePicture(picture, 'http://www.placehold.it/500x500');
 			}
 
 			picture = pictures[1];
-			replacePictureWithPictureWithImg(picture, 'http://www.placehold.it/500x500/f00ba5');
+			updateImgSrcOrReplacePicture(picture, 'http://www.placehold.it/500x500/f00ba5');
 			
 		}());
 
