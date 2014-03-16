@@ -6,14 +6,14 @@
 
 	var timerId,
 		pixelRatio,
-		mediaQueriesSupported,
-		browserCanAppendImagesToPictures;
+		areMediaQueriesSupported,
+		isAppendImageSupported;
 
 	/**
-	 * Detects if browser can append images to pictures
+	 * Detects old browser checking if browser can append images to pictures
 	 * @returns {boolean}
 	 */
-	function canBrowserAppendImagesToPictures() {
+	function detectAppendImageSupport() {
 		var newImgElement = document.createElement('img'),
 			theFirstPictureElement = document.getElementsByTagName("picture")[0];
 
@@ -29,18 +29,22 @@
 		}
 	}
 
+	function appendImage(picture, imgSrc, imgAlt) {
+		var imageElement = document.createElement('img');
+		imageElement.setAttribute('alt', imgAlt);
+		imageElement.setAttribute('src', imgSrc);
+		picture.appendChild(imageElement);
+	}
+
 	/**
 	 * Replaces the existing picture element with another picture element containing an image with the imgSrc source
-	 * @param {object} picture
+	 * @param {Node} picture
 	 * @param {string} imgSrc
 	 * @param {string} imgAlt
 	 */
-	function replacePictureWithPictureAndImg(picture, imgSrc, imgAlt) {
-		var newImage = document.createElement("img"),
-			newPicture = document.createElement("picture");
-		newImage.setAttribute('src', imgSrc);
-		newImage.setAttribute('alt', imgAlt);
-		newPicture.appendChild(newImage);
+	function replacePictureAndAppendImage(picture, imgSrc, imgAlt) {
+		var newPicture = document.createElement("picture");
+		appendImage(newPicture, imgSrc, imgAlt);
 		picture.parentNode.replaceChild(newPicture, picture);
 	}
 
@@ -104,14 +108,14 @@
 	/**
 	 * Set the src attribute of the first image element inside passed pictureElement
 	 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
-	 * @param pictureElement {object}
+	 * @param pictureElement {Node}
      * @param sourcesData {Array}
 	 */
 	function createOrUpdateImage(pictureElement, sourcesData) {
-		var imageElement, srcAttribute, altAttribute,
+		var srcAttribute, altAttribute,
 			imageElements = pictureElement.getElementsByTagName('img');
 
-		srcAttribute = (!mediaQueriesSupported || !sourcesData.length) ?
+		srcAttribute = (!areMediaQueriesSupported || !sourcesData.length) ?
 			pictureElement.getAttribute("data-default-src") :
 			getSrcAttributeFromSourcesData(sourcesData);
 
@@ -122,14 +126,11 @@
 		// Else create the image
 		else {
 			altAttribute = pictureElement.getAttribute('data-alt');
-			if (browserCanAppendImagesToPictures) {
-				imageElement = document.createElement('img');
-				imageElement.setAttribute('alt', altAttribute);
-				imageElement.setAttribute('src', srcAttribute);
-				pictureElement.appendChild(imageElement);
+			if (isAppendImageSupported) {
+				appendImage(pictureElement, srcAttribute, altAttribute);
 			}
 			else {
-				replacePictureWithPictureAndImg(pictureElement, srcAttribute, altAttribute );
+				replacePictureAndAppendImage(pictureElement, srcAttribute, altAttribute);
 			}
 		}
 	}
@@ -137,7 +138,7 @@
 	/**
 	 * Parses the picture element looking for sources elements, then
 	 * generate the array or string for the SrcSetArray
-	 * @param {object} pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
+	 * @param {Node} pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 	function parseSources(pictureElement) {
 		var sourcesData = [],
@@ -158,7 +159,7 @@
 	/**
 	 * Parses the DOM looking for elements containing the "data-picture" attribute, then
 	 * generate the images or updates their src attribute.
-	 * @param {object} element (the starting element to parse DOM into. If not passed, it parses the whole document)
+	 * @param {Node} element (the starting element to parse DOM into. If not passed, it parses the whole document)
 	 */
 	function parsePictures(element) {
 		var sourcesData,
@@ -182,8 +183,8 @@
 		}
 
 		pixelRatio = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
-		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
-		browserCanAppendImagesToPictures = canBrowserAppendImagesToPictures();
+		areMediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
+		isAppendImageSupported = detectAppendImageSupport();
 
 		if (w.addEventListener) {
 			// Manage resize event only if they've passed 100 milliseconds between a resize event and another
