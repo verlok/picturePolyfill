@@ -1,5 +1,5 @@
 # picturePolyfill
-A Responsive Images approach that you can use today that uses the **real [`picture` element](http://www.w3.org/TR/2013/WD-html-picture-element-20130226/)** along with children `source` elements with `media` and `srcset` attributes.
+A Responsive Images approach that you can use today that uses the **[real `picture` element](http://www.w3.org/TR/2013/WD-html-picture-element-20130226/)** along with children `source` elements with `media` and `srcset` attributes.
 
 * Author: Andrea Verlicchi (c) 2014
 * License: MIT/GPLv2
@@ -101,7 +101,7 @@ Note that you should serve double resolution images (double width and double hei
 
 ## Installation
 
-### Manual
+### Manually
 
 * Download picturePolyfill from GitHub
 * Include the minified file in your project script directory
