@@ -1,29 +1,26 @@
 # picturePolyfill
-A Responsive Images approach that you can use today that mimics the [proposed picture element](http://www.w3.org/TR/2013/WD-html-picture-element-20130226/) using a single `span` (for safety sake) with a JSON notation of `source`, with `media` and `srcset` attributes.
+A Responsive Images approach that you can use today that uses the **[real `picture` element](http://www.w3.org/TR/2013/WD-html-picture-element-20130226/)** along with children `source` elements with `media` and `srcset` attributes.
 
 * Author: Andrea Verlicchi (c) 2014
 * License: MIT/GPLv2
 
 ### **[DEMO](http://verlok.github.io/picturePolyfill/)** 
 
-**Note:** picturePolyfill works best in browsers that support CSS3 media queries. The demo page references (externally) the [matchMedia polyfill](https://github.com/paulirish/matchMedia.js/) which makes matchMedia work in `media-query`-supporting browsers that don't support `matchMedia`. The `matchMedia` polyfill is not required for `picturePolyfill` to work, but it's required to support the `media` property specified in the data-picture attribute. In non-media query-supporting browsers, the `matchMedia` polyfill will allow for querying native media types, such as `screen`, `print`, etc.
-
 ## picturePolyfill advantages
 
 PicturePolyfill is fast and easy to use because:
 
-* **loading performance**: it serves only one image, no other double HTTP requests are made
-* **computing performance**: it doesn't execute while a smooth (animated or manually dragged) browser resize is in progress, avoiding useless DOM parsing and HTTP requests to mid-breakpoints images that the user might not need
-* **support to HD (Retina) displays** easily made (no need to prefix HD media queries with the `-webkit-` prefix)
-* **small html markup** thanks to the possibility to specify multiple values in the `srcset` property
+* **markup & go**: it uses the picture tag, easy to markup, and futureproof
+* **loading performance**: it serves only one image to your website users, no double HTTP requests are made
+* **computing performance**: it's designed and coded keeping performance in mind. For example, it doesn't execute while a smooth (animated or manually dragged) browser resize is in progress (avoiding useless DOM parsing and useless HTTP requests to mid-breakpoints images that the user might not need) and it caches the `source` elements data
+* **support to HD (Retina) displays** easily made via the `srcset` attribute of `source` tags
 
 ### Differences with picturefill
 
 picturePolyfill is better than picturefill because:
 
-* it gives you the **`srcset` attribute**, which gives you easier support for retina displays. picturefill requires more lines of markup code (and the `-webkit-` prefix) to support different media queries.
-* it makes you **choose a default image** that you want to show on Internet Explorer 8. picturefill always serves the smaller one 
-* it's **faster**, as it relies on a `JSON` object, that is much faster to be parsed then many span elements required by picturefill (see "performance" section on this readme)
+* it uses the **real `picture` markup**
+* it gives you the ability to **choose a default image** that you want to show on Internet Explorer desktop, without the need to add any comment
 
 ## Markup pattern and explanation
 
@@ -32,19 +29,15 @@ picturePolyfill is better than picturefill because:
 To support HD (Retina) images, mark up your responsive images like this.
 
 ```html
-<span data-alt="A beautiful image" data-picture='[
-	{                                "srcset": ["img/320x320.gif",   "img/320x320x2.gif"]},
-	{"media": "(min-width: 321px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
-	{"media": "(min-width: 481px)",  "srcset": ["img/768x768.gif",   "img/768x768x2.gif"]},
-	{"media": "(min-width: 769px)",  "srcset": ["img/1024x1024.gif", "img/1024x1024x2.gif"], "standard": true},
-	{"media": "(min-width: 1025px)", "srcset": ["img/1280x1280.gif", "img/1280x1280x2.gif"]},
-	{"media": "(min-width: 1281px)", "srcset": ["img/1440x1440.gif", "img/1440x1440x2.gif"]},
-	{"media": "(min-width: 1441px)", "srcset": ["img/1920x1920.gif", "img/1920x1920x2.gif"]}
-]'>
+<picture data-alt="A beautiful responsive image" data-default-src="img/1440x1440.gif">
+	<source srcset="img/480x480.gif,   img/480x480x2.gif 2x"/>
+	<source srcset="img/768x768.gif,   img/768x768x2.gif 2x"   media="(min-width: 481px)"/>
+	<source srcset="img/1440x1440.gif, img/1440x1440x2.gif 2x" media="(min-width: 1025px)"/>
+	<source srcset="img/1920x1920.gif, img/1920x1920x2.gif 2x" media="(min-width: 1441px)"/>
 	<noscript>
-		<img src="img/1280x1280.gif" alt="A beautiful image"/>
+		<img src="img/768x768.gif" alt="A beautiful responsive image"/>
 	</noscript>
-</span>
+</picture>
 ```
 
 ### Without HD (Retina) support
@@ -52,53 +45,34 @@ To support HD (Retina) images, mark up your responsive images like this.
 If you don't need to support HD (Retina) images, you can mark up your responsive images like this.
 
 ```html
-<span data-alt="A beautiful image" data-picture='[
-	{                                "srcset": "img/320x320.gif"},
-	{"media": "(min-width: 321px)",  "srcset": "img/768x768.gif"},
-	{"media": "(min-width: 481px)",  "srcset": "img/768x768.gif"},
-	{"media": "(min-width: 769px)",  "srcset": "img/1024x1024.gif", "standard": true},
-	{"media": "(min-width: 1025px)", "srcset": "img/1280x1280.gif"},
-	{"media": "(min-width: 1281px)", "srcset": "img/1440x1440.gif"},
-	{"media": "(min-width: 1441px)", "srcset": "img/1920x1920.gif"}
-]'>
+<picture data-alt="A beautiful responsive image" data-default-src="img/1440x1440.gif">
+	<source srcset="img/480x480.gif"/>
+	<source srcset="img/768x768.gif"   media="(min-width: 481px)"/>
+	<source srcset="img/1440x1440.gif" media="(min-width: 1025px)"/>
+	<source srcset="img/1920x1920.gif" media="(min-width: 1441px)"/>
 	<noscript>
-		<img src="img/1280x1280.gif" alt="A beautiful image"/>
+		<img src="img/768x768.gif" alt="A beautiful responsive image"/>
 	</noscript>
-</span>
+</picture>
 ```
 
-### The `data-picture` attribute array
+### Notes about the markup
 
-The `data-picture` attribute accepts an array. In each element, it accepts:
-* `media`: any and all CSS3 media queries—such as `min-width` or `max-width`
-* `srcset`: the image URL (string) at the corresponding `media`, or an array of image URLs. To support only standard displays, just pass in a string. To support HD (Retina) displays, pass an array of values: the first value for standard displays, the second value for HD displays (Retina; double density), and more for triple and quad density.
-* `standard`: a boolean value, `true` if you want this to be the image picked by browsers without media query support (like IE 8 or below). If srcset is an array, these browser will always load the first `srcset` element.
+`picture` tag:
+* `data-default-src` attribute: the image URL that you want to load in IE Desktop < 10.
+* `data-alt` attribute: the alternative text that will be set in the `img` tag
 
-**Note:** As the `data-picture` attribute array is read from left to right, the array elements with `media` property set to `min-width` must be placed in increasing `min-width` order, e.g. 321px, 481px, 769px, etc.
+`source` tags:
+* `media` attribute: any media query, but it's adviced to use a `min-width` media query to follow the "mobile first" approach.
+* `srcset` attribute: the image URL or comma separated URLs at the corresponding `media`
 
-### Notes on the markup above...
-
-* The `data-picture` attribute must contain a JSON array which can contain any number of elements. The above example may contain more than the average situation may call for. I recommend to generate this array using a helper on a server side language (like PHP or similar).
-* The `span[data-picture]` element's `data-alt` attribute is used as alternate text for the `img` element that picturePolyfill generates upon a successful.
-* It's generally a good idea to leave one element of the `data-picture` array with no `media` qualifier, so it'll apply everywhere - typically a mobile-optimized image is ideal here.
-* Each element of the `data-picture` array can have an optional `media` attribute to make it apply in specific media settings. Both media types and queries can be used, like a native `media` attribute, but support for media _queries_ depends on the browser (unsupporting browsers fail silently).
-* The `noscript` element wraps the fallback image for non-JavaScript environments and search engines, and including this wrapper prevents browsers from fetching the fallback image during page load (causing unnecessary overhead).
-
-### About the real `picture` element
-
-Some developers are [wondering](http://www.linkedin.com/groupItem?view=&gid=2071438&type=member&item=5846510553693986816&commentID=5848302870645993472): **will I have to re-code my HTML** when the real `picture` element will be standard and supported?
-
-Please note that there's a version of picturePolyfill, under the [usingPictureMarkup](https://github.com/verlok/picturePolyfill/tree/master/usingPictureMarkup) folder, which makes it possible to **use the real `picture` + `source` tags today**, but this version is supporting Internet Explorer 10 and above (no support for versions 8 and 9).
-
-If you need to support IE 8 and 9 the answer is yes, recoding will be necessary when the real `picture` tag will be a standard.
-
-What I suggest is to **generate the responsive images markup** using some function written in a **server side language** (like PHP or similar), with a simple configuration to **switch** to make it generate the `span[data-picture]` element today (required by picturePolyfill) or the real `picture` element when fully supported.
-
+`noscript` tag:
+* This should wrap the fallback image for non-JavaScript environments and search engines. You *could* avoid wrapping the `img` tag in `noscript`, but this will make browsers to fetch the fallback image during page load, causing unnecessary overhead.
 
 ### How the `img` is appended and updated
 
 Upon finding a matching media in the `data-picture` array, picturePolyfill will generate an `img` element and inside that span. 
-The `img`'s `src` attribute is updated at browser resize, after a small delay (100ms) to prevent the script to be executed too many times during smooth (animated or manually dragged) browser resize.
+The `img`'s `src` attribute is then updated at browser resize (see _computing performance_ section above to read about performance at browser resize)
 
 ## Server-side scaling/cropping tool
 
@@ -109,30 +83,58 @@ It's then a good practice to have a server-side picture scaling service (like [p
 If you want to use an image server, you can code your HTML like the following:
 
 ```html
-<a href="#someLink2">
-	<span data-alt="A beautiful responsive image" data-picture='[
-		{                                "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=320"}, 
-		{"media": "(min-width: 481px)",  "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=512"}, 
-		{"media": "(min-width: 1025px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=640"}, 
-		{"media": "(min-width: 1281px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"},
-		{"media": "(min-width: 1921px)", "srcset": "http://demo.api.pixtulate.com/demo/large-2.jpg?w=1400"}
-		]'>
-		<noscript>
-			<img src="img/1280x1280.gif" alt="A beautiful responsive image"/>
-		</noscript>
-	</span>
-</a>
+<picture data-alt="A beautiful responsive image" data-default-src="img/1440x1440.gif">
+	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
+	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)"/>
+	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720" media="(min-width: 1025px)"/>
+	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960" media="(min-width: 1441px)"/>
+	<noscript>
+		<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
+	</noscript>
+</picture>
 ```
 
-Use an array in the srcset property and double size images to support HD/retina displays, as you can see in the "With HD (Retina) images support" section of this readme.
+Note that you should serve double resolution images (double width and double height) for HD/retina displays, as you can see in the "With HD (Retina) images support" section of this readme.
 
 [Take a look at the demo](http://verlok.github.io/picturePolyfill/).
 
 
-## Usage
+## Installation
 
-To use picturePolyfill, just insert the script tag at the end of your html file, just right the closure of the `body` tag.
-If picturePolyfill is put in the head of the document of deferred until after load is fired, images will not load unless the browser window is resized.
+### Manually
+
+* Download picturePolyfill from GitHub
+* Include the minified file in your project script directory
+
+### Using bower
+
+You can install the latest version of picturePolyfill using [bower](http://www.bower.io)
+
+```Shell
+bower install picturePolyfill
+```
+
+## Inclusion
+
+To use picturePolyfill, just include the script tag at the end of your html file, in the `head` section of your `HTML` pages, OR just before the closure of the `body` tag.
+
+Including the `defer` attribute in the `script` tag will prevent the script download to block page rendering while in progress.
+
+### In the `head` section
+
+```html
+<html>
+	<head>
+		Your HEAD content
+		<script src="picturePolyfill.min.js" defer></script>
+	</head>
+	<body>
+		Your BODY content
+	</body>
+</html>
+```
+
+### At the end of the body section
 
 ```html
 <html>
@@ -140,48 +142,31 @@ If picturePolyfill is put in the head of the document of deferred until after lo
 		Your HEAD content
 	</head>
 	<body>
-		Your BODY + your responsive images markup, as described
+		Your BODY content
 		<script src="picturePolyfill.min.js"></script>
 	</body>
 </html>
 ```
 
-### Later calls
+## Execution
 
-picturePolyfill is intentionally exposed to the global space, so you can call it later, as you need it.	
+picturePolyfill executes automatically at page load and at browser resizes.
 
-* **AJAX calls**: after your new DOM has been injected on the page, just call `window.picturePolyfill()`
-* **document ready**: if you insert the `<script>` tag at the bottom of your markup, just before the closure of the `body` tag, you won't have to call picturePolyfill manually. If you can't do that, to use the script at the document ready (e.g. using jQuery's `$(document).ready()` function), just call `window.picturePolyfill()`
-* **Browser resize**: the browser resize event is already managed by the script, it will update the images source 100ms after each resize event.
 
+### AJAX calls
+
+picturePolyfill is intentionally exposed to the global space, so you can call it as you need it.	
+
+For example, if your AJAX call changes a portion of your DOM, after your new DOM has been injected on the page, just call `window.picturePolyfill()` or `window.picturePolyfill(theChangedElement)` to make picturePolyfill to parse a only the changed portion of the DOM.
 
 ## Browser support
 
-**picturePolyfill** supports all modern browsers and Internet Explorer 8 and above.
+picturePolyfill supports all modern browsers and **down to Internet Explorer 7** (it wasn't tested on IE6).
 
-**Note**: The `matchMedia` polyfill (included in the `/external` folder) is necessary to support the `media` property across browsers (such as IE9), even in browsers that support media queries, although it is becoming more widely supported in new browsers. If you don't include matchMediaPolyfill, the script will load the `standard` picture format.
+* On **Modern Browsers, Internet Explorer 10 and above**: the images will be loaded depending on the matched media query
+* On **Internet Explorer 7 to 9**: the content of the `data-default-src` attribute will be used to reference the image source.
 
-### Internet Explorer desktop versions
-
-* **IE 10 and above**: Fully supported, as in all other modern browsers.
-* **IE 9**: Supported, including the `matchMedia` polyfill provided in `external/matchMedia.js`
-* **IE 8**: Supported, but as the browser has no support for CSS3 Media Queries, the script will load the element (of the `data-picture` attribute array) which has the `standard` property set to true, or the last element of the array.
-* **IE 7 and below are intentionally not supported** (missing JSON, missing querySelectorAll). Script will fail silently without throwing any javascript errors.
-
-**Note**: Internet Explorer 7 finally disappeared along with all its bugs. The most used Internet Explorer versions today (march 2014) are 11, 8, 10, then 9. Please note that IE 10 and above also support the [real picture element polyfill](https://github.com/verlok/picturePolyfill/tree/master/usingPictureMarkup).
 
 ## Size and delivery
 
-Currently, `picturePolyfill.js` compresses to around 620bytes (~0.6kb), after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
-
-## Performance
-
-To make sure this script is performing at its best, I created some performance tests on [JSPerf](http://jsperf.com). Here they are:
-
-* [About finding matches with array vs with string assignment](http://jsperf.com/find-matches-with-array-vs-with-string-assignment)
-* [About avoid writing the entire MQ, put the min-width value only](http://jsperf.com/picturepolyfill-and-json-parse-test2)
-* [picturePolyfill vs picturefill performance test](http://jsperf.com/picturefill-vs-picturepolyfill-performance-test)
-
-## Inspiration
-
-picturePolyfill was inspired by [picturefill](https://github.com/scottjehl/picturefill/)
+Currently, `picturePolyfill.js` compresses to around 910bytes (~0.88kb) after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
