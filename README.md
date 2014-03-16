@@ -83,7 +83,7 @@ It's then a good practice to have a server-side picture scaling service (like [p
 If you want to use an image server, you can code your HTML like the following:
 
 ```html
-<picture data-alt="A beautiful responsive image" data-default-src="img/1440x1440.gif">
+<picture data-alt="A beautiful responsive image" data-default-src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440">
 	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
 	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)"/>
 	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720" media="(min-width: 1025px)"/>
