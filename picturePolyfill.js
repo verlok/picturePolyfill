@@ -29,6 +29,12 @@
 		}
 	}
 
+	/**
+	 * Append an image element to a picture element
+	 * @param {Node} picture
+	 * @param {string} imgSrc
+	 * @param {string} imgAlt
+	 */
 	function appendImage(picture, imgSrc, imgAlt) {
 		var imageElement = document.createElement('img');
 		imageElement.setAttribute('alt', imgAlt);
