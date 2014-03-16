@@ -1,5 +1,3 @@
-- Merge the gh-pages branch
-- Update the readme
 - Release 2.0.0 on bower and GitHub
 - Try to improve performances again, caching the sourcesData object -> version 2.0.1
 - Add support to the src attribute, not only srcset -> version 2.0.2
