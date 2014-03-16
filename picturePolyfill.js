@@ -13,7 +13,7 @@
 	 * Detects if browser can append images to pictures
 	 * @returns {boolean}
 	 */
-	function detectIfBrowserCanAppendImagesToPictures() {
+	function canBrowserAppendImagesToPictures() {
 		var newImgElement = document.createElement('img'),
 			theFirstPictureElement = document.getElementsByTagName("picture")[0];
 
@@ -31,9 +31,9 @@
 
 	/**
 	 * Replaces the existing picture element with another picture element containing an image with the imgSrc source
-	 * @param picture
-	 * @param imgSrc
-	 * @param imgAlt
+	 * @param {object} picture
+	 * @param {string} imgSrc
+	 * @param {string} imgAlt
 	 */
 	function replacePictureWithPictureAndImg(picture, imgSrc, imgAlt) {
 		var newImage = document.createElement("img"),
@@ -46,15 +46,15 @@
 
 	/**
 	 * Returns a hash density > sourceSet
-	 * @param srcSetAttribute
-	 * @returns {{}}
+	 * @param {string} srcsetAttribute
+	 * @returns {object}
 	 */
-	function getSrcSetHash(srcSetAttribute) {
+	function getSrcsetHash(srcsetAttribute) {
 		var srcSetElement,
 			source,
 			density,
 			hash = {},
-			srcSetElements = srcSetAttribute.split(',');
+			srcSetElements = srcsetAttribute.split(',');
 
 		for (var i=0, len=srcSetElements.length; i<len; i+=1) {
 			srcSetElement = srcSetElements[i].trim().split(' ');
@@ -68,14 +68,14 @@
 	/**
 	 * Returns the proper src from the srcSet property
 	 * Get the first valid element from passed position to the left
-	 * @param srcSetArray
-	 * @param position
+	 * @param {Array} srcsetArray
+	 * @param {int} position
 	 * @returns {string}
 	 */
-	function getSrcFromSrcSetArray(srcSetArray, position) {
+	function getSrcFromSrcsetArray(srcsetArray, position) {
 		var ret;
 		do {
-			ret = srcSetArray[position+'x'];
+			ret = srcsetArray[position+'x'];
 			position-=1;
 		}
 		while (ret===undefined && position>0);
@@ -85,17 +85,17 @@
 	/**
 	 * Loop through every element of the dataPicture array, check if the media query applies and,
 	 * if so, get the src element from the srcSet property based depending on pixel ratio
-	 * @param dataPicture {element}
+	 * @param sourcesData {Array}
 	 * @returns {string}
 	 */
-	function getSrcAttributeFromData(dataPicture) {
+	function getSrcAttributeFromSourcesData(sourcesData) {
 		var media,
 			matchedSrc;
 
-		for (var i=0, len=dataPicture.length; i<len; i+=1) {
-			media = dataPicture[i].media;
+		for (var i=0, len=sourcesData.length; i<len; i+=1) {
+			media = sourcesData[i].media;
 			if (!media || w.matchMedia(media).matches) {
-				matchedSrc = getSrcFromSrcSetArray(dataPicture[i].srcset, pixelRatio);
+				matchedSrc = getSrcFromSrcsetArray(sourcesData[i].srcset, pixelRatio);
 			}
 		}
 		return matchedSrc;
@@ -104,8 +104,8 @@
 	/**
 	 * Set the src attribute of the first image element inside passed pictureElement
 	 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
-	 * @param pictureElement
-     * @param sourcesData
+	 * @param pictureElement {object}
+     * @param sourcesData {Array}
 	 */
 	function createOrUpdateImage(pictureElement, sourcesData) {
 		var imageElement, srcAttribute, altAttribute,
@@ -113,7 +113,7 @@
 
 		srcAttribute = (!mediaQueriesSupported || !sourcesData.length) ?
 			pictureElement.getAttribute("data-default-src") :
-			getSrcAttributeFromData(sourcesData);
+			getSrcAttributeFromSourcesData(sourcesData);
 
 		// If image already exists, use it
 		if (imageElements.length) {
@@ -137,7 +137,7 @@
 	/**
 	 * Parses the picture element looking for sources elements, then
 	 * generate the array or string for the SrcSetArray
-	 * @param pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
+	 * @param {object} pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 	function parseSources(pictureElement) {
 		var sourcesData = [],
@@ -146,7 +146,7 @@
 		for (var i=0, len = foundSources.length; i<len; i+=1) {
 			var sourceElement = foundSources[i];
 			var media = sourceElement.getAttribute('media');
-			var srcset = getSrcSetHash(sourceElement.getAttribute('srcset'));
+			var srcset = getSrcsetHash(sourceElement.getAttribute('srcset'));
 			sourcesData.push({
 				'media': media,
 				'srcset': srcset
@@ -158,7 +158,7 @@
 	/**
 	 * Parses the DOM looking for elements containing the "data-picture" attribute, then
 	 * generate the images or updates their src attribute.
-	 * @param element the starting element to parse DOM into. If not passed, it parses the whole document.
+	 * @param {object} element (the starting element to parse DOM into. If not passed, it parses the whole document)
 	 */
 	function parsePictures(element) {
 		var sourcesData,
@@ -177,29 +177,29 @@
 	 */
 	function initialize() {
 
-		function picturePolyfillDocument() {
+		function parseWholeDocument() {
 			parsePictures(document);
 		}
 
 		pixelRatio = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
 		mediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
-		browserCanAppendImagesToPictures = detectIfBrowserCanAppendImagesToPictures();
+		browserCanAppendImagesToPictures = canBrowserAppendImagesToPictures();
 
 		if (w.addEventListener) {
 			// Manage resize event only if they've passed 100 milliseconds between a resize event and another
 			// to avoid the script to slow down browsers that animate resize or when browser edge is being manually dragged
 			w.addEventListener('resize', function() {
 				clearTimeout(timerId);
-				timerId = setTimeout(picturePolyfillDocument, 100);
+				timerId = setTimeout(parseWholeDocument, 100);
 			});
 			w.addEventListener('DOMContentLoaded', function(){
-				picturePolyfillDocument();
-				w.removeEventListener('load', picturePolyfillDocument);
+				parseWholeDocument();
+				w.removeEventListener('load', parseWholeDocument);
 			});
-			w.addEventListener('load', picturePolyfillDocument);
+			w.addEventListener('load', parseWholeDocument);
 		}
 		else if (w.attachEvent) {
-			w.attachEvent('onload', picturePolyfillDocument);
+			w.attachEvent('onload', parseWholeDocument);
 		}
 	}
 
