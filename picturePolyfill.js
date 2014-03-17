@@ -152,11 +152,10 @@
 
 		for (var i=0, len = foundSources.length; i<len; i+=1) {
 			var sourceElement = foundSources[i];
-			var media = sourceElement.getAttribute('media');
-			var srcset = getSrcsetHash(sourceElement.getAttribute('srcset'));
 			sourcesData.push({
-				'media': media,
-				'srcset': srcset
+				'media': sourceElement.getAttribute('media'),
+				'src': sourceElement.getAttribute('src'),
+				'srcset': getSrcsetHash(sourceElement.getAttribute('srcset'))
 			});
 		}
 		return sourcesData;
@@ -216,4 +215,4 @@
 	// to gain the ability to call picturePolyfill on a slice of DOM (eg: after an AJAX call)
 	w.picturePolyfill = parsePictures;
 
-}(this));
+}(window));
