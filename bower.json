@@ -1,6 +1,6 @@
 {
   "name": "picturePolyfill",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "main": "picturePolyfill.js",
   "ignore": [
     ".idea",

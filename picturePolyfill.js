@@ -99,13 +99,14 @@
 	 * @returns {string}
 	 */
 	function getSrcAttributeFromSourcesData(sourcesData) {
-		var media,
-			matchedSrc;
+		var matchedSrc;
 
 		for (var i=0, len=sourcesData.length; i<len; i+=1) {
-			media = sourcesData[i].media;
+			var sourceData = sourcesData[i],
+				media = sourceData.media,
+				srcset = sourceData.srcset;
 			if (!media || w.matchMedia(media).matches) {
-				matchedSrc = getSrcFromSrcsetArray(sourcesData[i].srcset, pixelRatio);
+				matchedSrc = srcset ? getSrcFromSrcsetArray(srcset, pixelRatio) : sourceData.src;
 			}
 		}
 		return matchedSrc;
@@ -151,11 +152,12 @@
 			foundSources = pictureElement.getElementsByTagName('source');
 
 		for (var i=0, len = foundSources.length; i<len; i+=1) {
-			var sourceElement = foundSources[i];
+			var sourceElement = foundSources[i],
+				srcset = sourceElement.getAttribute('srcset');
 			sourcesData.push({
 				'media': sourceElement.getAttribute('media'),
 				'src': sourceElement.getAttribute('src'),
-				'srcset': getSrcsetHash(sourceElement.getAttribute('srcset'))
+				'srcset': srcset ? getSrcsetHash(srcset) : null
 			});
 		}
 		return sourcesData;
