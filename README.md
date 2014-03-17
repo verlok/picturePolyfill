@@ -1,5 +1,5 @@
 # picturePolyfill
-A Responsive Images approach that you can use today that uses the **[real `picture` element](http://www.w3.org/TR/2013/WD-html-picture-element-20130226/)** along with children `source` elements with `media` and `srcset` attributes.
+A Responsive Images approach that you can use today that uses the **[real `picture` element](http://www.w3.org/TR/2013/WD-html-picture-element-20130226/)** along with children `source` elements with `media`, `src` and `srcset` attributes.
 
 * Author: Andrea Verlicchi (c) 2014
 * License: MIT/GPLv2
@@ -46,10 +46,10 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
 
 ```html
 <picture data-alt="A beautiful responsive image" data-default-src="img/1440x1440.gif">
-	<source srcset="img/480x480.gif"/>
-	<source srcset="img/768x768.gif"   media="(min-width: 481px)"/>
-	<source srcset="img/1440x1440.gif" media="(min-width: 1025px)"/>
-	<source srcset="img/1920x1920.gif" media="(min-width: 1441px)"/>
+	<source src="img/480x480.gif"/>
+	<source src="img/768x768.gif"   media="(min-width: 481px)"/>
+	<source src="img/1440x1440.gif" media="(min-width: 1025px)"/>
+	<source src="img/1920x1920.gif" media="(min-width: 1441px)"/>
 	<noscript>
 		<img src="img/768x768.gif" alt="A beautiful responsive image"/>
 	</noscript>
@@ -64,15 +64,16 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
 
 `source` tags:
 * `media` attribute: any media query, but it's adviced to use a `min-width` media query to follow the "mobile first" approach.
-* `srcset` attribute: the image URL or comma separated URLs at the corresponding `media`
+* `src` attribute: the image URL at the corresponding `media`
+* `srcset` attribute: comma separated URLs and scale at the corresponding `media`, e.g. `img/768x768.gif, img/768x768x2.gif 2x`
 
 `noscript` tag:
 * This should wrap the fallback image for non-JavaScript environments and search engines. You *could* avoid wrapping the `img` tag in `noscript`, but this will make browsers to fetch the fallback image during page load, causing unnecessary overhead.
 
 ### How the `img` is appended and updated
 
-Upon finding a matching media in the `data-picture` array, picturePolyfill will generate an `img` element and inside that span. 
-The `img`'s `src` attribute is then updated at browser resize (see _computing performance_ section above to read about performance at browser resize)
+The script searches in the `source` tags and selects the last matching `media`'s `src` or `srcset`. When found, picturePolyfill will generate an `img` element inside the `picture` tag, with the corresponding `src` and `alt` attributes. 
+The `img`'s `src` attribute is then updated at browser resize (see _computing performance_ section above to read about performance at browser resize).
 
 ## Server-side scaling/cropping tool
 
@@ -84,10 +85,10 @@ If you want to use an image server, you can code your HTML like the following:
 
 ```html
 <picture data-alt="A beautiful responsive image" data-default-src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440">
-	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
-	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)"/>
-	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720" media="(min-width: 1025px)"/>
-	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960" media="(min-width: 1441px)"/>
+	<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
+	<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)"/>
+	<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720" media="(min-width: 1025px)"/>
+	<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960" media="(min-width: 1441px)"/>
 	<noscript>
 		<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
 	</noscript>
