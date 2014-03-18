@@ -145,7 +145,7 @@
 	/**
 	 * Parses the picture element looking for sources elements, then
 	 * generate the array or string for the SrcSetArray
-	 * @param {Node} pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
+	 * @param {Array} pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 	function parseSources(pictureElement) {
 		var sourcesData = [],
