@@ -12,7 +12,9 @@ PicturePolyfill is fast and easy to use because:
 
 * **markup & go**: it uses the picture tag, easy to markup, and futureproof
 * **loading performance**: it serves only one image to your website users, no double HTTP requests are made
-* **computing performance**: it's designed and coded keeping performance in mind. For example, it doesn't execute while a smooth (animated or manually dragged) browser resize is in progress (avoiding useless DOM parsing and useless HTTP requests to mid-breakpoints images that the user might not need) and it caches the `source` elements data
+* **computing performance**: it's designed and coded keeping performance in mind. For example:
+    * it **doesn't execute repeatedly** while a smooth/animated browser resize is in progress, avoiding useless DOM parsing and useless HTTP requests to mid-breakpoints images that the user might not need)
+	* it **caches che `source` elements data**, making the script much more perfoming [see tests](http://jsperf.com/picturepolyfill-test-cached-vs-not-cached) 
 * **support to HD (Retina) displays** easily made via the `srcset` attribute of `source` tags
 
 ### Differences with picturefill
@@ -151,18 +153,25 @@ Including the `defer` attribute in the `script` tag will prevent the script down
 
 ## Execution
 
-picturePolyfill executes automatically at page load and at browser resizes.
+PicturePolyfill executes either automatically and programmatically.
 
+* it executes automatically **at page load**, on the whole `document`
+* it executes automatically **at browser resize**, on the whole `document`
+* it can be **programmatically executed**, if you:
+    * call `window.picturePolyfill()` to execute it on the whole `document`
+    * call `window.picturePolyfill(element)` to execute from the `element` DOM node below
 
-### AJAX calls
+Calling `picturePolyfill()` and passing in a specific node is particularly useful **if your DOM has changed** and you know the parent node where the change occured.
 
-picturePolyfill is intentionally exposed to the global space, so you can call it as you need it.	
+### After DOM has changed (AJAX calls, etc.)
 
-For example, if your AJAX call changes a portion of your DOM, after your new DOM has been injected on the page, just call `window.picturePolyfill()` or `window.picturePolyfill(theChangedElement)` to make picturePolyfill to parse a only the changed portion of the DOM.
+PicturePolyfill is intentionally exposed to the global namespace, so you can call it as you need it.    
+
+**Example:** if some of your AJAX calls change a portion of your DOM injecting new `picture` nodes, after your new DOM has changed just call `window.picturePolyfill()` or `window.picturePolyfill(element)` to make `picturePolyfill` to parse only the changed portion of the DOM.
 
 ## Browser support
 
-picturePolyfill supports all modern browsers and **down to Internet Explorer 7** (it wasn't tested on IE6).
+PicturePolyfill supports all modern browsers and **down to Internet Explorer 7** (it wasn't tested on IE6).
 
 * On **Modern Browsers, Internet Explorer 10 and above**: the images will be loaded depending on the matched media query
 * On **Internet Explorer 7 to 9**: the content of the `data-default-src` attribute will be used to reference the image source.

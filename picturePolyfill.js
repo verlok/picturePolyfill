@@ -7,7 +7,9 @@
 	var timerId,
 		pixelRatio,
 		areMediaQueriesSupported,
-		isAppendImageSupported;
+		isAppendImageSupported,
+		cacheArray,
+		cacheIndex;
 
 	/**
 	 * Detects old browser checking if browser can append images to pictures
@@ -93,7 +95,7 @@
 	}
 
 	/**
-	 * Loop through every element of the dataPicture array, check if the media query applies and,
+	 * Loop through every element of the sourcesData array, check if the media query applies and,
 	 * if so, get the src element from the srcSet property based depending on pixel ratio
 	 * @param sourcesData {Array}
 	 * @returns {string}
@@ -145,7 +147,7 @@
 	/**
 	 * Parses the picture element looking for sources elements, then
 	 * generate the array or string for the SrcSetArray
-	 * @param {Node} pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
+	 * @param {Array} pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
 	 */
 	function parseSources(pictureElement) {
 		var sourcesData = [],
@@ -175,7 +177,13 @@
 
 		for (var i=0, len=pictureElements.length; i<len; i+=1) {
 			pictureElement = pictureElements[i];
-			sourcesData = parseSources(pictureElement); //NEXT STEP: store sources data somewhere to avoid parsing it every time
+			sourcesData = cacheArray[pictureElement.getAttribute('data-cache-index')];
+			if (!sourcesData) {
+				sourcesData = parseSources(pictureElement);
+				cacheArray[cacheIndex] = sourcesData;
+				pictureElement.setAttribute('data-cache-index', cacheIndex);
+				cacheIndex+=1;
+			}
 			createOrUpdateImage(pictureElement, sourcesData);
 		}
 	}
@@ -192,6 +200,8 @@
 		pixelRatio = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
 		areMediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
 		isAppendImageSupported = detectAppendImageSupport();
+		cacheArray = [];
+		cacheIndex = 0;
 
 		if (w.addEventListener) {
 			// Manage resize event only if they've passed 100 milliseconds between a resize event and another
