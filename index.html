@@ -5,15 +5,18 @@
 	<title>Responsive images using verlok/picturePolyfill - by Andrea Verlicchi</title>
 	<meta name="viewport" content="width=device-width">
 	<style>
-		body { margin: 0 0 2em 0; padding: 0; text-align: center; }
-		.element a, .element span, .element img { display: block; }
-		h2 { margin-top: 1.5em }
-		img { width: 100%; height: auto; border: 0; }
+		body {font-family: Helvetica, Arial, sans-serif; margin: 0 0 2em 0; padding: 0; text-align: center}
+		a {color: #0b97c4; text-decoration: none; border-bottom: 1px dotted #2b81af; padding-bottom: .1em}
+		a:visited {color: #2F6FAD}
+		a:hover {color: #cc0000; border-bottom: 1px solid #cc0000}
+		.element a, .element span, .element img {display: block}
+		h2 {margin-top: 1.5em}
+		img {width: 100%; height: auto; border: 0}
 		@media screen and (min-width: 481px) {
-			.element { float: left; width: 50%; }
+			.element {float: left; width: 50%}
 		}
-		.cf:before,	.cf:after {	content: " "; display: table; }
-		.cf:after {	clear: both; }
+		.cf:before,	.cf:after {	content: " "; display: table}
+		.cf:after {	clear: both}
 	</style>
 </head>
 <body>
