@@ -137,7 +137,7 @@ Including the `defer` attribute in the `script` tag will prevent the script down
 </html>
 ```
 
-### At the end of the body section
+### At the end of the `body` section
 
 ```html
 <html>
