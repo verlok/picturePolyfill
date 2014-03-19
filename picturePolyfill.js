@@ -221,10 +221,15 @@
 		}
 	}
 
-	initialize();
+	// Check if picture is supported. If not, initialize module and expose picturePolyfill to the global namespace
+	// else expose an empty function to avoid errors when calling picturePolyfill
 
-	// Exposing picturePolyfill to the global environment,
-	// to gain the ability to call picturePolyfill on a slice of DOM (eg: after an AJAX call)
-	w.picturePolyfill = parsePictures;
+	if (!window.HTMLPictureElement) {
+		initialize();
+		w.picturePolyfill = parsePictures;
+	}
+	else {
+		w.picturePolyfill = function() {};
+	}
 
 }(window));
