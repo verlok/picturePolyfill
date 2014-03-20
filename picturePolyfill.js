@@ -168,7 +168,7 @@
 	/**
 	 * Parses the DOM looking for elements containing the "data-picture" attribute, then
 	 * generate the images or updates their src attribute.
-	 * @param {Node} element (the starting element to parse DOM into. If not passed, it parses the whole document)
+	 * @param {Node} element (the starting element to parse DOM into. REQUIRED)
 	 */
 	function parsePictures(element) {
 		var sourcesData,
@@ -189,13 +189,16 @@
 	}
 
 	/**
+	 * Parse the whole document
+	 */
+	function parseWholeDocument() {
+		parsePictures(document);
+	}
+
+	/**
 	 * Initialize  and resize event handlers
 	 */
 	function initialize() {
-
-		function parseWholeDocument() {
-			parsePictures(document);
-		}
 
 		pixelRatio = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
 		areMediaQueriesSupported = w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
@@ -226,7 +229,7 @@
 
 	if (!window.HTMLPictureElement) {
 		initialize();
-		w.picturePolyfill = parsePictures;
+		w.picturePolyfill = parseWholeDocument;
 	}
 	else {
 		w.picturePolyfill = function() {};
