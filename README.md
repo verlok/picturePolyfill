@@ -21,6 +21,7 @@ PicturePolyfill is fast and easy to use because:
 
 picturePolyfill is better than picturefill because:
 
+* it's **10x faster** on IE 10, **8x faster** on mobile Safari, **6x faster** on Firefox and Safari, **4x faster** on Chrome and Opera [see performance test](http://jsperf.com/picturepolyfill-204-vs-picturefill-121-performance-test)
 * it uses the **real `picture` markup**
 * it gives you the ability to **choose a default image** that you want to show on Internet Explorer desktop, without the need to add any comment
 
