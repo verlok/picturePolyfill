@@ -24,6 +24,6 @@ module( "hello", {
 	}
 });
 
-test( "Script initialization", function() {
+test( "function is exposed to the global namespace", function() {
 	strictEqual( typeof window.picturePolyfill, 'function');
 });
