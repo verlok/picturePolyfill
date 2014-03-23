@@ -1,4 +1,4 @@
-module( "hello", {
+module( "picturePolyfill", {
 	setup: function() {
 		$('body').append('<picture data-alt="A beautiful responsive image" data-default-src="img/960x960.gif">\
 			<source srcset="img/480x480.gif, img/480x480x2.gif 2x"/>\
@@ -24,6 +24,6 @@ module( "hello", {
 	}
 });
 
-test( "function is exposed to the global namespace", function() {
-	strictEqual( typeof window.picturePolyfill, 'function');
+test( "picturePolyfill was declared and exposed", function() {
+	strictEqual( typeof window.picturePolyfill, 'object');
 });
