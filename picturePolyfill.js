@@ -229,7 +229,7 @@
 
 	if (!window.HTMLPictureElement) {
 		initialize();
-		w.picturePolyfill = parseWholeDocument;
+		w.picturePolyfill = function(element) { parsePictures(element || document); };
 	}
 	else {
 		w.picturePolyfill = function() {};
