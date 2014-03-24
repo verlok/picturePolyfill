@@ -24,6 +24,33 @@ module( "picturePolyfill", {
 	}
 });
 
-test( "picturePolyfill was declared and exposed", function() {
+test( "main object is declared and exposed", function() {
 	strictEqual( typeof window.picturePolyfill, 'object');
+});
+
+test( "parses elements at DOMContentLoaded", function() {
+	picturePolyfill.initialize();
+	this.spy(picturePolyfill, "parsePictures");
+	var evt = document.createEvent("Event");
+	evt.initEvent("DOMContentLoaded", true, true);
+	document.dispatchEvent(evt);
+	ok(picturePolyfill.parsePictures.calledOnce);
+});
+
+test( "parses elements at resize", function() {
+	picturePolyfill.initialize();
+	this.spy(picturePolyfill, "parsePictures");
+	var evt = document.createEvent('UIEvents');
+	evt.initUIEvent('resize', true, false,window,0);
+	window.dispatchEvent(evt);
+	this.clock.tick(100);
+	ok(picturePolyfill.parsePictures.calledOnce);
+});
+
+test( "call parsePictures won't give errors when polyfill isn't required", function() {
+	picturePolyfill.isNecessary = false;
+	picturePolyfill.initialize();
+	this.spy(picturePolyfill, "parsePictures");
+	picturePolyfill.parsePictures();
+	strictEqual(picturePolyfill.parsePictures.exceptions[0], undefined);
 });

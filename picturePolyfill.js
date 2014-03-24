@@ -191,7 +191,13 @@ var picturePolyfill = (function(w) {
 		parsePictures: function(element) {
 			var sourcesData,
 				pictureElement,
-				pictureElements = element.getElementsByTagName('picture');
+				pictureElements;
+
+			if (!this.isNecessary) {
+				return false;
+			}
+
+			pictureElements = (element || document).getElementsByTagName('picture');
 
 			for (var i=0, len=pictureElements.length; i<len; i+=1) {
 				pictureElement = pictureElements[i];
@@ -211,6 +217,10 @@ var picturePolyfill = (function(w) {
 		 */
 		initialize: function() {
 
+			if (!this.isNecessary) {
+				return false;
+			}
+
 			cacheArray = [];
 			cacheIndex = 0;
 
@@ -226,7 +236,7 @@ var picturePolyfill = (function(w) {
 					timerId = setTimeout(parseWholeDocument, 100);
 				});
 				w.addEventListener('DOMContentLoaded', function(){
-					picturePolyfill.parsePictures(document);
+					parseWholeDocument();
 					w.removeEventListener('load', parseWholeDocument);
 				});
 				w.addEventListener('load', parseWholeDocument);
@@ -240,6 +250,5 @@ var picturePolyfill = (function(w) {
 
 }(window));
 
-if (picturePolyfill.isNecessary) {
-	picturePolyfill.initialize();
-}
+
+//picturePolyfill.initialize();
