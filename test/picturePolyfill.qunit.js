@@ -1,4 +1,4 @@
-module( "picturePolyfill", {
+module("picturePolyfill", {
 	setup: function() {
 		$('body').append('<picture data-alt="A beautiful responsive image" data-default-src="img/960x960.gif">\
 			<source srcset="img/480x480.gif, img/480x480x2.gif 2x"/>\
@@ -24,11 +24,11 @@ module( "picturePolyfill", {
 	}
 });
 
-test( "main object is declared and exposed", function() {
+test("main object is declared and exposed", function() {
 	strictEqual( typeof window.picturePolyfill, 'object');
 });
 
-test( "parses elements at DOMContentLoaded", function() {
+test("parses elements at DOMContentLoaded", function() {
 	picturePolyfill.initialize();
 	this.spy(picturePolyfill, "parsePictures");
 	var evt = document.createEvent("Event");
@@ -37,7 +37,7 @@ test( "parses elements at DOMContentLoaded", function() {
 	ok(picturePolyfill.parsePictures.calledOnce);
 });
 
-test( "parses elements at resize", function() {
+test("parses elements at resize", function() {
 	picturePolyfill.initialize();
 	this.spy(picturePolyfill, "parsePictures");
 	var evt = document.createEvent('UIEvents');
@@ -47,10 +47,66 @@ test( "parses elements at resize", function() {
 	ok(picturePolyfill.parsePictures.calledOnce);
 });
 
-test( "call parsePictures won't give errors when polyfill isn't required", function() {
+test("call parsePictures won't give errors when polyfill isn't required", function() {
 	picturePolyfill.isNecessary = false;
 	picturePolyfill.initialize();
 	this.spy(picturePolyfill, "parsePictures");
 	picturePolyfill.parsePictures();
 	strictEqual(picturePolyfill.parsePictures.exceptions[0], undefined);
 });
+
+test("getSrcsetHash correct behaviour, correct srcset format", function() {
+	var srcset;
+	// Single
+	srcset = "img/480x480.gif";
+	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+		"1x": "img/480x480.gif"
+	});
+	// Single 2x
+	srcset = "img/480x480.gif 2x";
+	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+		"2x": "img/480x480.gif"
+	});
+	// Double
+	srcset = "img/480x480.gif, img/480x480x2.gif 2x";
+	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+		"1x": "img/480x480.gif",
+		"2x": "img/480x480x2.gif"
+	});
+	// Triple
+	srcset = "img/480x480.gif, img/480x480x2.gif 2x, img/480x480x3.gif 3x";
+	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+		"1x": "img/480x480.gif",
+		"2x": "img/480x480x2.gif",
+		"3x": "img/480x480x3.gif"
+	});
+	// Double with 1x and 3x
+	srcset = "img/480x480.gif, img/480x480x3.gif 3x";
+	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+		"1x": "img/480x480.gif",
+		"3x": "img/480x480x3.gif"
+	});
+});
+
+
+test("getSrcsetHash correct behaviour, messy srcset format", function() {
+	var srcset;
+	// Double with 1x and 2x -- EXTRA SPACES IN MIDDLE
+	srcset = "img/480x480.gif,  img/480x480x2.gif 2x";
+	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+		"1x": "img/480x480.gif",
+		"2x": "img/480x480x2.gif"
+	});
+	// Triple with 1x and 3x -- EXTRA SPACES EVERYWHERE
+	srcset = "    img/480x480.gif   ,   img/480x480x3.gif 3x  ";
+	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+		"1x": "img/480x480.gif",
+		"3x": "img/480x480x3.gif"
+	});
+	// Single 2x with extra spaces
+	srcset = "  img/480x480x2.gif   2x  ";
+	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+		"2x": "img/480x480x2.gif"
+	});
+});
+

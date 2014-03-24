@@ -76,20 +76,29 @@ var picturePolyfill = (function(w) {
 
 		/**
 		 * Returns a hash density > sourceSet
-		 * @param {string} srcsetAttribute
+		 * @param {string} srcset
 		 * @returns {object}
 		 */
-		_getSrcsetHash: function(srcsetAttribute) {
+		_getSrcsetHash: function(srcset) {
 			var srcSetElement,
 				source,
 				density,
 				hash = {},
-				srcSetElements = srcsetAttribute.split(',');
+				srcSetElements = srcset.split(',');
 
 			for (var i=0, len=srcSetElements.length; i<len; i+=1) {
 				srcSetElement = srcSetElements[i].trim().split(' ');
-				density = srcSetElement[1] ? srcSetElement[1].trim() : "1x";
-				source = srcSetElement[0].trim();
+				switch(srcSetElement.length) {
+					case 1:
+						density = "1x";
+						break;
+					case 2:
+						density = srcSetElement[1];
+						break;
+					default:
+						density = srcSetElement[srcSetElement.length-1];
+				}
+				source = srcSetElement[0];
 				hash[density] = source;
 			}
 			return hash;
@@ -249,6 +258,5 @@ var picturePolyfill = (function(w) {
 	};
 
 }(window));
-
 
 //picturePolyfill.initialize();
