@@ -107,18 +107,32 @@ var picturePolyfill = (function(w) {
 		/**
 		 * Returns the proper src from the srcSet property
 		 * Get the first valid element from passed position to the left
-		 * @param {Array} srcsetArray
+		 * @param {Array} srcsetHash
 		 * @param {int} position
 		 * @returns {string}
 		 */
-		_getSrcFromSrcsetArray: function(srcsetArray, position) {
+		_getSrcFromSrcsetHash: function(srcsetHash, position) {
 			var ret;
+
+			// Try direct access to position - best case
+			ret = srcsetHash[position+'x'];
+			if (ret) { return ret; }
+
+			// Try looking for smaller images
 			do {
-				ret = srcsetArray[position+'x'];
 				position-=1;
+				ret = srcsetHash[position+'x'];
 			}
-			while (ret===undefined && position>0);
-			return ret;
+			while (!ret && position>0);
+			if (ret) { return ret; }
+
+			// Still nothing? Get the first result in the hash and return it
+			for (var key in srcsetHash) {
+				return srcsetHash[key];
+			}
+
+			// Fallback
+			return null;
 		},
 
 		/**
@@ -131,11 +145,11 @@ var picturePolyfill = (function(w) {
 			var matchedSrc;
 
 			for (var i=0, len=sourcesData.length; i<len; i+=1) {
-				var sourceData = sourcesData[i],
-					media = sourceData.media,
-					srcset = sourceData.srcset;
+				var source = sourcesData[i],
+					media = source.media,
+					srcset = source.srcset;
 				if (!media || w.matchMedia(media).matches) {
-					matchedSrc = srcset ? this._getSrcFromSrcsetArray(srcset, picturePolyfill._pixelRatio) : sourceData.src;
+					matchedSrc = srcset ? this._getSrcFromSrcsetHash(srcset, picturePolyfill._pixelRatio) : source.src;
 				}
 			}
 			return matchedSrc;
@@ -182,12 +196,14 @@ var picturePolyfill = (function(w) {
 
 			for (var i=0, len = foundSources.length; i<len; i+=1) {
 				var sourceElement = foundSources[i],
-					srcset = sourceElement.getAttribute('srcset');
-				sourcesData.push({
-					'media': sourceElement.getAttribute('media'),
-					'src': sourceElement.getAttribute('src'),
-					'srcset': srcset ? picturePolyfill._getSrcsetHash(srcset) : null
-				});
+					srcset = sourceElement.getAttribute('srcset'),
+					media = sourceElement.getAttribute('media'),
+					src = sourceElement.getAttribute('src'),
+					hash = {};
+				if (media) { hash["media"] = media; }
+				if (src) { hash["src"] = src; }
+				if (srcset) { hash["srcset"] = picturePolyfill._getSrcsetHash(srcset); }
+				sourcesData.push(hash);
 			}
 			return sourcesData;
 		},
