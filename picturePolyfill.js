@@ -9,10 +9,6 @@ var picturePolyfill = (function(w) {
 		_resizeTimer,
 		_timeAfterResize = 100;
 
-	if (!String.prototype.trim) {
-		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
-	}
-
 	/**
 	 * Detects old browser checking if browser can append images to pictures
 	 * @returns {boolean}

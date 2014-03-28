@@ -61,59 +61,63 @@ test("parses elements at resize", function() {
 	}
 });
 
-test("getSrcsetHash correct behaviour, correct srcset format", function() {
-	var srcset;
-	// Single
-	srcset = "img/480x480.gif";
-	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
-		"1x": "img/480x480.gif"
+if (!!("".trim)) {
+	test("_getSrcsetHash correct behaviour, correct srcset format", function() {
+		var srcset;
+		// Single
+		srcset = "img/480x480.gif";
+		deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+			"1x": "img/480x480.gif"
+		});
+		// Single 2x
+		srcset = "img/480x480.gif 2x";
+		deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+			"2x": "img/480x480.gif"
+		});
+		// Double
+		srcset = "img/480x480.gif, img/480x480x2.gif 2x";
+		deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+			"1x": "img/480x480.gif",
+			"2x": "img/480x480x2.gif"
+		});
+		// Triple
+		srcset = "img/480x480.gif, img/480x480x2.gif 2x, img/480x480x3.gif 3x";
+		deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+			"1x": "img/480x480.gif",
+			"2x": "img/480x480x2.gif",
+			"3x": "img/480x480x3.gif"
+		});
+		// Double with 1x and 3x
+		srcset = "img/480x480.gif, img/480x480x3.gif 3x";
+		deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+			"1x": "img/480x480.gif",
+			"3x": "img/480x480x3.gif"
+		});
 	});
-	// Single 2x
-	srcset = "img/480x480.gif 2x";
-	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
-		"2x": "img/480x480.gif"
-	});
-	// Double
-	srcset = "img/480x480.gif, img/480x480x2.gif 2x";
-	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
-		"1x": "img/480x480.gif",
-		"2x": "img/480x480x2.gif"
-	});
-	// Triple
-	srcset = "img/480x480.gif, img/480x480x2.gif 2x, img/480x480x3.gif 3x";
-	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
-		"1x": "img/480x480.gif",
-		"2x": "img/480x480x2.gif",
-		"3x": "img/480x480x3.gif"
-	});
-	// Double with 1x and 3x
-	srcset = "img/480x480.gif, img/480x480x3.gif 3x";
-	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
-		"1x": "img/480x480.gif",
-		"3x": "img/480x480x3.gif"
-	});
-});
+}
 
-test("_getSrcsetHash correct behaviour, messy srcset format", function() {
-	var srcset;
-	// Double with 1x and 2x -- EXTRA SPACES IN MIDDLE
-	srcset = "img/480x480.gif,  img/480x480x2.gif 2x";
-	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
-		"1x": "img/480x480.gif",
-		"2x": "img/480x480x2.gif"
+if (!!("".trim)) {
+	test("_getSrcsetHash correct behaviour, messy srcset format", function () {
+		var srcset;
+		// Double with 1x and 2x -- EXTRA SPACES IN MIDDLE
+		srcset = "img/480x480.gif,  img/480x480x2.gif 2x";
+		deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+			"1x": "img/480x480.gif",
+			"2x": "img/480x480x2.gif"
+		});
+		// Triple with 1x and 3x -- EXTRA SPACES EVERYWHERE
+		srcset = "img/480x480.gif   ,   img/480x480x3.gif 3x";
+		deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+			"1x": "img/480x480.gif",
+			"3x": "img/480x480x3.gif"
+		});
+		// Single 2x with extra spaces
+		srcset = "img/480x480x2.gif   2x";
+		deepEqual(picturePolyfill._getSrcsetHash(srcset), {
+			"2x": "img/480x480x2.gif"
+		});
 	});
-	// Triple with 1x and 3x -- EXTRA SPACES EVERYWHERE
-	srcset = "img/480x480.gif   ,   img/480x480x3.gif 3x";
-	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
-		"1x": "img/480x480.gif",
-		"3x": "img/480x480x3.gif"
-	});
-	// Single 2x with extra spaces
-	srcset = "img/480x480x2.gif   2x";
-	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
-		"2x": "img/480x480x2.gif"
-	});
-});
+}
 
 test("_getSrcFromSrcsetHash correct behaviour, correct data", function() {
 	var srcsetHash;
