@@ -15,8 +15,11 @@ module.exports = function(config) {
 
 		// list of files / patterns to load in the browser
 		files: [
-			'*.js',
-			'test/*.js'
+			'test/jquery.min.js',
+			'test/sinon-1.9.0.js',
+			'test/sinon-qunit-1.0.0.js',
+			'test/picturePolyfill.qunit.js',
+			'picturePolyfill.js'
 		],
 
 
