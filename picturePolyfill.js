@@ -29,25 +29,23 @@ var picturePolyfill = (function(w) {
 	/**
 	 * Append an image element to a picture element
 	 * @param {Node} picture
-	 * @param {string} imgSrc
-	 * @param {string} imgAlt
+	 * @param attributes
 	 */
-	function appendImage(picture, imgSrc, imgAlt) {
+	function appendImage(picture, attributes) {
 		var imageElement = document.createElement('img');
-		imageElement.setAttribute('alt', imgAlt);
-		imageElement.setAttribute('src', imgSrc);
+		imageElement.setAttribute('alt', attributes.alt);
+		imageElement.setAttribute('src', attributes.src);
 		picture.appendChild(imageElement);
 	}
 
 	/**
 	 * Replaces the existing picture element with another picture element containing an image with the imgSrc source
 	 * @param {Node} picture
-	 * @param {string} imgSrc
-	 * @param {string} imgAlt
+	 * @param attributes
 	 */
-	function replacePictureAndAppendImage(picture, imgSrc, imgAlt) {
+	function replacePictureAndAppendImage(picture, attributes) {
 		var newPicture = document.createElement("picture");
-		appendImage(newPicture, imgSrc, imgAlt);
+		appendImage(newPicture, attributes.src, attributes.alt);
 		picture.parentNode.replaceChild(newPicture, picture);
 	}
 
@@ -159,28 +157,22 @@ var picturePolyfill = (function(w) {
 		 * Set the src attribute of the first image element inside passed pictureElement
 		 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
 		 * @param pictureElement {Node}
-		 * @param sourcesData {Array}
+		 * @param srcAttribute {Array}
 		 */
-		_createOrUpdateImage: function(pictureElement, sourcesData) {
-			var srcAttribute, altAttribute,
-				imageElements = pictureElement.getElementsByTagName('img');
-
-			srcAttribute = (!picturePolyfill._areMediaQueriesSupported || !sourcesData.length) ?
-				pictureElement.getAttribute("data-default-src") :
-				picturePolyfill._getSrcFromSourcesData(sourcesData);
+		_createOrUpdateImage: function(pictureElement, attributes) {
+			var imageElements = pictureElement.getElementsByTagName('img');
 
 			// If image already exists, use it
 			if (imageElements.length) {
-				imageElements[0].setAttribute('src', srcAttribute);
+				imageElements[0].setAttribute('src', attributes.src);
 			}
 			// Else create the image
 			else {
-				altAttribute = pictureElement.getAttribute('data-alt');
 				if (picturePolyfill._isAppendImageSupported) {
-					appendImage(pictureElement, srcAttribute, altAttribute);
+					appendImage(pictureElement, attributes);
 				}
 				else {
-					replacePictureAndAppendImage(pictureElement, srcAttribute, altAttribute);
+					replacePictureAndAppendImage(pictureElement, attributes);
 				}
 			}
 		},
@@ -216,7 +208,8 @@ var picturePolyfill = (function(w) {
 		parse: function(element) {
 			var sourcesData,
 				pictureElement,
-				pictureElements;
+				pictureElements,
+				srcAttribute;
 
 			if (!this.isNecessary) { return false; }
 
@@ -224,14 +217,22 @@ var picturePolyfill = (function(w) {
 
 			for (var i=0, len=pictureElements.length; i<len; i+=1) {
 				pictureElement = pictureElements[i];
-				sourcesData = cacheArray[pictureElement.getAttribute('data-cache-index')];
-				if (!sourcesData) {
-					sourcesData = picturePolyfill._getSources(pictureElement);
-					cacheArray[cacheIndex] = sourcesData;
-					pictureElement.setAttribute('data-cache-index', cacheIndex);
-					cacheIndex+=1;
+				if (!picturePolyfill._areMediaQueriesSupported) {
+					srcAttribute = pictureElement.getAttribute("data-default-src");
+				} else {
+					sourcesData = cacheArray[pictureElement.getAttribute('data-cache-index')];
+					if (!sourcesData) {
+						sourcesData = picturePolyfill._getSources(pictureElement);
+						cacheArray[cacheIndex] = sourcesData;
+						pictureElement.setAttribute('data-cache-index', cacheIndex);
+						cacheIndex+=1;
+					}
+					srcAttribute = picturePolyfill._getSrcFromSourcesData(sourcesData);
 				}
-				picturePolyfill._createOrUpdateImage(pictureElement, sourcesData);
+				picturePolyfill._createOrUpdateImage(pictureElement, {
+					src: srcAttribute,
+					alt: pictureElement.getAttribute('data-alt')
+				});
 			}
 
 			return i;

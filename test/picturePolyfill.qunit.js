@@ -205,49 +205,17 @@ test("_getSrcFromSourcesData behaves correctly", function() {
 
 test("_createOrUpdateImage actually creates an image, without MQs support", function() {
 	var pictureEl1 = document.getElementById('first');
-	var images;
-
-	picturePolyfill._areMediaQueriesSupported = false;
-
 	strictEqual(pictureEl1.getElementsByTagName('img').length, 0);
-	picturePolyfill._createOrUpdateImage(pictureEl1, []);
+	picturePolyfill._createOrUpdateImage(pictureEl1, {src: 'img.gif', alt: 'An image'});
 	strictEqual(pictureEl1.getElementsByTagName('img').length, 1);
-	picturePolyfill._createOrUpdateImage(pictureEl1, []);
-	images = pictureEl1.getElementsByTagName('img');
-	strictEqual(images.length, 1);
-	strictEqual(images[0].getAttribute('src'), 'default.gif');
-	strictEqual(images[0].getAttribute('alt'), 'A beautiful responsive image');
-});
-
-test("_createOrUpdateImage actually creates an image, with MQ support", function() {
-	var pictureEl2 = document.getElementById('second');
-	var sourcesData = [
-		{
-			srcset: {
-				"1x": "a.gif",
-				"2x": "b.gif"
-			}
-		}
-	];
-
-	picturePolyfill._areMediaQueriesSupported = true;
-
-	picturePolyfill._pixelRatio = 1;
-	strictEqual(pictureEl2.getElementsByTagName('img').length, 0);
-	picturePolyfill._createOrUpdateImage(pictureEl2, sourcesData);
-	strictEqual(pictureEl2.getElementsByTagName('img').length, 1);
-	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('src'), 'a.gif');
-	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('alt'), 'A beautiful responsive image');
-	picturePolyfill._createOrUpdateImage(pictureEl2, sourcesData); //Do it again for update
-	strictEqual(pictureEl2.getElementsByTagName('img').length, 1);
-	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('src'), 'a.gif');
-	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('alt'), 'A beautiful responsive image');
-
-	picturePolyfill._pixelRatio = 2;
-	picturePolyfill._createOrUpdateImage(pictureEl2, sourcesData);
-	strictEqual(pictureEl2.getElementsByTagName('img').length, 1);
-	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('src'), 'b.gif');
-	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('alt'), 'A beautiful responsive image');
+	var imgEl = pictureEl1.getElementsByTagName('img')[0];
+	strictEqual(imgEl.getAttribute('src'), 'img.gif');
+	strictEqual(imgEl.getAttribute('alt'), 'An image');
+	picturePolyfill._createOrUpdateImage(pictureEl1, {src: 'img2.gif', alt: 'An image'});
+	strictEqual(pictureEl1.getElementsByTagName('img').length, 1);
+	var imgEl = pictureEl1.getElementsByTagName('img')[0];
+	strictEqual(imgEl.getAttribute('src'), 'img2.gif');
+	strictEqual(imgEl.getAttribute('alt'), 'An image');
 });
 
 test("_getSources correctly parses sources", function() {
@@ -299,11 +267,18 @@ test("_getSources correctly parses sources", function() {
 			"src":"img/960x960.gif"
 		}
 	];
-	deepEqual(expected1, picturePolyfill._getSources(pictureEl1));
-	deepEqual(expected2, picturePolyfill._getSources(pictureEl2));
+	var returned1 = picturePolyfill._getSources(pictureEl1);
+	var returned2 = picturePolyfill._getSources(pictureEl2);
+
+	deepEqual(returned1, expected1);
+	deepEqual(returned2, expected2);
 });
 
 test("parse correct behaviour", function(){
+
+	//TODO: ADD TEST WITH AND WITHOUT MEDIA QUERIES SUPPORT
+	//TODO: TRY WITH BOTH DENSITIES
+
 	this.spy(picturePolyfill, "_createOrUpdateImage");
 
 	picturePolyfill.parse();
