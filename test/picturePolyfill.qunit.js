@@ -35,27 +35,24 @@ test("main object is declared and exposed", function() {
 });
 
 test("parses elements at DOMContentLoaded", function() {
-	picturePolyfill.initialize();
-	this.spy(picturePolyfill, "parsePictures");
+	this.spy(picturePolyfill, "parse");
 	var evt = document.createEvent("Event");
 	evt.initEvent("DOMContentLoaded", true, true);
 	document.dispatchEvent(evt);
-	ok(picturePolyfill.parsePictures.calledOnce);
+	ok(picturePolyfill.parse.calledOnce);
 });
 
 test("parses elements at resize", function() {
-	picturePolyfill.initialize();
-	this.spy(picturePolyfill, "parsePictures");
+	this.spy(picturePolyfill, "parse");
 	var evt = document.createEvent('UIEvents');
 	evt.initUIEvent('resize', true, false,window,0);
 	window.dispatchEvent(evt);
 	this.clock.tick(100);
-	ok(picturePolyfill.parsePictures.calledOnce);
+	ok(picturePolyfill.parse.calledOnce);
 });
 
 test("getSrcsetHash correct behaviour, correct srcset format", function() {
 	var srcset;
-	picturePolyfill.initialize();
 	// Single
 	srcset = "img/480x480.gif";
 	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
@@ -90,7 +87,6 @@ test("getSrcsetHash correct behaviour, correct srcset format", function() {
 
 test("_getSrcsetHash correct behaviour, messy srcset format", function() {
 	var srcset;
-	picturePolyfill.initialize();
 	// Double with 1x and 2x -- EXTRA SPACES IN MIDDLE
 	srcset = "img/480x480.gif,  img/480x480x2.gif 2x";
 	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
@@ -112,7 +108,6 @@ test("_getSrcsetHash correct behaviour, messy srcset format", function() {
 
 test("_getSrcFromSrcsetHash correct behaviour, correct data", function() {
 	var srcsetHash;
-	picturePolyfill.initialize();
 	// Get 1, 2 or 3 from 1x, 2x, 3x hash
 	srcsetHash = {
 		"1x": "img/480x480.gif",
@@ -132,7 +127,6 @@ test("_getSrcFromSrcsetHash correct behaviour, correct data", function() {
 
 test("_getSrcFromSrcsetHash correct behaviour, missing middle data", function() {
 	var srcsetHash;
-	picturePolyfill.initialize();
 	// Get 1, 2 or 3 from 1x, 3x hash
 	srcsetHash = {
 		"1x": "img/480x480.gif",
@@ -152,7 +146,6 @@ test("_getSrcFromSrcsetHash correct behaviour, missing middle data", function() 
 
 test("_getSrcFromSrcsetHash correct behaviour, missing first data", function() {
 	var srcsetHash;
-	picturePolyfill.initialize();
 	// Get 1, 2 or 3 from 1x, 3x hash
 	srcsetHash = {
 		"2x": "img/480x480x2.gif",
@@ -172,7 +165,6 @@ test("_getSrcFromSrcsetHash correct behaviour, missing first data", function() {
 
 test("_getSrcFromSrcsetHash correct behaviour, empty hash", function() {
 	var srcsetHash;
-	picturePolyfill.initialize();
 	// Get 1, 2 or 3 from 1x, 3x hash
 	srcsetHash = {};
 	// Correct calls
@@ -182,9 +174,8 @@ test("_getSrcFromSrcsetHash correct behaviour, empty hash", function() {
 	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash,  2), null);
 });
 
-test("_getSrcAttributeFromSourcesData behaves correctly", function() {
+test("_getSrcFromSourcesData behaves correctly", function() {
 	var sourcesData;
-	picturePolyfill.initialize();
 	// Normal case
 	sourcesData = [
 		{
@@ -195,9 +186,9 @@ test("_getSrcAttributeFromSourcesData behaves correctly", function() {
 		}
 	];
 	picturePolyfill._pixelRatio = 1;
-	strictEqual(picturePolyfill._getSrcAttributeFromSourcesData(sourcesData), "a.gif");
+	strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "a.gif");
 	picturePolyfill._pixelRatio = 2;
-	strictEqual(picturePolyfill._getSrcAttributeFromSourcesData(sourcesData), "b.gif");
+	strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "b.gif");
 	// With more MQs
 	sourcesData.push({
 		media: "(min-width: 1px)",
@@ -207,14 +198,28 @@ test("_getSrcAttributeFromSourcesData behaves correctly", function() {
 		}
 	});
 	picturePolyfill._pixelRatio = 1;
-	strictEqual(picturePolyfill._getSrcAttributeFromSourcesData(sourcesData), "c.gif");
+	strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "c.gif");
 	picturePolyfill._pixelRatio = 2;
-	strictEqual(picturePolyfill._getSrcAttributeFromSourcesData(sourcesData), "d.gif");
+	strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "d.gif");
 });
 
-test("_createOrUpdateImage actually creates an image", function() {
-
+test("_createOrUpdateImage actually creates an image, without MQs support", function() {
 	var pictureEl1 = document.getElementById('first');
+	var images;
+
+	picturePolyfill._areMediaQueriesSupported = false;
+
+	strictEqual(pictureEl1.getElementsByTagName('img').length, 0);
+	picturePolyfill._createOrUpdateImage(pictureEl1, []);
+	strictEqual(pictureEl1.getElementsByTagName('img').length, 1);
+	picturePolyfill._createOrUpdateImage(pictureEl1, []);
+	images = pictureEl1.getElementsByTagName('img');
+	strictEqual(images.length, 1);
+	strictEqual(images[0].getAttribute('src'), 'default.gif');
+	strictEqual(images[0].getAttribute('alt'), 'A beautiful responsive image');
+});
+
+test("_createOrUpdateImage actually creates an image, with MQ support", function() {
 	var pictureEl2 = document.getElementById('second');
 	var sourcesData = [
 		{
@@ -225,33 +230,27 @@ test("_createOrUpdateImage actually creates an image", function() {
 		}
 	];
 
-	picturePolyfill.initialize();
-	picturePolyfill._areMediaQueriesSupported = false;
-
-	strictEqual(pictureEl1.getElementsByTagName('img').length, 0);
-	picturePolyfill._createOrUpdateImage(pictureEl1, sourcesData);
-	strictEqual(pictureEl1.getElementsByTagName('img').length, 1);
-	picturePolyfill._createOrUpdateImage(pictureEl1, sourcesData);
-	strictEqual(pictureEl1.getElementsByTagName('img').length, 1);
-	strictEqual(pictureEl1.getElementsByTagName('img')[0].getAttribute('src'), 'default.gif');
-
 	picturePolyfill._areMediaQueriesSupported = true;
 
 	picturePolyfill._pixelRatio = 1;
 	strictEqual(pictureEl2.getElementsByTagName('img').length, 0);
 	picturePolyfill._createOrUpdateImage(pictureEl2, sourcesData);
 	strictEqual(pictureEl2.getElementsByTagName('img').length, 1);
-	picturePolyfill._createOrUpdateImage(pictureEl2, sourcesData);
+	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('src'), 'a.gif');
+	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('alt'), 'A beautiful responsive image');
+	picturePolyfill._createOrUpdateImage(pictureEl2, sourcesData); //Do it again for update
 	strictEqual(pictureEl2.getElementsByTagName('img').length, 1);
 	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('src'), 'a.gif');
+	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('alt'), 'A beautiful responsive image');
 
 	picturePolyfill._pixelRatio = 2;
 	picturePolyfill._createOrUpdateImage(pictureEl2, sourcesData);
 	strictEqual(pictureEl2.getElementsByTagName('img').length, 1);
 	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('src'), 'b.gif');
+	strictEqual(pictureEl2.getElementsByTagName('img')[0].getAttribute('alt'), 'A beautiful responsive image');
 });
 
-test("_parseSources correctly parses sources", function() {
+test("_getSources correctly parses sources", function() {
 	var pictureEl1 = document.getElementById('first');
 	var pictureEl2 = document.getElementById('second');
 	var expected1 = [
@@ -300,30 +299,25 @@ test("_parseSources correctly parses sources", function() {
 			"src":"img/960x960.gif"
 		}
 	];
-	picturePolyfill.initialize();
-	deepEqual(expected1, picturePolyfill._parseSources(pictureEl1));
-	deepEqual(expected2, picturePolyfill._parseSources(pictureEl2));
+	deepEqual(expected1, picturePolyfill._getSources(pictureEl1));
+	deepEqual(expected2, picturePolyfill._getSources(pictureEl2));
 });
 
-test("parsePictures correct behaviour", function(){
-	picturePolyfill.initialize();
+test("parse correct behaviour", function(){
 	this.spy(picturePolyfill, "_createOrUpdateImage");
 
-	picturePolyfill.parsePictures();
+	picturePolyfill.parse();
 	ok(picturePolyfill._createOrUpdateImage.calledTwice);
 
 	picturePolyfill._createOrUpdateImage.reset();
-	picturePolyfill.parsePictures(document.getElementById('innerA'));
+	picturePolyfill.parse(document.getElementById('innerA'));
 	ok(picturePolyfill._createOrUpdateImage.calledOnce);
-
 });
 
-test("call parsePictures won't give errors when polyfill isn't required", function() {
-	picturePolyfill.initialize();
+test("call parse won't give errors when polyfill isn't required", function() {
+	this.spy(picturePolyfill, "parse");
 	picturePolyfill.isNecessary = false;
-	picturePolyfill.initialize();
-	this.spy(picturePolyfill, "parsePictures");
-	picturePolyfill.parsePictures();
-	strictEqual(picturePolyfill.parsePictures.exceptions[0], undefined);
+	picturePolyfill.parse();
+	strictEqual(picturePolyfill.parse.exceptions[0], undefined);
 	picturePolyfill.isNecessary = true;
 });
