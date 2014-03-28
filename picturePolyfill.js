@@ -4,7 +4,14 @@ var picturePolyfill = (function(w) {
 
 	"use strict";
 
-	var timerId, cacheArray, cacheIndex;
+	var _cacheArray,
+		_cacheIndex,
+		_resizeTimer,
+		_timeAfterResize = 100;
+
+	if (!String.prototype.trim) {
+		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+	}
 
 	/**
 	 * Detects old browser checking if browser can append images to pictures
@@ -157,7 +164,7 @@ var picturePolyfill = (function(w) {
 		 * Set the src attribute of the first image element inside passed pictureElement
 		 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
 		 * @param pictureElement {Node}
-		 * @param srcAttribute {Array}
+		 * @param attributes
 		 */
 		_createOrUpdateImage: function(pictureElement, attributes) {
 			var imageElements = pictureElement.getElementsByTagName('img');
@@ -220,12 +227,12 @@ var picturePolyfill = (function(w) {
 				if (!picturePolyfill._areMediaQueriesSupported) {
 					srcAttribute = pictureElement.getAttribute("data-default-src");
 				} else {
-					sourcesData = cacheArray[pictureElement.getAttribute('data-cache-index')];
+					sourcesData = _cacheArray[pictureElement.getAttribute('data-cache-index')];
 					if (!sourcesData) {
 						sourcesData = picturePolyfill._getSources(pictureElement);
-						cacheArray[cacheIndex] = sourcesData;
-						pictureElement.setAttribute('data-cache-index', cacheIndex);
-						cacheIndex+=1;
+						_cacheArray[_cacheIndex] = sourcesData;
+						pictureElement.setAttribute('data-cache-index', _cacheIndex);
+						_cacheIndex+=1;
 					}
 					srcAttribute = picturePolyfill._getSrcFromSourcesData(sourcesData);
 				}
@@ -243,22 +250,29 @@ var picturePolyfill = (function(w) {
 		 * @private
 		 */
 		_addListeners: function() {
-			function parseWholeDocument() { picturePolyfill.parse(document); }
+
+			function parseDocument() {
+				picturePolyfill.parse(document);
+			}
+
+			// Manage resize event only if they've passed 100 milliseconds between a resize event and another
+			// to avoid the script to slow down browsers that animate resize or when browser edge is being manually dragged
+			function parseDocumentAfterTimeout() {
+				clearTimeout(_resizeTimer);
+				_resizeTimer = setTimeout(parseDocument, _timeAfterResize);
+			}
+
 			if (w.addEventListener) {
-				// Manage resize event only if they've passed 100 milliseconds between a resize event and another
-				// to avoid the script to slow down browsers that animate resize or when browser edge is being manually dragged
-				w.addEventListener('resize', function() {
-					clearTimeout(timerId);
-					timerId = setTimeout(parseWholeDocument, 100);
-				});
+				w.addEventListener('resize', parseDocumentAfterTimeout);
 				w.addEventListener('DOMContentLoaded', function(){
-					parseWholeDocument();
-					w.removeEventListener('load', parseWholeDocument);
+					parseDocument();
+					w.removeEventListener('load', parseDocument);
 				});
-				w.addEventListener('load', parseWholeDocument);
+				w.addEventListener('load', parseDocument);
 			}
 			else if (w.attachEvent) {
-				w.attachEvent('onload', parseWholeDocument);
+				w.attachEvent('onload', parseDocument);
+				w.attachEvent('onresize', parseDocumentAfterTimeout);
 			}
 			this.areListenersActive = true;
 		},
@@ -270,8 +284,8 @@ var picturePolyfill = (function(w) {
 
 			if (!this.isNecessary) { return false; }
 
-			cacheArray = [];
-			cacheIndex = 0;
+			_cacheArray = [];
+			_cacheIndex = 0;
 
 			// Add listeners only once
 			if (!this.areListenersActive) {	this._addListeners(); }

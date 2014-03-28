@@ -35,20 +35,30 @@ test("main object is declared and exposed", function() {
 });
 
 test("parses elements at DOMContentLoaded", function() {
-	this.spy(picturePolyfill, "parse");
-	var evt = document.createEvent("Event");
-	evt.initEvent("DOMContentLoaded", true, true);
-	document.dispatchEvent(evt);
-	ok(picturePolyfill.parse.calledOnce);
+	if (document.createEvent) {
+		this.spy(picturePolyfill, "parse");
+		var evt = document.createEvent("Event");
+		evt.initEvent("DOMContentLoaded", true, true);
+		document.dispatchEvent(evt);
+		ok(picturePolyfill.parse.calledOnce);
+	}
+	else {
+		ok(true);
+	}
 });
 
 test("parses elements at resize", function() {
-	this.spy(picturePolyfill, "parse");
-	var evt = document.createEvent('UIEvents');
-	evt.initUIEvent('resize', true, false,window,0);
-	window.dispatchEvent(evt);
-	this.clock.tick(100);
-	ok(picturePolyfill.parse.calledOnce);
+	if(document.createEvent) {
+		this.spy(picturePolyfill, "parse");
+		var evt = document.createEvent('UIEvents');
+		evt.initUIEvent('resize', true, false,window,0);
+		window.dispatchEvent(evt);
+		this.clock.tick(100);
+		ok(picturePolyfill.parse.calledOnce);
+	}
+	else {
+		ok(true);
+	}
 });
 
 test("getSrcsetHash correct behaviour, correct srcset format", function() {
@@ -84,7 +94,6 @@ test("getSrcsetHash correct behaviour, correct srcset format", function() {
 	});
 });
 
-
 test("_getSrcsetHash correct behaviour, messy srcset format", function() {
 	var srcset;
 	// Double with 1x and 2x -- EXTRA SPACES IN MIDDLE
@@ -94,13 +103,13 @@ test("_getSrcsetHash correct behaviour, messy srcset format", function() {
 		"2x": "img/480x480x2.gif"
 	});
 	// Triple with 1x and 3x -- EXTRA SPACES EVERYWHERE
-	srcset = "    img/480x480.gif   ,   img/480x480x3.gif 3x  ";
+	srcset = "img/480x480.gif   ,   img/480x480x3.gif 3x";
 	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
 		"1x": "img/480x480.gif",
 		"3x": "img/480x480x3.gif"
 	});
 	// Single 2x with extra spaces
-	srcset = "  img/480x480x2.gif   2x  ";
+	srcset = "img/480x480x2.gif   2x";
 	deepEqual(picturePolyfill._getSrcsetHash(srcset), {
 		"2x": "img/480x480x2.gif"
 	});
@@ -175,35 +184,40 @@ test("_getSrcFromSrcsetHash correct behaviour, empty hash", function() {
 });
 
 test("_getSrcFromSourcesData behaves correctly", function() {
-	var sourcesData;
-	// Normal case
-	sourcesData = [
-		{
-			srcset: {
-				"1x": "a.gif",
-				"2x": "b.gif"
+	if (picturePolyfill._areMediaQueriesSupported) {
+		// Normal case
+		var sourcesData = [
+			{
+				srcset: {
+					"1x": "a.gif",
+					"2x": "b.gif"
+				}
 			}
-		}
-	];
-	picturePolyfill._pixelRatio = 1;
-	strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "a.gif");
-	picturePolyfill._pixelRatio = 2;
-	strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "b.gif");
-	// With more MQs
-	sourcesData.push({
-		media: "(min-width: 1px)",
-		srcset: {
-			"1x": "c.gif",
-			"2x": "d.gif"
-		}
-	});
-	picturePolyfill._pixelRatio = 1;
-	strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "c.gif");
-	picturePolyfill._pixelRatio = 2;
-	strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "d.gif");
+		];
+		picturePolyfill._pixelRatio = 1;
+		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "a.gif");
+		picturePolyfill._pixelRatio = 2;
+		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "b.gif");
+		// With more MQs
+		sourcesData.push({
+			media: "(min-width: 1px)",
+			srcset: {
+				"1x": "c.gif",
+				"2x": "d.gif"
+			}
+		});
+		picturePolyfill._pixelRatio = 1;
+		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "c.gif");
+		picturePolyfill._pixelRatio = 2;
+		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "d.gif");
+	}
+	else {
+		ok(true);
+	}
+
 });
 
-test("_createOrUpdateImage actually creates an image, without MQs support", function() {
+test("_createOrUpdateImage actually creates an image", function() {
 	var pictureEl1 = document.getElementById('first');
 	strictEqual(pictureEl1.getElementsByTagName('img').length, 0);
 	picturePolyfill._createOrUpdateImage(pictureEl1, {src: 'img.gif', alt: 'An image'});
@@ -213,65 +227,70 @@ test("_createOrUpdateImage actually creates an image, without MQs support", func
 	strictEqual(imgEl.getAttribute('alt'), 'An image');
 	picturePolyfill._createOrUpdateImage(pictureEl1, {src: 'img2.gif', alt: 'An image'});
 	strictEqual(pictureEl1.getElementsByTagName('img').length, 1);
-	var imgEl = pictureEl1.getElementsByTagName('img')[0];
+	imgEl = pictureEl1.getElementsByTagName('img')[0];
 	strictEqual(imgEl.getAttribute('src'), 'img2.gif');
 	strictEqual(imgEl.getAttribute('alt'), 'An image');
 });
 
 test("_getSources correctly parses sources", function() {
-	var pictureEl1 = document.getElementById('first');
-	var pictureEl2 = document.getElementById('second');
-	var expected1 = [
-		{
-			"srcset":{
-				"1x":"img/480x480.gif",
-				"2x":"img/480x480x2.gif"
+	if (picturePolyfill._areMediaQueriesSupported) {
+		var pictureEl1 = document.getElementById('first');
+		var pictureEl2 = document.getElementById('second');
+		var expected1 = [
+			{
+				"srcset": {
+					"1x": "img/480x480.gif",
+					"2x": "img/480x480x2.gif"
+				}
+			},
+			{
+				"media": "(min-width: 481px)",
+				"srcset": {
+					"1x": "img/512x512.gif",
+					"2x": "img/512x512x2.gif"
+				}
+			},
+			{
+				"media": "(min-width: 1025px)",
+				"srcset": {
+					"1x": "img/720x720.gif",
+					"2x": "img/720x720x2.gif"
+				}
+			},
+			{
+				"media": "(min-width: 1441px)",
+				"srcset": {
+					"1x": "img/960x960.gif",
+					"2x": "img/960x960x2.gif"
+				}
 			}
-		},
-		{
-			"media":"(min-width: 481px)",
-			"srcset":{
-				"1x":"img/512x512.gif",
-				"2x":"img/512x512x2.gif"
+		];
+		var expected2 = [
+			{
+				"src": "img/480x480.gif"
+			},
+			{
+				"media": "(min-width: 481px)",
+				"src": "img/512x512.gif"
+			},
+			{
+				"media": "(min-width: 1025px)",
+				"src": "img/720x720.gif"
+			},
+			{
+				"media": "(min-width: 1441px)",
+				"src": "img/960x960.gif"
 			}
-		},
-		{
-			"media":"(min-width: 1025px)",
-			"srcset":{
-				"1x":"img/720x720.gif",
-				"2x":"img/720x720x2.gif"
-			}
-		},
-		{
-			"media":"(min-width: 1441px)",
-			"srcset":{
-				"1x":"img/960x960.gif",
-				"2x":"img/960x960x2.gif"
-			}
-		}
-	];
-	var expected2 = [
-		{
-			"src":"img/480x480.gif"
-		},
-		{
-			"media":"(min-width: 481px)",
-			"src":"img/512x512.gif"
-		},
-		{
-			"media":"(min-width: 1025px)",
-			"src":"img/720x720.gif"
-		},
-		{
-			"media":"(min-width: 1441px)",
-			"src":"img/960x960.gif"
-		}
-	];
-	var returned1 = picturePolyfill._getSources(pictureEl1);
-	var returned2 = picturePolyfill._getSources(pictureEl2);
+		];
+		var returned1 = picturePolyfill._getSources(pictureEl1);
+		var returned2 = picturePolyfill._getSources(pictureEl2);
 
-	deepEqual(returned1, expected1);
-	deepEqual(returned2, expected2);
+		deepEqual(returned1, expected1);
+		deepEqual(returned2, expected2);
+	}
+	else {
+		ok(true);
+	}
 });
 
 test("parse correct behaviour", function(){
@@ -280,10 +299,8 @@ test("parse correct behaviour", function(){
 	//TODO: TRY WITH BOTH DENSITIES
 
 	this.spy(picturePolyfill, "_createOrUpdateImage");
-
 	picturePolyfill.parse();
 	ok(picturePolyfill._createOrUpdateImage.calledTwice);
-
 	picturePolyfill._createOrUpdateImage.reset();
 	picturePolyfill.parse(document.getElementById('innerA'));
 	ok(picturePolyfill._createOrUpdateImage.calledOnce);
