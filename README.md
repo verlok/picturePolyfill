@@ -169,7 +169,7 @@ PicturePolyfill executes either automatically and manually.
 
 PicturePolyfill is intentionally exposed to the global namespace, so you can call it as you need it.
 
-**Example:** if some of your AJAX calls change a portion of your DOM injecting new `picture` nodes, after your new DOM has changed just call `picturePolyfill.parse()` (or `picturePolyfill.parse(element)`) to make `picturePolyfill` parse only the changed portion of the DOM.
+**Example:** if some of your AJAX calls change a portion of your DOM injecting new `picture` nodes, after your new DOM has changed just call `picturePolyfill.parse()` (or `picturePolyfill.parse(element)`) to make picturePolyfill parse only the changed portion of the DOM.
 
 Calling `picturePolyfill.parse(element)` (where `element` is a specific DOM node) is faster if you know the parent node where the DOM changed.
 
