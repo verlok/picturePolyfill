@@ -224,19 +224,20 @@ test("_getSrcFromSourcesData behaves correctly", function() {
 test("_createOrUpdateImage actually creates an image", function() {
 	var pictureEl1 = document.getElementById('first');
 	strictEqual(pictureEl1.getElementsByTagName('img').length, 0);
-	picturePolyfill._createOrUpdateImage(pictureEl1, {src: 'img.gif', alt: 'An image'});
+	picturePolyfill._createOrUpdateImage(pictureEl1, {src: 'http://placehold.it/1x1', alt: 'An image'});
+	pictureEl1 = document.getElementById('first'); //retrieve it again, it might have been replaced
 	strictEqual(pictureEl1.getElementsByTagName('img').length, 1);
 	var imgEl = pictureEl1.getElementsByTagName('img')[0];
-	strictEqual(imgEl.getAttribute('src'), 'img.gif');
+	strictEqual(imgEl.getAttribute('src'), 'http://placehold.it/1x1');
 	strictEqual(imgEl.getAttribute('alt'), 'An image');
-	picturePolyfill._createOrUpdateImage(pictureEl1, {src: 'img2.gif', alt: 'An image'});
+	picturePolyfill._createOrUpdateImage(pictureEl1, {src: 'http://placehold.it/2x2', alt: 'An image'});
 	strictEqual(pictureEl1.getElementsByTagName('img').length, 1);
 	imgEl = pictureEl1.getElementsByTagName('img')[0];
-	strictEqual(imgEl.getAttribute('src'), 'img2.gif');
+	strictEqual(imgEl.getAttribute('src'), 'http://placehold.it/2x2');
 	strictEqual(imgEl.getAttribute('alt'), 'An image');
 });
 
-test("_getSources correctly parses sources", function() {
+test("_getSourcesData correctly parses sources", function() {
 	if (picturePolyfill._areMediaQueriesSupported) {
 		var pictureEl1 = document.getElementById('first');
 		var pictureEl2 = document.getElementById('second');
@@ -286,8 +287,8 @@ test("_getSources correctly parses sources", function() {
 				"src": "img/960x960.gif"
 			}
 		];
-		var returned1 = picturePolyfill._getSources(pictureEl1);
-		var returned2 = picturePolyfill._getSources(pictureEl2);
+		var returned1 = picturePolyfill._getSourcesData(pictureEl1);
+		var returned2 = picturePolyfill._getSourcesData(pictureEl2);
 
 		deepEqual(returned1, expected1);
 		deepEqual(returned2, expected2);
@@ -301,6 +302,7 @@ test("parse correct behaviour", function(){
 
 	//TODO: ADD TEST WITH AND WITHOUT MEDIA QUERIES SUPPORT
 	//TODO: TRY WITH BOTH DENSITIES
+	//TODO: TEST THAT IMAGE SOURCES ARE NOT NULL OR UNDEFINED!!
 
 	this.spy(picturePolyfill, "_createOrUpdateImage");
 	picturePolyfill.parse();

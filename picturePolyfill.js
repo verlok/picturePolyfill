@@ -14,14 +14,19 @@ var picturePolyfill = (function(w) {
 	 * @returns {boolean}
 	 */
 	function detectAppendImageSupport() {
-		var newImgElement = document.createElement('img'),
-			theFirstPictureElement = document.getElementsByTagName("picture")[0];
+		var newImg = document.createElement('img'),
+			pictures, firstPicture;
+
+		pictures = document.getElementsByTagName('picture');
+		firstPicture = pictures[0];
+
+		if (!pictures.length) {
+			return false;
+		}
 
 		try {
-			if (theFirstPictureElement) {
-				theFirstPictureElement.appendChild(newImgElement);
-				theFirstPictureElement.removeChild(newImgElement);
-			}
+			firstPicture.appendChild(newImg);
+			firstPicture.removeChild(newImg);
 			return true;
 		}
 		catch(e) {
@@ -36,9 +41,50 @@ var picturePolyfill = (function(w) {
 	 */
 	function appendImage(picture, attributes) {
 		var imageElement = document.createElement('img');
-		imageElement.setAttribute('alt', attributes.alt);
-		imageElement.setAttribute('src', attributes.src);
+		setAttributes(imageElement, attributes);
 		picture.appendChild(imageElement);
+	}
+
+	/**
+	 * Set all the "attributes" to an "element"
+	 * @param element
+	 * @param attributes
+	 */
+	function setAttributes(element, attributes) {
+		for (var attributeName in attributes) {
+			element.setAttribute(attributeName, attributes[attributeName]);
+		}
+	}
+
+	/**
+	 * Get all the "attributes" from an "element" and returns them as a hash
+	 * @param element
+	 * @param attributes
+	 * @returns {{}}
+	 */
+	function getAttributes(element, attributes) {
+		var ret = {}, attributeName, attributeValue;
+		for (var i=0, len=attributes.length; i<len; i+=1) {
+			attributeName = attributes[i];
+			attributeValue = element.getAttribute(attributeName);
+			if (attributeValue) {
+				ret[attributeName] = attributeValue;
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 *
+	 * @param element
+	 * @returns {Array}
+	 */
+	function getAttributesList(element) {
+		var arr = [];
+		for (var i=0, attributes=element.attributes, l=attributes.length; i<l; i++){
+			arr.push(attributes.item(i).nodeName);
+		}
+		return arr;
 	}
 
 	/**
@@ -47,11 +93,12 @@ var picturePolyfill = (function(w) {
 	 * @param attributes
 	 */
 	function replacePictureAndAppendImage(picture, attributes) {
-		var newPicture = document.createElement("picture");
-		appendImage(newPicture, attributes.src, attributes.alt);
+		var newPicture = document.createElement("picture"),
+			pictureAttributes = getAttributes(picture, getAttributesList(picture));
+		appendImage(newPicture, attributes);
+		setAttributes(newPicture, pictureAttributes);
 		picture.parentNode.replaceChild(newPicture, picture);
 	}
-
 
 	return {
 
@@ -113,7 +160,7 @@ var picturePolyfill = (function(w) {
 		 * @returns {string}
 		 */
 		_getSrcFromSrcsetHash: function(srcsetHash, position) {
-			var ret;
+			var ret, key;
 
 			// Try direct access to position - best case
 			ret = srcsetHash[position+'x'];
@@ -128,7 +175,7 @@ var picturePolyfill = (function(w) {
 			if (ret) { return ret; }
 
 			// Still nothing? Get the first result in the hash and return it
-			for (var key in srcsetHash) {
+			for (key in srcsetHash) {
 				return srcsetHash[key];
 			}
 
@@ -143,14 +190,17 @@ var picturePolyfill = (function(w) {
 		 * @returns {string}
 		 */
 		_getSrcFromSourcesData: function(sourcesData) {
-			var matchedSrc;
+			var matchedSrc,
+				sourceData,
+				media,
+				srcset;
 
 			for (var i=0, len=sourcesData.length; i<len; i+=1) {
-				var source = sourcesData[i],
-					media = source.media,
-					srcset = source.srcset;
+				sourceData = sourcesData[i];
+				media = sourceData.media;
+				srcset = sourceData.srcset;
 				if (!media || w.matchMedia(media).matches) {
-					matchedSrc = srcset ? this._getSrcFromSrcsetHash(srcset, picturePolyfill._pixelRatio) : source.src;
+					matchedSrc = srcset ? this._getSrcFromSrcsetHash(srcset, picturePolyfill._pixelRatio) : sourceData.src;
 				}
 			}
 			return matchedSrc;
@@ -185,20 +235,19 @@ var picturePolyfill = (function(w) {
 		 * generate the array or string for the SrcSetArray
 		 * @param {Array} pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
 		 */
-		_getSources: function(pictureElement) {
+		_getSourcesData: function(pictureElement) {
 			var sourcesData = [],
+				sourceElement,
+				sourceData,
 				foundSources = pictureElement.getElementsByTagName('source');
 
 			for (var i=0, len = foundSources.length; i<len; i+=1) {
-				var sourceElement = foundSources[i],
-					srcset = sourceElement.getAttribute('srcset'),
-					media = sourceElement.getAttribute('media'),
-					src = sourceElement.getAttribute('src'),
-					hash = {};
-				if (media) { hash["media"] = media; }
-				if (src) { hash["src"] = src; }
-				if (srcset) { hash["srcset"] = picturePolyfill._getSrcsetHash(srcset); }
-				sourcesData.push(hash);
+				sourceElement = foundSources[i];
+				sourceData = getAttributes(sourceElement, getAttributesList(sourceElement));
+				if (sourceData.srcset) {
+					sourceData.srcset = picturePolyfill._getSrcsetHash(sourceData.srcset);
+				}
+				sourcesData.push(sourceData);
 			}
 			return sourcesData;
 		},
@@ -225,7 +274,7 @@ var picturePolyfill = (function(w) {
 				} else {
 					sourcesData = _cacheArray[pictureElement.getAttribute('data-cache-index')];
 					if (!sourcesData) {
-						sourcesData = picturePolyfill._getSources(pictureElement);
+						sourcesData = picturePolyfill._getSourcesData(pictureElement);
 						_cacheArray[_cacheIndex] = sourcesData;
 						pictureElement.setAttribute('data-cache-index', _cacheIndex);
 						_cacheIndex+=1;
