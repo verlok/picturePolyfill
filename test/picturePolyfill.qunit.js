@@ -184,11 +184,11 @@ test("_getSrcFromData behaves correctly", function() {
 				}
 			}
 		];
-		picturePolyfill._pr = 1;
+		picturePolyfill._pxRatio = 1;
 		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "a.gif");
-		picturePolyfill._pr = 2;
+		picturePolyfill._pxRatio = 2;
 		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "b.gif");
-		picturePolyfill._pr = 3;
+		picturePolyfill._pxRatio = 3;
 		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "b.gif");
 		// With more MQs
 		sourcesData.push({
@@ -198,11 +198,11 @@ test("_getSrcFromData behaves correctly", function() {
 				"2x": "d.gif"
 			}
 		});
-		picturePolyfill._pr = 1;
+		picturePolyfill._pxRatio = 1;
 		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "c.gif");
-		picturePolyfill._pr = 2;
+		picturePolyfill._pxRatio = 2;
 		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "d.gif");
-		picturePolyfill._pr = 3;
+		picturePolyfill._pxRatio = 3;
 		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "d.gif");
 	}
 });
@@ -337,7 +337,7 @@ test("parse() resulting image sources - with MQ support", function(){
 
 		// Media query support: yes, pixel density: 1
 
-		picturePolyfill._pr = 1;
+		picturePolyfill._pxRatio = 1;
 		picturePolyfill.parse();
 
 		images = document.getElementsByTagName('img');
@@ -349,7 +349,7 @@ test("parse() resulting image sources - with MQ support", function(){
 
 		// Media query support: yes, pixel density: 2
 
-		picturePolyfill._pr = 2;
+		picturePolyfill._pxRatio = 2;
 		picturePolyfill.parse();
 
 		images = document.getElementsByTagName('img');
@@ -385,9 +385,9 @@ test("parse() resulting image sources - without MQ support", function(){
 	// Media query support: no, pixel density: indifferent
 
 	var initial_areMediaQueriesSupported = picturePolyfill._mqSupport,
-		initial_pixelRatio = picturePolyfill._pr;
+		initial_pixelRatio = picturePolyfill._pxRatio;
 
-	picturePolyfill._pr = null;
+	picturePolyfill._pxRatio = null;
 	picturePolyfill._mqSupport = false;
 	picturePolyfill.parse();
 
@@ -401,7 +401,7 @@ test("parse() resulting image sources - without MQ support", function(){
 	// Restoring initial values
 
 	picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
-	picturePolyfill._pr = initial_pixelRatio;
+	picturePolyfill._pxRatio = initial_pixelRatio;
 
 });
 

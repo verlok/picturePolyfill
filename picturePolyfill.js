@@ -190,7 +190,7 @@ var picturePolyfill = (function(w) {
 				media = sourceData.media;
 				srcset = sourceData.srcset;
 				if (!media || w.matchMedia(media).matches) {
-					matchedSrc = srcset ? this._getSrcFromHash(srcset, this._pr) : sourceData.src;
+					matchedSrc = srcset ? this._getSrcFromHash(srcset, this._pxRatio) : sourceData.src;
 				}
 			}
 			return matchedSrc;
@@ -287,7 +287,7 @@ var picturePolyfill = (function(w) {
 			 * @type {number}
 			 * @private
 			 */
-			this._pr = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
+			this._pxRatio = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
 
 			/**
 			 * Detect if browser has media queries support
