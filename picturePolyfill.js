@@ -40,14 +40,14 @@ var picturePolyfill = (function(w) {
 
 		/**
 		 * Appends an image element to a picture element
-		 * @param picture
+		 * @param element
 		 * @param attributes
 		 * @private
 		 */
-		_appendImg: function(picture, attributes) {
-			var imageElement = document.createElement('img');
-			this._setAttrs(imageElement, attributes);
-			picture.appendChild(imageElement);
+		_appendImg: function(element, attributes) {
+			var newImg = document.createElement('img');
+			this._setAttrs(newImg, attributes);
+			element.appendChild(newImg);
 		},
 
 		/**

@@ -3,39 +3,21 @@ module("picturePolyfill", {
 		// Nothing here!
 	},
 	teardown: function() {
-		$('#container').remove();
+		$('#testContainer').remove();
 	}
 });
+
+if(!Array.prototype.indexOf) {
+	Array.prototype.indexOf = function(obj, start) {
+		for (var i = (start || 0), j = this.length; i < j; i++) {
+			if (this[i] === obj) { return i; }
+		}
+		return -1;
+	}
+}
 
 test("main object is declared and exposed", function() {
 	strictEqual(typeof window.picturePolyfill, 'object');
-});
-
-test("parses elements at DOMContentLoaded", function() {
-	if (!document.createEvent) {
-		ok(true);
-	}
-	else {
-		this.spy(picturePolyfill, "parse");
-		var evt = document.createEvent("Event");
-		evt.initEvent("DOMContentLoaded", true, true);
-		document.dispatchEvent(evt);
-		ok(picturePolyfill.parse.calledOnce);
-	}
-});
-
-test("parses elements at resize", function() {
-	if (!document.createEvent) {
-		ok(true);
-	}
-	else {
-		this.spy(picturePolyfill, "parse");
-		var evt = document.createEvent('UIEvents');
-		evt.initUIEvent('resize', true, false,window,0);
-		window.dispatchEvent(evt);
-		this.clock.tick(100);
-		ok(picturePolyfill.parse.calledOnce);
-	}
 });
 
 test("_getSrcFromHash correct behaviour, correct data", function() {
@@ -214,7 +196,7 @@ test("_getSourcesData correctly parses sources", function() {
 	else {
 		var pictureEl1, pictureEl2, returned1, returned2, expected1, expected2;
 		// PREPARE THE DOM
-		$('body').append('<div id="container">\
+		$('body').append('<div id="testContainer">\
 			<div id="innerA">\
 				<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 					<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
@@ -255,32 +237,129 @@ test("_getSourcesData correctly parses sources", function() {
 	}
 });
 
-test("_setImg actually creates an image", function() {
-	$('body').append('<div id="container"></div>');
 
-	var container = document.getElementById('container'), imgs;
+test("_appendImg() actually appends an image", function() {
+	var target, newImg;
+	$('body').append('<div id="testContainer"></div>');
+	target = document.getElementById('testContainer');
+	picturePolyfill._appendImg(target, {
+		src: 'http://placehold.it/1x1',
+		alt: 'A brand new image'
+	});
+	newImg = target.getElementsByTagName('img')[0];
+	strictEqual(newImg.getAttribute('src'), 'http://placehold.it/1x1');
+	strictEqual(newImg.getAttribute('alt'), 'A brand new image');
+});
+
+test("_setAttrs adds all the attributes to an element", function() {
+	var target, attributes;
+	$('body').append('<div id="testContainer"></div>');
+	target = document.getElementById('testContainer');
+	attributes = {
+		"title": "Hey!",
+		"data-foo": "Bar"
+	};
+	picturePolyfill._setAttrs(target, attributes);
+	strictEqual(target.getAttribute('title'), "Hey!");
+	strictEqual(target.getAttribute('data-foo'), "Bar");
+});
+
+test("_getAttrsList and _getAttrs do their thing", function() {
+	var source, attributesList, attributes;
+	$('body').append('<div id="testContainer" title="Hey!" data-foo="Bar"></div>');
+	source = document.getElementById('testContainer');
+	// Check attrs list
+	attributesList = picturePolyfill._getAttrsList(source);
+	ok(attributesList.indexOf('id') > -1);
+	ok(attributesList.indexOf('title') > -1);
+	ok(attributesList.indexOf('data-foo') > -1);
+	// Check attrs values
+	attributes = picturePolyfill._getAttrs(source, attributesList);
+	strictEqual(attributes['id'], "testContainer");
+	strictEqual(attributes['title'], "Hey!");
+	strictEqual(attributes['data-foo'], "Bar");
+});
+
+test("_replacePicture creates a picture and the right image", function() {
+	var original, pictures, images;
+	$('body').append('<div id="testContainer">\
+		<picture id="myPic" title="A title" data-foo="Bar">\
+		<source src="http://placehold.it/2x2" />\
+		</picture>\
+	</div>');
+	original = document.getElementById('myPic');
+	picturePolyfill._replacePicture(original, {
+		src: 'http://placehold.it/1x1',
+		alt: 'Hey!'
+	});
+	pictures = document.getElementsByTagName('picture');
+	strictEqual(pictures.length, 1);
+	strictEqual(pictures[0].getAttribute('title'), "A title");
+	strictEqual(pictures[0].getAttribute('data-foo'), "Bar");
+	images = pictures[0].getElementsByTagName('img');
+	strictEqual(images.length, 1);
+	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/1x1');
+	strictEqual(images[0].getAttribute('alt'), 'Hey!');
+});
+
+
+test("_setImg should first create then update an image", function() {
+	var testContainer, images;
+	$('body').append('<div id="testContainer"></div>');
+
+	testContainer = document.getElementById('testContainer');
 
 	// No images at start
-	strictEqual(container.getElementsByTagName('img').length, 0);
+	strictEqual(testContainer.getElementsByTagName('img').length, 0);
 
 	// First creation check
-	picturePolyfill._setImg(container, {src: 'http://placehold.it/1x1', alt: 'An image'});
-	imgs = container.getElementsByTagName('img');
-	strictEqual(imgs.length, 1);
-	strictEqual(imgs[0].getAttribute('src'), 'http://placehold.it/1x1');
-	strictEqual(imgs[0].getAttribute('alt'), 'An image');
+	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
+	testContainer = document.getElementById('testContainer'); // retrieve again, might have been replaced
+	images = testContainer.getElementsByTagName('img');
+	strictEqual(images.length, 1);
+	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/1x1');
+	strictEqual(images[0].getAttribute('alt'), 'An image');
 
 	// Update check
-	picturePolyfill._setImg(container, {src: 'http://placehold.it/2x2', alt: 'Another image'});
-	imgs = container.getElementsByTagName('img');
-	strictEqual(imgs.length, 1); // length is always 1
-	strictEqual(imgs[0].getAttribute('src'), 'http://placehold.it/2x2'); //src is changes
-	strictEqual(imgs[0].getAttribute('alt'), 'An image'); //alt didn't change
+	testContainer = document.getElementById('testContainer');
+	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/2x2', alt: 'Another image'});
+	testContainer = document.getElementById('testContainer'); // retrieve again, might have been replaced
+	images = testContainer.getElementsByTagName('img');
+	strictEqual(images.length, 1); // length is always 1
+	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/2x2'); //src is changes
+	strictEqual(images[0].getAttribute('alt'), 'An image'); //alt didn't change
 
 });
 
+test("parse() is called at DOM ready", function() {
+	if (!document.createEvent) {
+		ok(true);
+	}
+	else {
+		this.spy(picturePolyfill, "parse");
+		var evt = document.createEvent("Event");
+		evt.initEvent("DOMContentLoaded", true, true);
+		document.dispatchEvent(evt);
+		ok(picturePolyfill.parse.calledOnce);
+	}
+});
+
+test("parse() is called at resize", function() {
+	if (!document.createEvent) {
+		ok(true);
+	}
+	else {
+		this.spy(picturePolyfill, "parse");
+		var evt = document.createEvent('UIEvents');
+		evt.initUIEvent('resize', true, false,window,0);
+		window.dispatchEvent(evt);
+		this.clock.tick(100);
+		ok(picturePolyfill.parse.calledOnce);
+	}
+});
+
 test("parse() only parses passed element", function() {
-	$('body').append('<div id="container">\
+	$('body').append('<div id="testContainer">\
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
@@ -316,7 +395,7 @@ test("parse() resulting image sources - with MQ support", function(){
 
 	var images, img1src, img2src;
 
-	$('body').append('<div id="container">\
+	$('body').append('<div id="testContainer">\
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
@@ -331,8 +410,10 @@ test("parse() resulting image sources - with MQ support", function(){
 		</div>\
 	</div>');
 
-	if (picturePolyfill._mqSupport) { // EXCLUDING OLD IE FROM THIS TESTS
-
+	if (!picturePolyfill._mqSupport) { // EXCLUDING OLD IE FROM THIS TESTS
+		ok(true);
+	}
+	else {
 		picturePolyfill.initialize();
 
 		// Media query support: yes, pixel density: 1
@@ -365,7 +446,7 @@ test("parse() resulting image sources - without MQ support", function(){
 
 	var images, img1src, img2src;
 
-	$('body').append('<div id="container">\
+	$('body').append('<div id="testContainer">\
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
@@ -407,7 +488,7 @@ test("parse() resulting image sources - without MQ support", function(){
 
 test("_getSourcesData, _getSrcFromData, _getSrcFromHash mustn't be called from non MQ browsers", function() {
 
-	$('body').append('<div id="container">\
+	$('body').append('<div id="testContainer">\
 		<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 			<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
 			<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
@@ -420,7 +501,7 @@ test("_getSourcesData, _getSrcFromData, _getSrcFromHash mustn't be called from n
 
 	picturePolyfill.initialize();
 
-	var initial_areMediaQueriesSupported = picturePolyfill._mqSupport;
+	var initial_mqSupport = picturePolyfill._mqSupport;
 
 	picturePolyfill._mqSupport = false;
 	picturePolyfill.parse();
@@ -429,14 +510,15 @@ test("_getSourcesData, _getSrcFromData, _getSrcFromHash mustn't be called from n
 	ok(picturePolyfill._getSrcFromData.notCalled);
 	ok(picturePolyfill._getSrcFromHash.notCalled);
 
-	picturePolyfill._mqSupport = true;
-	picturePolyfill.parse();
+	if (initial_mqSupport) {
+		picturePolyfill._mqSupport = true;
+		picturePolyfill.parse();
+		ok(picturePolyfill._getSourcesData.called);
+		ok(picturePolyfill._getSrcFromData.called);
+		ok(picturePolyfill._getSrcFromHash.called);
+	}
 
-	ok(picturePolyfill._getSourcesData.called);
-	ok(picturePolyfill._getSrcFromData.called);
-	ok(picturePolyfill._getSrcFromHash.called);
-
-	picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
+	picturePolyfill._mqSupport = initial_mqSupport;
 
 });
 
