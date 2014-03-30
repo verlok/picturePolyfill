@@ -1,4 +1,5 @@
 # picturePolyfill
+
 A Responsive Images approach that you can use today that uses the **[real `picture` element](http://www.w3.org/TR/2013/WD-html-picture-element-20130226/)** along with children `source` elements with `media`, `src` and `srcset` attributes.
 
 * Author: Andrea Verlicchi (c) 2014
@@ -24,6 +25,7 @@ picturePolyfill is better than picturefill because:
 * it's **15x faster** on IE 10, **8x faster** on mobile Safari, **6x faster** on Firefox and Safari, **4x faster** on Chrome and Opera [see performance test](http://jsperf.com/picturepolyfill-204-vs-picturefill-121-performance-test)
 * it uses the **real `picture` markup**
 * it gives you the ability to **choose a default image** that you want to show on Internet Explorer desktop, without the need to add any comment
+* it's **solid**, since `picturePolyfill` code is test driven with full code coverage
 
 ## Markup pattern and explanation
 
@@ -120,33 +122,34 @@ bower install picturePolyfill
 
 ## Inclusion
 
-To use picturePolyfill, just include the script tag at the end of your html file, in the `head` section of your `HTML` pages, OR just before the closure of the `body` tag.
+You can either include the `script in the `head` section of your `HTML` pages, OR just before the closure of the `body` tag.`
 
-Including the `defer` attribute in the `script` tag will prevent the script download to block page rendering while in progress.
 
 ### In the `head` section
 
 ```html
 <html>
 	<head>
-		Your HEAD content
+		...
 		<script src="picturePolyfill.min.js" defer></script>
 	</head>
 	<body>
-		Your BODY content
+		...
 	</body>
 </html>
 ```
+
+**Note:** Including the `defer` attribute in the `script` tag will prevent the script download to block page rendering while in progress.
 
 ### At the end of the `body` section
 
 ```html
 <html>
 	<head>
-		Your HEAD content
+		...
 	</head>
 	<body>
-		Your BODY content
+		...
 		<script src="picturePolyfill.min.js"></script>
 	</body>
 </html>
@@ -154,21 +157,21 @@ Including the `defer` attribute in the `script` tag will prevent the script down
 
 ## Execution
 
-PicturePolyfill executes either automatically and programmatically.
+PicturePolyfill executes either automatically and by code, calling the parse() function.
 
 * it executes automatically **at page load**, on the whole `document`
 * it executes automatically **at browser resize**, on the whole `document`
-* it can be **programmatically executed**, if you:
-    * call `window.picturePolyfill()` to execute it on the whole `document`
-    * call `window.picturePolyfill(element)` to execute from the `element` DOM node below
-
-Calling `picturePolyfill()` and passing in a specific node is particularly useful **if your DOM has changed** and you know the parent node where the change occured.
+* it can be **manually executed**, if you:
+    * call `picturePolyfill.parse()` to execute it on the whole `document`
+    * call `picturePolyfill.parse(element)` to execute from the `element` DOM node below
 
 ### After DOM has changed (AJAX calls, etc.)
 
-PicturePolyfill is intentionally exposed to the global namespace, so you can call it as you need it.    
+PicturePolyfill is intentionally exposed to the global namespace, so you can call it as you need it.
 
-**Example:** if some of your AJAX calls change a portion of your DOM injecting new `picture` nodes, after your new DOM has changed just call `window.picturePolyfill()` or `window.picturePolyfill(element)` to make `picturePolyfill` to parse only the changed portion of the DOM.
+**Example:** if some of your AJAX calls change a portion of your DOM injecting new `picture` nodes, after your new DOM has changed just call `picturePolyfill.parse()` (or `picturePolyfill.parse(element)`) to make picturePolyfill parse only the changed portion of the DOM.
+
+Calling `picturePolyfill.parse(element)` (where `element` is a specific DOM node) is faster if you know the parent node where the DOM changed.
 
 ## Browser support
 
@@ -177,7 +180,6 @@ PicturePolyfill supports all modern browsers and **down to Internet Explorer 7**
 * On **Modern Browsers, Internet Explorer 10 and above**: the images will be loaded depending on the matched media query
 * On **Internet Explorer 7 to 9**: the content of the `data-default-src` attribute will be used to reference the image source.
 
-
 ## Size and delivery
 
-Currently, `picturePolyfill.js` compresses to around 910bytes (~0.88kb) after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
+Currently, `picturePolyfill.js` compresses to around 1300bytes (~1.2kb) after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.

@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		// Metadata.
 		meta: {
-			version: '2.0.6'
+			version: '3.0.0'
 		},
 		banner: '/*! picturePolyfill - v<%= meta.version %> - ' +
 			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -65,6 +65,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	// Default task.
-	grunt.registerTask('default', ['jshint', 'uglify']);
+	grunt.registerTask('default', ['jshint', 'uglify', 'watch']);
 
 };
