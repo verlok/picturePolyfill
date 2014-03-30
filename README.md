@@ -182,4 +182,4 @@ PicturePolyfill supports all modern browsers and **down to Internet Explorer 7**
 
 ## Size and delivery
 
-Currently, `picturePolyfill.js` compresses to around 1200bytes (~1.0kb) after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
+Currently, `picturePolyfill.js` compresses to around 1300bytes (~1.2kb) after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
