@@ -7,7 +7,8 @@ var picturePolyfill = (function(w) {
 	var _cacheArray,
 		_cacheIndex,
 		_resizeTimer,
-		_timeAfterResize = 100;
+		_timeAfterResize = 100,
+		_areListenersActive = false;
 
 	/**
 	 * Detects old browser checking if browser can append images to pictures
@@ -43,9 +44,9 @@ var picturePolyfill = (function(w) {
 		 * @param attributes
 		 * @private
 		 */
-		_appendImage: function(picture, attributes) {
+		_appendImg: function(picture, attributes) {
 			var imageElement = document.createElement('img');
-			this._setAttributes(imageElement, attributes);
+			this._setAttrs(imageElement, attributes);
 			picture.appendChild(imageElement);
 		},
 
@@ -55,7 +56,7 @@ var picturePolyfill = (function(w) {
 		 * @param attributes
 		 * @private
 		 */
-		_setAttributes: function(element, attributes) {
+		_setAttrs: function(element, attributes) {
 			for (var attributeName in attributes) {
 				element.setAttribute(attributeName, attributes[attributeName]);
 			}
@@ -68,7 +69,7 @@ var picturePolyfill = (function(w) {
 		 * @returns {{}}
 		 * @private
 		 */
-		_getAttributes: function(element, attributes) {
+		_getAttrs: function(element, attributes) {
 			var ret = {}, attributeName, attributeValue;
 			for (var i=0, len=attributes.length; i<len; i+=1) {
 				attributeName = attributes[i];
@@ -86,7 +87,7 @@ var picturePolyfill = (function(w) {
 		 * @returns {Array}
 		 * @private
 		 */
-		_getAttributesList: function(element) {
+		_getAttrsList: function(element) {
 			var arr = [];
 			for (var i=0, attributes=element.attributes, l=attributes.length; i<l; i++){
 				arr.push(attributes.item(i).nodeName);
@@ -100,11 +101,11 @@ var picturePolyfill = (function(w) {
 		 * @param attributes
 		 * @private
 		 */
-		_replacePictureAndAppendImage: function(picture, attributes) {
+		_replacePicture: function(picture, attributes) {
 			var newPicture = document.createElement("picture"),
-				pictureAttributes = this._getAttributes(picture, this._getAttributesList(picture));
-			this._appendImage(newPicture, attributes);
-			this._setAttributes(newPicture, pictureAttributes);
+				pictureAttributes = this._getAttrs(picture, this._getAttrsList(picture));
+			this._appendImg(newPicture, attributes);
+			this._setAttrs(newPicture, pictureAttributes);
 			picture.parentNode.replaceChild(newPicture, picture);
 		},
 
@@ -147,7 +148,7 @@ var picturePolyfill = (function(w) {
 		 * @returns {*}
 		 * @private
 		 */
-		_getSrcFromSrcsetHash: function(srcsetHash, position) {
+		_getSrcFromHash: function(srcsetHash, position) {
 			var ret, key;
 
 			// Try direct access to position - best case
@@ -178,7 +179,7 @@ var picturePolyfill = (function(w) {
 		 * @returns {string||undefined}
 		 * @private
 		 */
-		_getSrcFromSourcesData: function(sourcesData) {
+		_getSrcFromData: function(sourcesData) {
 			var matchedSrc,
 				sourceData,
 				media,
@@ -189,7 +190,7 @@ var picturePolyfill = (function(w) {
 				media = sourceData.media;
 				srcset = sourceData.srcset;
 				if (!media || w.matchMedia(media).matches) {
-					matchedSrc = srcset ? this._getSrcFromSrcsetHash(srcset, this._pixelRatio) : sourceData.src;
+					matchedSrc = srcset ? this._getSrcFromHash(srcset, this._pr) : sourceData.src;
 				}
 			}
 			return matchedSrc;
@@ -201,7 +202,7 @@ var picturePolyfill = (function(w) {
 		 * @param pictureElement {Node}
 		 * @param attributes
 		 */
-		_createOrUpdateImage: function(pictureElement, attributes) {
+		_setImg: function(pictureElement, attributes) {
 			var imageElements = pictureElement.getElementsByTagName('img');
 
 			// If image already exists, use it
@@ -210,11 +211,11 @@ var picturePolyfill = (function(w) {
 			}
 			// Else create the image
 			else {
-				if (this._isAppendImageSupported) {
-					this._appendImage(pictureElement, attributes);
+				if (this._appendSupport) {
+					this._appendImg(pictureElement, attributes);
 				}
 				else {
-					this._replacePictureAndAppendImage(pictureElement, attributes);
+					this._replacePicture(pictureElement, attributes);
 				}
 			}
 		},
@@ -232,7 +233,7 @@ var picturePolyfill = (function(w) {
 
 			for (var i=0, len = foundSources.length; i<len; i+=1) {
 				sourceElement = foundSources[i];
-				sourceData = this._getAttributes(sourceElement, this._getAttributesList(sourceElement));
+				sourceData = this._getAttrs(sourceElement, this._getAttrsList(sourceElement));
 				if (sourceData.srcset) {
 					sourceData.srcset = this._getSrcsetHash(sourceData.srcset);
 				}
@@ -247,7 +248,7 @@ var picturePolyfill = (function(w) {
 		 */
 		_addListeners: function() {
 
-			if (!this.isNecessary) { return false; }
+			if (!this.isUseful || _areListenersActive) { return false; }
 
 			function parseDocument() {
 				picturePolyfill.parse(document);
@@ -272,7 +273,8 @@ var picturePolyfill = (function(w) {
 				w.attachEvent('onload', parseDocument);
 				w.attachEvent('onresize', parseDocumentAfterTimeout);
 			}
-			this.areListenersActive = true;
+
+			_areListenersActive = true;
 		},
 
 		/**
@@ -285,27 +287,27 @@ var picturePolyfill = (function(w) {
 			 * @type {number}
 			 * @private
 			 */
-			this._pixelRatio = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
+			this._pr = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
 
 			/**
 			 * Detect if browser has media queries support
 			 * @type {boolean}
 			 * @private
 			 */
-			this._areMediaQueriesSupported = !!w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
+			this._mqSupport = !!w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
 
 			/**
 			 * Detect if append image to picture is possible
 			 * @type {boolean}
 			 * @private
 			 */
-			this._isAppendImageSupported = _detectAppendImageSupport();
+			this._appendSupport = _detectAppendImageSupport();
 
 			/**
 			 * Detect if polyfill is necessary
 			 * @type {boolean}
 			 */
-			this.isNecessary = !w.HTMLPictureElement;
+			this.isUseful = !w.HTMLPictureElement;
 
 			/**
 			 * Cache array, where all sources data is stored
@@ -321,10 +323,8 @@ var picturePolyfill = (function(w) {
 			 */
 			_cacheIndex = 0;
 
-			// Add listeners only once
-			if (!this.areListenersActive) {
-				this._addListeners();
-			}
+			// Add listeners (listeners are added once)
+			this._addListeners();
 		},
 
 		/**
@@ -338,13 +338,13 @@ var picturePolyfill = (function(w) {
 				pictureElements,
 				srcAttribute;
 
-			if (!this.isNecessary) { return 0; }
+			if (!this.isUseful) { return 0; }
 
 			pictureElements = (element || document).getElementsByTagName('picture');
 
 			for (var i=0, len=pictureElements.length; i<len; i+=1) {
 				pictureElement = pictureElements[i];
-				if (!this._areMediaQueriesSupported) {
+				if (!this._mqSupport) {
 					srcAttribute = pictureElement.getAttribute("data-default-src");
 				} else {
 					sourcesData = _cacheArray[pictureElement.getAttribute('data-cache-index')];
@@ -354,9 +354,9 @@ var picturePolyfill = (function(w) {
 						pictureElement.setAttribute('data-cache-index', _cacheIndex);
 						_cacheIndex+=1;
 					}
-					srcAttribute = this._getSrcFromSourcesData(sourcesData);
+					srcAttribute = this._getSrcFromData(sourcesData);
 				}
-				this._createOrUpdateImage(pictureElement, {
+				this._setImg(pictureElement, {
 					src: srcAttribute,
 					alt: pictureElement.getAttribute('data-alt')
 				});

@@ -38,7 +38,7 @@ test("parses elements at resize", function() {
 	}
 });
 
-test("_getSrcFromSrcsetHash correct behaviour, correct data", function() {
+test("_getSrcFromHash correct behaviour, correct data", function() {
 	var srcsetHash;
 	// Get 1, 2 or 3 from 1x, 2x, 3x hash
 	srcsetHash = {
@@ -47,17 +47,17 @@ test("_getSrcFromSrcsetHash correct behaviour, correct data", function() {
 		"3x": "http://placehold.it/12x12"
 	};
 	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 1), 'http://placehold.it/4x4');
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 2), 'http://placehold.it/8x8');
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 3), 'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 1), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 2), 'http://placehold.it/8x8');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 3), 'http://placehold.it/12x12');
 	// Extra bounds calls
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 4),  'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 4),  'http://placehold.it/12x12');
 	// Impossible calls (.5 is rounded to 1, <1 is impossible)
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, .5), 'http://placehold.it/4x4');
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, -1), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, .5), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), 'http://placehold.it/4x4');
 });
 
-test("_getSrcFromSrcsetHash correct behaviour, missing middle data", function() {
+test("_getSrcFromHash correct behaviour, missing middle data", function() {
 	var srcsetHash;
 	// Get 1, 2 or 3 from 1x, 3x hash
 	srcsetHash = {
@@ -65,18 +65,18 @@ test("_getSrcFromSrcsetHash correct behaviour, missing middle data", function() 
 		"3x": "http://placehold.it/12x12"
 	};
 	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 1), 'http://placehold.it/4x4');
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 3), 'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 1), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 3), 'http://placehold.it/12x12');
 	// Extra bounds calls
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 4),  'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 4),  'http://placehold.it/12x12');
 	// In the hole call
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 2), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 2), 'http://placehold.it/4x4');
 	// Impossible calls (.5 is rounded to 1, <1 is impossible)
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, .5), 'http://placehold.it/4x4');
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, -1), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, .5), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), 'http://placehold.it/4x4');
 });
 
-test("_getSrcFromSrcsetHash correct behaviour, missing first data", function() {
+test("_getSrcFromHash correct behaviour, missing first data", function() {
 	var srcsetHash;
 	// Get 1, 2 or 3 from 1x, 3x hash
 	srcsetHash = {
@@ -84,30 +84,30 @@ test("_getSrcFromSrcsetHash correct behaviour, missing first data", function() {
 		"3x": "http://placehold.it/12x12"
 	};
 	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 2), 'http://placehold.it/8x8');
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 3), 'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 2), 'http://placehold.it/8x8');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 3), 'http://placehold.it/12x12');
 	// Extra bounds calls
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 4),  'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 4),  'http://placehold.it/12x12');
 	// In the hole call
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, 1), 'http://placehold.it/8x8');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 1), 'http://placehold.it/8x8');
 	// Impossible calls (.5 is rounded to 1, <1 is impossible)
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, .5), 'http://placehold.it/8x8');
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, -1), 'http://placehold.it/8x8');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, .5), 'http://placehold.it/8x8');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), 'http://placehold.it/8x8');
 });
 
-test("_getSrcFromSrcsetHash correct behaviour, empty hash", function() {
+test("_getSrcFromHash correct behaviour, empty hash", function() {
 	var srcsetHash;
 	// Get 1, 2 or 3 from 1x, 3x hash
 	srcsetHash = {};
 	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash, -1), null);
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash,  0), null);
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash,  1), null);
-	strictEqual(picturePolyfill._getSrcFromSrcsetHash(srcsetHash,  2), null);
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), null);
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash,  0), null);
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash,  1), null);
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash,  2), null);
 });
 
 test("_getSrcsetHash correct behaviour, correct srcset format", function () {
-	if (!picturePolyfill._areMediaQueriesSupported) {
+	if (!picturePolyfill._mqSupport) {
 		ok(true);
 	}
 	else {
@@ -145,7 +145,7 @@ test("_getSrcsetHash correct behaviour, correct srcset format", function () {
 });
 
 test("_getSrcsetHash correct behaviour, messy srcset format", function () {
-	if (!picturePolyfill._areMediaQueriesSupported) {
+	if (!picturePolyfill._mqSupport) {
 		ok(true);
 	}
 	else {
@@ -170,8 +170,8 @@ test("_getSrcsetHash correct behaviour, messy srcset format", function () {
 	}
 });
 
-test("_getSrcFromSourcesData behaves correctly", function() {
-	if (!picturePolyfill._areMediaQueriesSupported) {
+test("_getSrcFromData behaves correctly", function() {
+	if (!picturePolyfill._mqSupport) {
 		ok(true);
 	}
 	else {
@@ -184,12 +184,12 @@ test("_getSrcFromSourcesData behaves correctly", function() {
 				}
 			}
 		];
-		picturePolyfill._pixelRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "a.gif");
-		picturePolyfill._pixelRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "b.gif");
-		picturePolyfill._pixelRatio = 3;
-		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "b.gif");
+		picturePolyfill._pr = 1;
+		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "a.gif");
+		picturePolyfill._pr = 2;
+		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "b.gif");
+		picturePolyfill._pr = 3;
+		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "b.gif");
 		// With more MQs
 		sourcesData.push({
 			media: "(min-width: 1px)",
@@ -198,17 +198,17 @@ test("_getSrcFromSourcesData behaves correctly", function() {
 				"2x": "d.gif"
 			}
 		});
-		picturePolyfill._pixelRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "c.gif");
-		picturePolyfill._pixelRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "d.gif");
-		picturePolyfill._pixelRatio = 3;
-		strictEqual(picturePolyfill._getSrcFromSourcesData(sourcesData), "d.gif");
+		picturePolyfill._pr = 1;
+		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "c.gif");
+		picturePolyfill._pr = 2;
+		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "d.gif");
+		picturePolyfill._pr = 3;
+		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "d.gif");
 	}
 });
 
 test("_getSourcesData correctly parses sources", function() {
-	if (!picturePolyfill._areMediaQueriesSupported) {
+	if (!picturePolyfill._mqSupport) {
 		ok(true);
 	}
 	else {
@@ -255,7 +255,7 @@ test("_getSourcesData correctly parses sources", function() {
 	}
 });
 
-test("_createOrUpdateImage actually creates an image", function() {
+test("_setImg actually creates an image", function() {
 	$('body').append('<div id="container"></div>');
 
 	var container = document.getElementById('container'), imgs;
@@ -264,14 +264,14 @@ test("_createOrUpdateImage actually creates an image", function() {
 	strictEqual(container.getElementsByTagName('img').length, 0);
 
 	// First creation check
-	picturePolyfill._createOrUpdateImage(container, {src: 'http://placehold.it/1x1', alt: 'An image'});
+	picturePolyfill._setImg(container, {src: 'http://placehold.it/1x1', alt: 'An image'});
 	imgs = container.getElementsByTagName('img');
 	strictEqual(imgs.length, 1);
 	strictEqual(imgs[0].getAttribute('src'), 'http://placehold.it/1x1');
 	strictEqual(imgs[0].getAttribute('alt'), 'An image');
 
 	// Update check
-	picturePolyfill._createOrUpdateImage(container, {src: 'http://placehold.it/2x2', alt: 'Another image'});
+	picturePolyfill._setImg(container, {src: 'http://placehold.it/2x2', alt: 'Another image'});
 	imgs = container.getElementsByTagName('img');
 	strictEqual(imgs.length, 1); // length is always 1
 	strictEqual(imgs[0].getAttribute('src'), 'http://placehold.it/2x2'); //src is changes
@@ -299,17 +299,17 @@ test("parse() only parses passed element", function() {
 
 	// Setting spies
 
-	this.spy(picturePolyfill, "_createOrUpdateImage");
+	this.spy(picturePolyfill, "_setImg");
 
 	// Testing number of calls when calling parse() on the whole document or on a single element
 
 	picturePolyfill.parse();
-	ok(picturePolyfill._createOrUpdateImage.calledTwice);
+	ok(picturePolyfill._setImg.calledTwice);
 
-	picturePolyfill._createOrUpdateImage.reset();
+	picturePolyfill._setImg.reset();
 
 	picturePolyfill.parse(document.getElementById('innerA'));
-	ok(picturePolyfill._createOrUpdateImage.calledOnce);
+	ok(picturePolyfill._setImg.calledOnce);
 });
 
 test("parse() resulting image sources - with MQ support", function(){
@@ -331,13 +331,13 @@ test("parse() resulting image sources - with MQ support", function(){
 		</div>\
 	</div>');
 
-	if (picturePolyfill._areMediaQueriesSupported) { // EXCLUDING OLD IE FROM THIS TESTS
+	if (picturePolyfill._mqSupport) { // EXCLUDING OLD IE FROM THIS TESTS
 
 		picturePolyfill.initialize();
 
 		// Media query support: yes, pixel density: 1
 
-		picturePolyfill._pixelRatio = 1;
+		picturePolyfill._pr = 1;
 		picturePolyfill.parse();
 
 		images = document.getElementsByTagName('img');
@@ -349,7 +349,7 @@ test("parse() resulting image sources - with MQ support", function(){
 
 		// Media query support: yes, pixel density: 2
 
-		picturePolyfill._pixelRatio = 2;
+		picturePolyfill._pr = 2;
 		picturePolyfill.parse();
 
 		images = document.getElementsByTagName('img');
@@ -384,11 +384,11 @@ test("parse() resulting image sources - without MQ support", function(){
 
 	// Media query support: no, pixel density: indifferent
 
-	var initial_areMediaQueriesSupported = picturePolyfill._areMediaQueriesSupported,
-		initial_pixelRatio = picturePolyfill._pixelRatio;
+	var initial_areMediaQueriesSupported = picturePolyfill._mqSupport,
+		initial_pixelRatio = picturePolyfill._pr;
 
-	picturePolyfill._pixelRatio = null;
-	picturePolyfill._areMediaQueriesSupported = false;
+	picturePolyfill._pr = null;
+	picturePolyfill._mqSupport = false;
 	picturePolyfill.parse();
 
 	images = document.getElementsByTagName('img');
@@ -400,12 +400,12 @@ test("parse() resulting image sources - without MQ support", function(){
 
 	// Restoring initial values
 
-	picturePolyfill._areMediaQueriesSupported = initial_areMediaQueriesSupported;
-	picturePolyfill._pixelRatio = initial_pixelRatio;
+	picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
+	picturePolyfill._pr = initial_pixelRatio;
 
 });
 
-test("_getSourcesData, _getSrcFromSourcesData, _getSrcFromSrcsetHash mustn't be called from non MQ browsers", function() {
+test("_getSourcesData, _getSrcFromData, _getSrcFromHash mustn't be called from non MQ browsers", function() {
 
 	$('body').append('<div id="container">\
 		<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
@@ -415,28 +415,28 @@ test("_getSourcesData, _getSrcFromSourcesData, _getSrcFromSrcsetHash mustn't be 
 	</div>');
 
 	this.spy(picturePolyfill, "_getSourcesData");
-	this.spy(picturePolyfill, "_getSrcFromSourcesData");
-	this.spy(picturePolyfill, "_getSrcFromSrcsetHash");
+	this.spy(picturePolyfill, "_getSrcFromData");
+	this.spy(picturePolyfill, "_getSrcFromHash");
 
 	picturePolyfill.initialize();
 
-	var initial_areMediaQueriesSupported = picturePolyfill._areMediaQueriesSupported;
+	var initial_areMediaQueriesSupported = picturePolyfill._mqSupport;
 
-	picturePolyfill._areMediaQueriesSupported = false;
+	picturePolyfill._mqSupport = false;
 	picturePolyfill.parse();
 
 	ok(picturePolyfill._getSourcesData.notCalled);
-	ok(picturePolyfill._getSrcFromSourcesData.notCalled);
-	ok(picturePolyfill._getSrcFromSrcsetHash.notCalled);
+	ok(picturePolyfill._getSrcFromData.notCalled);
+	ok(picturePolyfill._getSrcFromHash.notCalled);
 
-	picturePolyfill._areMediaQueriesSupported = true;
+	picturePolyfill._mqSupport = true;
 	picturePolyfill.parse();
 
 	ok(picturePolyfill._getSourcesData.called);
-	ok(picturePolyfill._getSrcFromSourcesData.called);
-	ok(picturePolyfill._getSrcFromSrcsetHash.called);
+	ok(picturePolyfill._getSrcFromData.called);
+	ok(picturePolyfill._getSrcFromHash.called);
 
-	picturePolyfill._areMediaQueriesSupported = initial_areMediaQueriesSupported;
+	picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
 
 });
 
@@ -444,12 +444,12 @@ test("call parse won't give errors when polyfill isn't required", function() {
 	this.spy(picturePolyfill, "parse");
 	picturePolyfill.initialize();
 
-	var initial_isNecessary = picturePolyfill.isNecessary;
+	var initial_isNecessary = picturePolyfill.isUseful;
 
-	picturePolyfill.isNecessary = false;
+	picturePolyfill.isUseful = false;
 	picturePolyfill.parse();
 	strictEqual(picturePolyfill.parse.exceptions[0], undefined);
 	strictEqual(picturePolyfill.parse.getCall(0).returnValue, 0);
 
-	picturePolyfill.isNecessary = initial_isNecessary;
+	picturePolyfill.isUseful = initial_isNecessary;
 });
