@@ -13,7 +13,7 @@ var picturePolyfill = (function(w) {
 	 * Detects old browser checking if browser can append images to pictures
 	 * @returns {boolean}
 	 */
-	function detectAppendImageSupport() {
+	function _detectAppendImageSupport() {
 		var newImg = document.createElement('img'),
 			pictures, firstPicture;
 
@@ -21,6 +21,7 @@ var picturePolyfill = (function(w) {
 		firstPicture = pictures[0];
 
 		if (!pictures.length) {
+			// Can't determine support if no pictures are in the page. Worst case will do.
 			return false;
 		}
 
@@ -34,98 +35,84 @@ var picturePolyfill = (function(w) {
 		}
 	}
 
-	/**
-	 * Append an image element to a picture element
-	 * @param {Node} picture
-	 * @param attributes
-	 */
-	function appendImage(picture, attributes) {
-		var imageElement = document.createElement('img');
-		setAttributes(imageElement, attributes);
-		picture.appendChild(imageElement);
-	}
-
-	/**
-	 * Set all the "attributes" to an "element"
-	 * @param element
-	 * @param attributes
-	 */
-	function setAttributes(element, attributes) {
-		for (var attributeName in attributes) {
-			element.setAttribute(attributeName, attributes[attributeName]);
-		}
-	}
-
-	/**
-	 * Get all the "attributes" from an "element" and returns them as a hash
-	 * @param element
-	 * @param attributes
-	 * @returns {{}}
-	 */
-	function getAttributes(element, attributes) {
-		var ret = {}, attributeName, attributeValue;
-		for (var i=0, len=attributes.length; i<len; i+=1) {
-			attributeName = attributes[i];
-			attributeValue = element.getAttribute(attributeName);
-			if (attributeValue) {
-				ret[attributeName] = attributeValue;
-			}
-		}
-		return ret;
-	}
-
-	/**
-	 *
-	 * @param element
-	 * @returns {Array}
-	 */
-	function getAttributesList(element) {
-		var arr = [];
-		for (var i=0, attributes=element.attributes, l=attributes.length; i<l; i++){
-			arr.push(attributes.item(i).nodeName);
-		}
-		return arr;
-	}
-
-	/**
-	 * Replaces the existing picture element with another picture element containing an image with the imgSrc source
-	 * @param {Node} picture
-	 * @param attributes
-	 */
-	function replacePictureAndAppendImage(picture, attributes) {
-		var newPicture = document.createElement("picture"),
-			pictureAttributes = getAttributes(picture, getAttributesList(picture));
-		appendImage(newPicture, attributes);
-		setAttributes(newPicture, pictureAttributes);
-		picture.parentNode.replaceChild(newPicture, picture);
-	}
-
 	return {
 
 		/**
-		 * {integer} The device pixel ratio. 1 for standard displays, 2+ for HD displays
+		 * Appends an image element to a picture element
+		 * @param picture
+		 * @param attributes
+		 * @private
 		 */
-		_pixelRatio: (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1,
+		_appendImage: function(picture, attributes) {
+			var imageElement = document.createElement('img');
+			this._setAttributes(imageElement, attributes);
+			picture.appendChild(imageElement);
+		},
 
 		/**
-		 * {boolean} Detect if browser has media queries support
+		 * Set all the "attributes" to an "element"
+		 * @param element
+		 * @param attributes
+		 * @private
 		 */
-		_areMediaQueriesSupported: w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches,
+		_setAttributes: function(element, attributes) {
+			for (var attributeName in attributes) {
+				element.setAttribute(attributeName, attributes[attributeName]);
+			}
+		},
 
 		/**
-		 * {boolean} Detect if append image to picture is possible
+		 * Get all the "attributes" from an "element" and returns them as a hash
+		 * @param element
+		 * @param attributes
+		 * @returns {{}}
+		 * @private
 		 */
-		_isAppendImageSupported: detectAppendImageSupport(),
+		_getAttributes: function(element, attributes) {
+			var ret = {}, attributeName, attributeValue;
+			for (var i=0, len=attributes.length; i<len; i+=1) {
+				attributeName = attributes[i];
+				attributeValue = element.getAttribute(attributeName);
+				if (attributeValue) {
+					ret[attributeName] = attributeValue;
+				}
+			}
+			return ret;
+		},
 
 		/**
-		 * {boolean} Detect if polyfill is necessary
+		 * Gets the attributes list from an "element"
+		 * @param element
+		 * @returns {Array}
+		 * @private
 		 */
-		isNecessary: !w.HTMLPictureElement,
+		_getAttributesList: function(element) {
+			var arr = [];
+			for (var i=0, attributes=element.attributes, l=attributes.length; i<l; i++){
+				arr.push(attributes.item(i).nodeName);
+			}
+			return arr;
+		},
+
+		/**
+		 * Replaces the existing picture element with another picture element containing an image with the imgSrc source
+		 * @param picture
+		 * @param attributes
+		 * @private
+		 */
+		_replacePictureAndAppendImage: function(picture, attributes) {
+			var newPicture = document.createElement("picture"),
+				pictureAttributes = this._getAttributes(picture, this._getAttributesList(picture));
+			this._appendImage(newPicture, attributes);
+			this._setAttributes(newPicture, pictureAttributes);
+			picture.parentNode.replaceChild(newPicture, picture);
+		},
 
 		/**
 		 * Returns a hash density > sourceSet
-		 * @param {string} srcset
-		 * @returns {object}
+		 * @param srcset
+		 * @returns {{}}
+		 * @private
 		 */
 		_getSrcsetHash: function(srcset) {
 			var srcSetElement,
@@ -155,9 +142,10 @@ var picturePolyfill = (function(w) {
 		/**
 		 * Returns the proper src from the srcSet property
 		 * Get the first valid element from passed position to the left
-		 * @param {Array} srcsetHash
-		 * @param {int} position
-		 * @returns {string}
+		 * @param srcsetHash
+		 * @param position
+		 * @returns {*}
+		 * @private
 		 */
 		_getSrcFromSrcsetHash: function(srcsetHash, position) {
 			var ret, key;
@@ -186,8 +174,9 @@ var picturePolyfill = (function(w) {
 		/**
 		 * Loop through every element of the sourcesData array, check if the media query applies and,
 		 * if so, get the src element from the srcSet property based depending on pixel ratio
-		 * @param sourcesData {Array}
-		 * @returns {string}
+		 * @param sourcesData
+		 * @returns {string||undefined}
+		 * @private
 		 */
 		_getSrcFromSourcesData: function(sourcesData) {
 			var matchedSrc,
@@ -200,7 +189,7 @@ var picturePolyfill = (function(w) {
 				media = sourceData.media;
 				srcset = sourceData.srcset;
 				if (!media || w.matchMedia(media).matches) {
-					matchedSrc = srcset ? this._getSrcFromSrcsetHash(srcset, picturePolyfill._pixelRatio) : sourceData.src;
+					matchedSrc = srcset ? this._getSrcFromSrcsetHash(srcset, this._pixelRatio) : sourceData.src;
 				}
 			}
 			return matchedSrc;
@@ -221,11 +210,11 @@ var picturePolyfill = (function(w) {
 			}
 			// Else create the image
 			else {
-				if (picturePolyfill._isAppendImageSupported) {
-					appendImage(pictureElement, attributes);
+				if (this._isAppendImageSupported) {
+					this._appendImage(pictureElement, attributes);
 				}
 				else {
-					replacePictureAndAppendImage(pictureElement, attributes);
+					this._replacePictureAndAppendImage(pictureElement, attributes);
 				}
 			}
 		},
@@ -243,9 +232,9 @@ var picturePolyfill = (function(w) {
 
 			for (var i=0, len = foundSources.length; i<len; i+=1) {
 				sourceElement = foundSources[i];
-				sourceData = getAttributes(sourceElement, getAttributesList(sourceElement));
+				sourceData = this._getAttributes(sourceElement, this._getAttributesList(sourceElement));
 				if (sourceData.srcset) {
-					sourceData.srcset = picturePolyfill._getSrcsetHash(sourceData.srcset);
+					sourceData.srcset = this._getSrcsetHash(sourceData.srcset);
 				}
 				sourcesData.push(sourceData);
 			}
@@ -253,48 +242,12 @@ var picturePolyfill = (function(w) {
 		},
 
 		/**
-		 * Parses the DOM looking for elements containing the "data-picture" attribute, then
-		 * generate the images or updates their src attribute.
-		 * @param {Node} element (the starting element to parse DOM into. REQUIRED)
-		 */
-		parse: function(element) {
-			var sourcesData,
-				pictureElement,
-				pictureElements,
-				srcAttribute;
-
-			if (!this.isNecessary) { return false; }
-
-			pictureElements = (element || document).getElementsByTagName('picture');
-
-			for (var i=0, len=pictureElements.length; i<len; i+=1) {
-				pictureElement = pictureElements[i];
-				if (!picturePolyfill._areMediaQueriesSupported) {
-					srcAttribute = pictureElement.getAttribute("data-default-src");
-				} else {
-					sourcesData = _cacheArray[pictureElement.getAttribute('data-cache-index')];
-					if (!sourcesData) {
-						sourcesData = picturePolyfill._getSourcesData(pictureElement);
-						_cacheArray[_cacheIndex] = sourcesData;
-						pictureElement.setAttribute('data-cache-index', _cacheIndex);
-						_cacheIndex+=1;
-					}
-					srcAttribute = picturePolyfill._getSrcFromSourcesData(sourcesData);
-				}
-				picturePolyfill._createOrUpdateImage(pictureElement, {
-					src: srcAttribute,
-					alt: pictureElement.getAttribute('data-alt')
-				});
-			}
-
-			return i;
-		},
-
-		/**
 		 * Adds listeners to load and resize event
 		 * @private
 		 */
 		_addListeners: function() {
+
+			if (!this.isNecessary) { return false; }
 
 			function parseDocument() {
 				picturePolyfill.parse(document);
@@ -327,13 +280,89 @@ var picturePolyfill = (function(w) {
 		 */
 		initialize: function() {
 
-			if (!this.isNecessary) { return false; }
+			/**
+			 * The device pixel ratio. 1 for standard displays, 2+ for HD displays
+			 * @type {number}
+			 * @private
+			 */
+			this._pixelRatio = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
 
+			/**
+			 * Detect if browser has media queries support
+			 * @type {boolean}
+			 * @private
+			 */
+			this._areMediaQueriesSupported = !!w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
+
+			/**
+			 * Detect if append image to picture is possible
+			 * @type {boolean}
+			 * @private
+			 */
+			this._isAppendImageSupported = _detectAppendImageSupport();
+
+			/**
+			 * Detect if polyfill is necessary
+			 * @type {boolean}
+			 */
+			this.isNecessary = !w.HTMLPictureElement;
+
+			/**
+			 * Cache array, where all sources data is stored
+			 * @type {Array}
+			 * @private
+			 */
 			_cacheArray = [];
+
+			/**
+			 * Cache index, incremental
+			 * @type {number}
+			 * @private
+			 */
 			_cacheIndex = 0;
 
 			// Add listeners only once
-			if (!this.areListenersActive) {	this._addListeners(); }
+			if (!this.areListenersActive) {
+				this._addListeners();
+			}
+		},
+
+		/**
+		 * Parses the DOM looking for elements containing the "data-picture" attribute, then
+		 * generate the images or updates their src attribute.
+		 * @param {Node} element (the starting element to parse DOM into. REQUIRED)
+		 */
+		parse: function(element) {
+			var sourcesData,
+				pictureElement,
+				pictureElements,
+				srcAttribute;
+
+			if (!this.isNecessary) { return 0; }
+
+			pictureElements = (element || document).getElementsByTagName('picture');
+
+			for (var i=0, len=pictureElements.length; i<len; i+=1) {
+				pictureElement = pictureElements[i];
+				if (!this._areMediaQueriesSupported) {
+					srcAttribute = pictureElement.getAttribute("data-default-src");
+				} else {
+					sourcesData = _cacheArray[pictureElement.getAttribute('data-cache-index')];
+					if (!sourcesData) {
+						sourcesData = this._getSourcesData(pictureElement);
+						_cacheArray[_cacheIndex] = sourcesData;
+						pictureElement.setAttribute('data-cache-index', _cacheIndex);
+						_cacheIndex+=1;
+					}
+					srcAttribute = this._getSrcFromSourcesData(sourcesData);
+				}
+				this._createOrUpdateImage(pictureElement, {
+					src: srcAttribute,
+					alt: pictureElement.getAttribute('data-alt')
+				});
+			}
+
+			return i;
 		}
 	};
 
