@@ -166,9 +166,7 @@ Calling `picturePolyfill()` and passing in a specific node is particularly usefu
 
 ### After DOM has changed (AJAX calls, etc.)
 
-PicturePolyfill is intentionally exposed to the global namespace, so you can call it as you need it.    
-
-**Example:** if some of your AJAX calls change a portion of your DOM injecting new `picture` nodes, after your new DOM has changed just call `window.picturePolyfill()` or `window.picturePolyfill(element)` to make `picturePolyfill` to parse only the changed portion of the DOM.
+**Example:** if some of your AJAX calls change a portion of your DOM injecting new `picture` nodes, after your new DOM has changed just call `picturePolyfill.parse()` (or `picturePolyfill.parse(element)`) to make picturePolyfill parse only the changed portion of the DOM.
 
 ## Browser support
 
@@ -180,4 +178,4 @@ PicturePolyfill supports all modern browsers and **down to Internet Explorer 7**
 
 ## Size and delivery
 
-Currently, `picturePolyfill.js` compresses to around 910bytes (~0.88kb) after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
+Currently, `picturePolyfill.js` compresses to around 1300bytes (~1.2kb) after minify and gzip. To minify, you might try these online tools: [Uglify](http://marijnhaverbeke.nl/uglifyjs), [Yahoo Compressor](http://refresh-sf.com/yui/), or [Closure Compiler](http://closure-compiler.appspot.com/home). Serve with gzip compression.
