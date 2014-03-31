@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>PicturePolyfill 3.0.0 vs Picturefill 1.2.1 performance test</title>
+	<style>
+		body { margin: 0; padding: 0; text-align: center; }
+		img { width: 100%; height: auto; margin-bottom: 1px; }
+		.name { font-family: monospace }
+	</style>
+
+<script>
+/*! Picturefill - Responsive Images that work today. (and mimic the proposed Picture element with span elements). Author: Scott Jehl, Filament Group, 2012 | License: MIT/GPLv2 */
+!function(a){"use strict";a.picturefill=function(){for(var b=a.document.getElementsByTagName("span"),c=0,d=b.length;d>c;c++)if(null!==b[c].getAttribute("data-picture")){for(var e=b[c].getElementsByTagName("span"),f=[],g=0,h=e.length;h>g;g++){var i=e[g].getAttribute("data-media");(!i||a.matchMedia&&a.matchMedia(i).matches)&&f.push(e[g])}var j=b[c].getElementsByTagName("img")[0];if(f.length){var k=f.pop();if(j&&"NOSCRIPT"!==j.parentNode.nodeName){if(k===j.parentNode)continue}else j=a.document.createElement("img"),j.alt=b[c].getAttribute("data-alt");j.src=k.getAttribute("data-src"),k.appendChild(j),j.removeAttribute("width"),j.removeAttribute("height")}else j&&j.parentNode.removeChild(j)}},a.addEventListener?(a.addEventListener("resize",a.picturefill,!1),a.addEventListener("DOMContentLoaded",function(){a.picturefill(),a.removeEventListener("load",a.picturefill,!1)},!1),a.addEventListener("load",a.picturefill,!1)):a.attachEvent&&a.attachEvent("onload",a.picturefill)}(this);
+
+/*! picturePolyfill - v3.0.0 - 2014-03-31
+* https://github.com/verlok/picturePolyfill */
+var picturePolyfill=function(a){"use strict";function b(){var a,b,c=document.createElement("img");if(a=document.getElementsByTagName("picture"),b=a[0],!a.length)return!1;try{return b.appendChild(c),b.removeChild(c),!0}catch(d){return!1}}var c,d,e,f=100,g=!1;return{_appendImg:function(a,b){var c=document.createElement("img");this._setAttrs(c,b),a.appendChild(c)},_setAttrs:function(a,b){for(var c in b)a.setAttribute(c,b[c])},_getAttrs:function(a,b){for(var c,d,e={},f=0,g=b.length;g>f;f+=1)c=b[f],d=a.getAttribute(c),d&&(e[c]=d);return e},_getAttrsList:function(a){for(var b=[],c=0,d=a.attributes,e=d.length;e>c;c++)b.push(d.item(c).nodeName);return b},_replacePicture:function(a,b){var c=document.createElement("picture"),d=this._getAttrs(a,this._getAttrsList(a));this._appendImg(c,b),this._setAttrs(c,d),a.parentNode.replaceChild(c,a)},_getSrcsetHash:function(a){for(var b,c,d,e={},f=a.split(","),g=0,h=f.length;h>g;g+=1){switch(b=f[g].trim().split(" "),b.length){case 1:d="1x";break;case 2:d=b[1];break;default:d=b[b.length-1]}c=b[0],e[d]=c}return e},_getSrcFromHash:function(a,b){var c,d;if(c=a[b+"x"])return c;do b-=1,c=a[b+"x"];while(!c&&b>0);if(c)return c;for(d in a)return a[d];return null},_getSrcFromData:function(b){for(var c,d,e,f,g=0,h=b.length;h>g;g+=1)d=b[g],e=d.media,f=d.srcset,(!e||a.matchMedia(e).matches)&&(c=f?this._getSrcFromHash(f,this._pxRatio):d.src);return c},_setImg:function(a,b){var c=a.getElementsByTagName("img");c.length?c[0].setAttribute("src",b.src):this._appendSupport?this._appendImg(a,b):this._replacePicture(a,b)},_getSourcesData:function(a){for(var b,c,d=[],e=a.getElementsByTagName("source"),f=0,g=e.length;g>f;f+=1)b=e[f],c=this._getAttrs(b,this._getAttrsList(b)),c.srcset&&(c.srcset=this._getSrcsetHash(c.srcset)),d.push(c);return d},_addListeners:function(){function b(){picturePolyfill.parse(document)}function c(){clearTimeout(e),e=setTimeout(b,f)}return!this.isUseful||g?!1:(a.addEventListener?(a.addEventListener("resize",c),a.addEventListener("DOMContentLoaded",function(){b(),a.removeEventListener("load",b)}),a.addEventListener("load",b)):a.attachEvent&&(a.attachEvent("onload",b),a.attachEvent("onresize",c)),void(g=!0))},initialize:function(){this._pxRatio=a.devicePixelRatio?Math.ceil(a.devicePixelRatio):1,this._mqSupport=!!a.matchMedia&&null!==a.matchMedia("only all")&&a.matchMedia("only all").matches,this._appendSupport=b(),this.isUseful=!a.HTMLPictureElement,c=[],d=0,this._addListeners()},parse:function(a){var b,e,f,g;if(!this.isUseful)return 0;f=(a||document).getElementsByTagName("picture");for(var h=0,i=f.length;i>h;h+=1)e=f[h],this._mqSupport?(b=c[e.getAttribute("data-cache-index")],b||(b=this._getSourcesData(e),c[d]=b,e.setAttribute("data-cache-index",d),d+=1),g=this._getSrcFromData(b)):g=e.getAttribute("data-default-src"),this._setImg(e,{src:g,alt:e.getAttribute("data-alt")});return h}}}(window);picturePolyfill.initialize();
+</script>
+</head>
+<body>
+
+	<h1>PicturePolyfill 3.0.0 vs Picturefill 1.2.1 performance test</h1>
+
+	<p>This test is published in jsPerf: <a href="picturepolyfill-3-0-0-vs-picturefill-1-2-1-performance-test"><span class="name">picturePolyfill 3.0.0</span> vs <span class="name">picturefill 1.2.1</span> performance test</a></p>
+
+	<p>See picturePolyfill <a href="https://github.com/verlok/picturePolyfill">GitHub repo page</a> and <a href="http://verlok.github.io/picturePolyfill/">online DEMO</a>.</p>
+
+	<!-- Picturefill markup -->
+	<span data-picture data-alt="A beautiful responsive image">
+		<span data-src="http://placehold.it/480x480"></span>
+		<span data-src="http://placehold.it/1024x1024" data-media="(min-width: 481px)"></span>
+		<span data-src="http://placehold.it/1440x1440" data-media="(min-width: 1025px)"></span>
+		<span data-src="http://placehold.it/1920x1920" data-media="(min-width: 1441px)"></span>
+		<noscript><img src="http://placehold.it/1024x1024" alt="A beautiful responsive image"></noscript>
+	</span>
+
+	<!-- PicturePolyfill markup -->
+	<picture data-alt="A beautiful responsive image" data-default-src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440">
+		<source src="http://placehold.it/480x480"/>
+		<source src="http://placehold.it/1024x1024" media="(min-width: 481px)"/>
+		<source src="http://placehold.it/1440x1440" media="(min-width: 1025px)"/>
+		<source src="http://placehold.it/1920x1920" media="(min-width: 1441px)"/>
+		<noscript><img src="http://placehold.it/1024x1024" alt="A beautiful responsive image"/></noscript>
+	</picture>
+
+</body>
+</html>
