@@ -522,6 +522,64 @@ test("_getSourcesData, _getSrcFromData, _getSrcFromHash mustn't be called from n
 
 });
 
+test("parse() after a DOM injection (without MQ support)", function(){
+
+	var images, img1src, img2src, $ajaxResponse;
+
+	$('body').append('<div id="testContainer">\
+		<div id="staticPictures">\
+			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
+				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
+				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+			</picture>\
+		</div>\
+		<div id="ajaxSection">\
+		</div>\
+	</div>');
+
+	$ajaxResponse = $('<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
+		<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
+		<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+	</picture>');
+
+	picturePolyfill.initialize();
+
+	// Media query support: no, pixel density: indifferent
+
+	var initial_areMediaQueriesSupported = picturePolyfill._mqSupport,
+		initial_pixelRatio = picturePolyfill._pxRatio;
+
+	picturePolyfill._pxRatio = null;
+	picturePolyfill._mqSupport = false;
+	picturePolyfill.parse();
+
+	images = document.getElementsByTagName('img');
+	strictEqual(images.length, 1);
+
+	img1src = images[0].getAttribute('src');
+	strictEqual(img1src, 'http://placehold.it/1x1');
+
+	$('#ajaxSection').append($ajaxResponse);
+
+	var ajaxSection = document.getElementById('ajaxSection');
+	picturePolyfill.parse(ajaxSection);
+
+	images = document.getElementsByTagName('img');
+	strictEqual(images.length, 2);
+
+	img1src = images[0].getAttribute('src');
+	img2src = images[1].getAttribute('src');
+
+	strictEqual(img1src, 'http://placehold.it/1x1');
+	strictEqual(img2src, 'http://placehold.it/2x2');
+
+	// Restoring initial values
+
+	picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
+	picturePolyfill._pxRatio = initial_pixelRatio;
+
+});
+
 test("call parse won't give errors when polyfill isn't required", function() {
 	this.spy(picturePolyfill, "parse");
 	picturePolyfill.initialize();
