@@ -17,7 +17,9 @@ if(!Array.prototype.indexOf) {
 }
 
 test("main object is declared and exposed", function() {
-	strictEqual(typeof window.picturePolyfill, 'object');
+	strictEqual(typeof window.picturePolyfill,            'object',   "picturePolyfill should be an object");
+	strictEqual(typeof window.picturePolyfill.parse,      'function', "picturePolyfill.parse() should be a function")
+	strictEqual(typeof window.picturePolyfill.initialize, 'function', "picturePolyfill.initialize() should be a function")
 });
 
 test("_getSrcFromHash correct behaviour, correct data", function() {
@@ -29,14 +31,14 @@ test("_getSrcFromHash correct behaviour, correct data", function() {
 		"3x": "http://placehold.it/12x12"
 	};
 	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 1), 'http://placehold.it/4x4');
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 2), 'http://placehold.it/8x8');
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 3), 'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 1),   'http://placehold.it/4x4',   "Single density element doesn't match");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 2),   'http://placehold.it/8x8',   "Double density element doesn't match");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 3),   'http://placehold.it/12x12', "Triple density element doesn't match");
 	// Extra bounds calls
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 4),  'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 4),   'http://placehold.it/12x12', "Out of upper bound call should return upper in-bound value");
 	// Impossible calls (.5 is rounded to 1, <1 is impossible)
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, .5), 'http://placehold.it/4x4');
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, .5),  'http://placehold.it/4x4',   "Impossible density should return lower bound value");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1),  'http://placehold.it/4x4',   "Out or lower bound call should return lower in-bound value");
 });
 
 test("_getSrcFromHash correct behaviour, missing middle data", function() {
@@ -47,15 +49,15 @@ test("_getSrcFromHash correct behaviour, missing middle data", function() {
 		"3x": "http://placehold.it/12x12"
 	};
 	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 1), 'http://placehold.it/4x4');
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 3), 'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 1),  'http://placehold.it/4x4',   "Single density element doesn't match");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 3),  'http://placehold.it/12x12', "Triple density element doesn't match");
 	// Extra bounds calls
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 4),  'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 4),  'http://placehold.it/12x12', "Out of upper bound call should return upper in-bound value");
 	// In the hole call
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 2), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 2),  'http://placehold.it/4x4',   "Missing density item should return the lower value");
 	// Impossible calls (.5 is rounded to 1, <1 is impossible)
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, .5), 'http://placehold.it/4x4');
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), 'http://placehold.it/4x4');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, .5), 'http://placehold.it/4x4',   "Impossible density should return lower bound value");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), 'http://placehold.it/4x4',   "Out or lower bound call should return lower in-bound value");
 });
 
 test("_getSrcFromHash correct behaviour, missing first data", function() {
@@ -66,15 +68,15 @@ test("_getSrcFromHash correct behaviour, missing first data", function() {
 		"3x": "http://placehold.it/12x12"
 	};
 	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 2), 'http://placehold.it/8x8');
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 3), 'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 2),  'http://placehold.it/8x8',   "Double density element doesn't match");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 3),  'http://placehold.it/12x12', "Triple density element doesn't match");
 	// Extra bounds calls
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 4),  'http://placehold.it/12x12');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 4),  'http://placehold.it/12x12', "Out of upper bound call should return upper in-bound value");
 	// In the hole call
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 1), 'http://placehold.it/8x8');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, 1),  'http://placehold.it/8x8',   "Out or lower bound call should return lower in-bound value");
 	// Impossible calls (.5 is rounded to 1, <1 is impossible)
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, .5), 'http://placehold.it/8x8');
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), 'http://placehold.it/8x8');
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, .5), 'http://placehold.it/8x8',   "Impossible density should return lower bound value");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), 'http://placehold.it/8x8',   "Out or lower bound call should return lower in-bound value");;
 });
 
 test("_getSrcFromHash correct behaviour, empty hash", function() {
@@ -82,10 +84,10 @@ test("_getSrcFromHash correct behaviour, empty hash", function() {
 	// Get 1, 2 or 3 from 1x, 3x hash
 	srcsetHash = {};
 	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), null);
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash,  0), null);
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash,  1), null);
-	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash,  2), null);
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash, -1), null, "If hash is empty, null value must be returned");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash,  0), null, "If hash is empty, null value must be returned");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash,  1), null, "If hash is empty, null value must be returned");
+	strictEqual(picturePolyfill._getSrcFromHash(srcsetHash,  2), null, "If hash is empty, null value must be returned");
 });
 
 test("_getSrcsetHash correct behaviour, correct srcset format", function () {
