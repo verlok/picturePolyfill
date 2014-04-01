@@ -542,6 +542,8 @@ test("parse() after a DOM injection (without MQ support)", function(){
 		<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
 	</picture>');
 
+	this.spy(picturePolyfill, "parse");
+
 	picturePolyfill.initialize();
 
 	// Media query support: no, pixel density: indifferent
@@ -553,6 +555,8 @@ test("parse() after a DOM injection (without MQ support)", function(){
 	picturePolyfill._mqSupport = false;
 	picturePolyfill.parse();
 
+	strictEqual(picturePolyfill.parse.getCalls().length, 1, "Parse has not been called exactly once");
+
 	images = document.getElementsByTagName('img');
 	strictEqual(images.length, 1);
 
@@ -563,6 +567,8 @@ test("parse() after a DOM injection (without MQ support)", function(){
 
 	var ajaxSection = document.getElementById('ajaxSection');
 	picturePolyfill.parse(ajaxSection);
+
+	strictEqual(picturePolyfill.parse.getCalls().length, 2, "Parse has not been called exactly twice");
 
 	images = document.getElementsByTagName('img');
 	strictEqual(images.length, 2);
