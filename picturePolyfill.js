@@ -110,66 +110,59 @@ var picturePolyfill = (function(w) {
 		},
 
 		/**
-		 * Returns a hash density > sourceSet
+		 * Returns a sorted array of object representing the elements of a srcset attribute,
+		 * where pxr is the pixel ratio and src is the source for that ratio
 		 * @param srcset
-		 * @returns {{}}
+		 * @returns {Array}
 		 * @private
 		 */
-		_getSrcsetHash: function(srcset) {
+		_getSrcsetArray: function(srcset) {
 			var srcSetElement,
 				source,
 				density,
-				hash = {},
+				ret = [],
 				srcSetElements = srcset.split(',');
 
 			for (var i=0, len=srcSetElements.length; i<len; i+=1) {
 				srcSetElement = srcSetElements[i].trim().split(' ');
-				switch(srcSetElement.length) {
-					case 1:
-						density = "1x";
-						break;
-					case 2:
-						density = srcSetElement[1];
-						break;
-					default:
-						density = srcSetElement[srcSetElement.length-1];
+				if (srcSetElement.length === 1) {
+					density = 1;
+				}
+				else {
+					density = parseFloat(srcSetElement[srcSetElement.length-1], 10);
 				}
 				source = srcSetElement[0];
-				hash[density] = source;
+				ret.push({pxr: density, src: source});
 			}
-			return hash;
+
+			return ret.sort(function(hash1, hash2) {
+				var pxr1 = hash1.pxr, pxr2 = hash2.pxr;
+				if (pxr1 < pxr2) { return -1; }
+				if (pxr1 > pxr2) { return  1; }
+				return 0;
+			});
 		},
 
 		/**
-		 * Returns the proper src from the srcSet property
+		 * Returns the proper src from the srcset array obtained by _getSrcsetArray
 		 * Get the first valid element from passed position to the left
-		 * @param srcsetHash
-		 * @param position
-		 * @returns {*}
+		 * @param array
+		 * @param pixelRatio
+		 * @returns string || null
 		 * @private
 		 */
-		_getSrcFromHash: function(srcsetHash, position) {
-			var ret, key;
-
-			// Try direct access to position - best case
-			ret = srcsetHash[position+'x'];
-			if (ret) { return ret; }
-
-			// Try looking for smaller images
+		_getSrcFromArray: function(array, pixelRatio) {
+			var i=0,
+				len = array.length,
+				breakPoint=-1;
+			if (!len) {	return null; }
 			do {
-				position-=1;
-				ret = srcsetHash[position+'x'];
-			}
-			while (!ret && position>0);
-			if (ret) { return ret; }
-
-			// Still nothing? Get the first result in the hash and return it
-			for (key in srcsetHash) {
-				return srcsetHash[key];
-			}
-
-			// Fallback
-			return null;
+				if (array[i].pxr >= pixelRatio || i === len-1) {
+					breakPoint = i;
+				}
+				i+=1;
+			} while (!(breakPoint > -1 || i >= len));
+			return array[breakPoint].src;
 		},
 
 		/**
@@ -190,7 +183,7 @@ var picturePolyfill = (function(w) {
 				media = sourceData.media;
 				srcset = sourceData.srcset;
 				if (!media || w.matchMedia(media).matches) {
-					matchedSrc = srcset ? this._getSrcFromHash(srcset, this._pxRatio) : sourceData.src;
+					matchedSrc = srcset ? this._getSrcFromArray(srcset, this._pxRatio) : sourceData.src;
 				}
 			}
 			return matchedSrc;
@@ -235,7 +228,7 @@ var picturePolyfill = (function(w) {
 				sourceElement = foundSources[i];
 				sourceData = this._getAttrs(sourceElement, this._getAttrsList(sourceElement));
 				if (sourceData.srcset) {
-					sourceData.srcset = this._getSrcsetHash(sourceData.srcset);
+					sourceData.srcset = this._getSrcsetArray(sourceData.srcset);
 				}
 				sourcesData.push(sourceData);
 			}
@@ -287,7 +280,7 @@ var picturePolyfill = (function(w) {
 			 * @type {number}
 			 * @private
 			 */
-			this._pxRatio = (w.devicePixelRatio) ? Math.ceil(w.devicePixelRatio) : 1;
+			this._pxRatio = w.devicePixelRatio || 1;
 
 			/**
 			 * Detect if browser has media queries support
