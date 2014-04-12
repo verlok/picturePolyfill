@@ -25,7 +25,14 @@
 		<h1>Responsive images using <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> - Demo</h1>
 
 		<a href="https://twitter.com/picturePolyfill" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @picturePolyfill</a>
-		
+
+        <picture data-alt="A beautiful responsive image" data-default-src="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1440">
+            <source srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1440, http://demo.api.pixtulate.com/demo/large-1.jpg?w=2880 2x" media="(min-width: 1025px)"/>
+            <source srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1920, http://demo.api.pixtulate.com/demo/large-1.jpg?w=3840 2x" media="(min-width: 1441px)"/>
+            <noscript>
+                <img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
+            </noscript>
+        </picture>
 
 		<p>The following link contains some <strong>responsive images</strong> created using a real <code>&lt;picture&gt;</code> element, and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
 
