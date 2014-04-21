@@ -190,6 +190,18 @@ var picturePolyfill = (function(w) {
 		},
 
 		/**
+		 * Removes the image from the picture, when it doesn't have to be shown
+		 * @param pictureElement
+		 * @private
+		 */
+		_resetImg: function(pictureElement) {
+			var imageElements = pictureElement.getElementsByTagName('img');
+			if (imageElements.length) {
+				pictureElement.removeChild(imageElements[0]);
+			}
+		},
+
+		/**
 		 * Set the src attribute of the first image element inside passed pictureElement
 		 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
 		 * @param pictureElement {Node}
@@ -339,7 +351,8 @@ var picturePolyfill = (function(w) {
 				pictureElement = pictureElements[i];
 				if (!this._mqSupport) {
 					srcAttribute = pictureElement.getAttribute("data-default-src");
-				} else {
+				}
+				else {
 					sourcesData = _cacheArray[pictureElement.getAttribute('data-cache-index')];
 					if (!sourcesData) {
 						sourcesData = this._getSourcesData(pictureElement);
@@ -349,10 +362,15 @@ var picturePolyfill = (function(w) {
 					}
 					srcAttribute = this._getSrcFromData(sourcesData);
 				}
-				this._setImg(pictureElement, {
-					src: srcAttribute,
-					alt: pictureElement.getAttribute('data-alt')
-				});
+				if (!srcAttribute) {
+					this._resetImg(pictureElement);
+				}
+				else {
+					this._setImg(pictureElement, {
+						src: srcAttribute,
+						alt: pictureElement.getAttribute('data-alt')
+					});
+				}
 			}
 
 			return i;

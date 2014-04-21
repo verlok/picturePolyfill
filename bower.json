@@ -1,6 +1,6 @@
 {
 	"name": "picturePolyfill",
-	"version": "3.1.0",
+	"version": "3.2.1",
 	"main": "picturePolyfill.js",
 	"ignore": [
 		".idea",
@@ -8,8 +8,7 @@
 		"**/.*",
 		"node_modules",
 		"bower_components",
-		"test",
-		"tests"
+		"test"
 	],
 	"homepage": "https://github.com/verlok/picturePolyfill",
 	"authors": [

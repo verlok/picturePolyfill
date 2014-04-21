@@ -25,9 +25,23 @@
 		<h1>Responsive images using <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> - Demo</h1>
 
 		<a href="https://twitter.com/picturePolyfill" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @picturePolyfill</a>
-		
 
-		<p>The following link contains some <strong>responsive images</strong> created using a real <code>&lt;picture&gt;</code> element, and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
+        <p>The following are some <strong>responsive images</strong> created using a real <code>&lt;picture&gt;</code> element, and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
+        <p>Real time server side scaling in this demo is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
+
+        <h2>Full width server-side scaled image</h2>
+
+        <picture data-alt="A beautiful responsive image" data-default-src="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1440">
+            <source srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=480, http://demo.api.pixtulate.com/demo/large-1.jpg?w=960 2x"/>
+            <source srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1024, http://demo.api.pixtulate.com/demo/large-1.jpg?w=2048 2x" media="(min-width: 481px)"/>
+            <source srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1440, http://demo.api.pixtulate.com/demo/large-1.jpg?w=2880 2x" media="(min-width: 1025px)"/>
+            <source srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1920, http://demo.api.pixtulate.com/demo/large-1.jpg?w=3840 2x" media="(min-width: 1441px)"/>
+            <noscript>
+                <img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
+            </noscript>
+        </picture>
+
+        <h2>Half width server-side scaled images</h2>
 
 		<div class="cf">
 			<div class="element">
@@ -56,7 +70,7 @@
 			</div>
 		</div>
 
-		<p>Real time server side scaling is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
+        <h2>Half width pre-scaled images</h2>
 
 		<div class="cf">
 			<div class="element">
@@ -87,7 +101,7 @@
 
 	</div>
 
-	<script src="picturePolyfill.js"></script>
+	<script src="dist/picturePolyfill.min.js"></script>
 	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 </body>
