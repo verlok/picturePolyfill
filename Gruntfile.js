@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		// Metadata.
 		meta: {
-			version: '3.2.0'
+			version: '3.2.1'
 		},
 		banner: '/*! picturePolyfill - v<%= meta.version %> - ' +
 			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -18,8 +18,8 @@ module.exports = function(grunt) {
 				banner: '<%= banner %>'
 			},
 			dist: {
-				src: 'picturePolyfill.js',
-				dest: 'picturePolyfill.min.js'
+				src: 'src/picturePolyfill.js',
+				dest: 'dist/picturePolyfill.min.js'
 			}
 		},
 		jshint: {

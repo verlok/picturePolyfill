@@ -19,7 +19,7 @@ module.exports = function(config) {
 			'test/sinon-1.9.0.js',
 			'test/sinon-qunit-1.0.0.js',
 			'test/picturePolyfill.qunit.js',
-			'picturePolyfill.js'
+			'src/picturePolyfill.js'
 		],
 
 
