@@ -368,7 +368,9 @@ var picturePolyfill = (function(w) {
 				else {
 					this._setImg(pictureElement, {
 						src: srcAttribute,
-						alt: pictureElement.getAttribute('data-alt')
+						alt: pictureElement.getAttribute('data-alt'),
+						width: pictureElement.getAttribute('width'),
+						height: pictureElement.getAttribute('height')
 					});
 				}
 			}
