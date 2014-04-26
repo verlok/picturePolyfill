@@ -401,6 +401,23 @@ test("_setImg() should copy picture's width and height attributes to image", fun
 	strictEqual(images[0].getAttribute('height'), '69');
 });
 
+test("_setImg() should not load the same image twice", function() {
+	var testContainer, image;
+
+	$('body').append('<div id="testContainer"></div>');
+	testContainer = document.getElementById('testContainer');
+
+	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
+	testContainer = document.getElementById('testContainer');
+
+	image = testContainer.getElementsByTagName('img')[0];
+	this.spy(image, 'setAttribute');
+
+	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
+
+	ok(image.setAttribute.notCalled);
+})
+
 test("parse() is called at DOM ready", function() {
 	if (!document.createEvent) {
 		ok(true);

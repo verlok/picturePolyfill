@@ -213,7 +213,9 @@ var picturePolyfill = (function(w) {
 
 			// If image already exists, use it
 			if (imageElements.length) {
-				imageElements[0].setAttribute('src', attributes.src);
+				if (imageElements[0].getAttribute('src') !== attributes.src) {
+					imageElements[0].setAttribute('src', attributes.src);
+				}
 			}
 			// Else create the image
 			else {
