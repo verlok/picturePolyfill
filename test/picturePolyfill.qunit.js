@@ -359,8 +359,8 @@ test("_replacePicture creates a picture and the right image", function() {
 
 test("_setImg should first create then update an image", function() {
 	var testContainer, images;
-	$('body').append('<div id="testContainer"></div>');
 
+	$('body').append('<div id="testContainer"></div>');
 	testContainer = document.getElementById('testContainer');
 
 	// No images at start
@@ -383,6 +383,22 @@ test("_setImg should first create then update an image", function() {
 	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/2x2'); //src is changes
 	strictEqual(images[0].getAttribute('alt'), 'An image'); //alt didn't change
 
+});
+
+test("_setImg() should copy picture's width and height attributes to image", function() {
+	var testContainer, images;
+
+	$('body').append('<picture id="testContainer" width="666" height="69"></picture>');
+	testContainer = document.getElementById('testContainer');
+
+	// Check img width and height
+	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
+	testContainer = document.getElementById('testContainer');
+	images = testContainer.getElementsByTagName('img');
+	strictEqual(images.length, 1);
+
+	strictEqual(images[0].getAttribute('width'), '666');
+	strictEqual(images[0].getAttribute('height'), '69');
 });
 
 test("parse() is called at DOM ready", function() {

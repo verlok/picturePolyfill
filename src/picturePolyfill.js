@@ -208,7 +208,8 @@ var picturePolyfill = (function(w) {
 		 * @param attributes
 		 */
 		_setImg: function(pictureElement, attributes) {
-			var imageElements = pictureElement.getElementsByTagName('img');
+			var pictureAttributesToCopy, attributeName, attributeValue,
+				imageElements = pictureElement.getElementsByTagName('img');
 
 			// If image already exists, use it
 			if (imageElements.length) {
@@ -216,6 +217,15 @@ var picturePolyfill = (function(w) {
 			}
 			// Else create the image
 			else {
+				// Adding picture's attributes to the image (e.g. width, height)
+				pictureAttributesToCopy = ['width', 'height'];
+				for (var i = 0, len = pictureAttributesToCopy.length; i<len; i+=1) {
+					attributeName = pictureAttributesToCopy[i];
+					attributeValue = pictureElement.getAttribute(attributeName);
+					if (attributeValue) {
+						attributes[attributeName] = attributeValue;
+					}
+				}
 				if (this._appendSupport) {
 					this._appendImg(pictureElement, attributes);
 				}
