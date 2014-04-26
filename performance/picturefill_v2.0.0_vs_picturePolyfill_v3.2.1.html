@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>PicturePolyfill 3.0.0 vs Picturefill 1.2.1 performance test</title>
+	<style>
+		body { margin: 0; padding: 0; text-align: center; }
+		img { width: 100%; height: auto; margin-bottom: 1px; }
+		.name { font-family: monospace }
+	</style>
+<script>
+	/*! Picturefill - v2.0.0-alpha - 2014-04-17
+	 * http://scottjehl.github.io/picturefill
+	 * Copyright (c) 2014 https://github.com/scottjehl/picturefill/blob/master/Authors.txt; Licensed MIT */
+	window.matchMedia||(window.matchMedia=function(){"use strict";var a=window.styleMedia||window.media;if(!a){var b=document.createElement("style"),c=document.getElementsByTagName("script")[0],d=null;b.type="text/css",b.id="matchmediajs-test",c.parentNode.insertBefore(b,c),d="getComputedStyle"in window&&window.getComputedStyle(b,null)||b.currentStyle,a={matchMedium:function(a){var c="@media "+a+"{ #matchmediajs-test { width: 1px; } }";return b.styleSheet?b.styleSheet.cssText=c:b.textContent=c,"1px"===d.width}}}return function(b){return{matches:a.matchMedium(b||"all"),media:b||"all"}}}()),function(a,b){"use strict";function c(a){var b,c,d,f,g,h;a=a||{},b=a.elements||e.getAllElements();for(var i=0,j=b.length;j>i;i++)if(c=b[i],d=c.nodeName,f=void 0,g=void 0,h=void 0,c[e.ns]||(c[e.ns]={}),a.reevaluate||!c[e.ns].evaluated){if("PICTURE"===d){if(e.removeVideoShim(c),f=e.getMatch(c),f===!1)continue;h=c.getElementsByTagName("img")[0]}else f=void 0,h=c;h&&(h[e.ns]||(h[e.ns]={}),h.srcset&&e.dodgeSrcset(h),f?(g=e.processSourceSet(f),e.applyBestCandidate(g,h)):(g=e.processSourceSet(h),(void 0===h.srcset||h.hasAttribute("sizes"))&&e.applyBestCandidate(g,h)),c[e.ns].evaluated=!0)}}function d(){c();var d=setInterval(function(){return a.picturefill(),/^loaded|^i|^c/.test(b.readyState)?void clearInterval(d):void 0},250);if(a.addEventListener){var e;a.addEventListener("resize",function(){a.clearTimeout(e),e=a.setTimeout(function(){c({reevaluate:!0})},60)},!1)}}if(!a.HTMLPictureElement){b.createElement("picture"),b.createElement("source");var e={};e.ns="picturefill",e.srcsetSupported=void 0!==(new a.Image).srcset,e.trim=function(a){return a.trim?a.trim():a.replace(/^\s+|\s+$/g,"")},e.endsWith=function(a,b){return a.endsWith?a.endsWith(b):-1!==a.indexOf(b,a.length-b.length)},e.matchesMedia=function(b){return a.matchMedia&&a.matchMedia(b).matches},e.getDpr=function(){return a.devicePixelRatio||1},e.getWidthFromLength=function(a){return e.lengthEl||(e.lengthEl=b.createElement("div"),b.documentElement.insertBefore(e.lengthEl,b.documentElement.firstChild)),e.lengthEl.style.cssText="width: "+a+";",e.lengthEl.offsetWidth},e.types={},e.types["image/svg+xml"]=b.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image","1.1"),e.types["image/webp"]=function(){var b=new a.Image,d="image/webp";b.onerror=function(){e.types[d]=!1,c()},b.onload=function(){e.types[d]=1===b.width,c()},b.src="data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA="},e.verifyTypeSupport=function(a){var b=a.getAttribute("type");return null===b||""===b?!0:"function"==typeof e.types[b]?(e.types[b](),"pending"):e.types[b]},e.parseSize=function(a){var b=/(\([^)]+\))?\s*(.+)/g.exec(a);return{media:b&&b[1],length:b&&b[2]}},e.findWidthFromSourceSize=function(a){for(var b,c=e.trim(a).split(/\s*,\s*/),d=0,f=c.length;f>d;d++){var g=c[d],h=e.parseSize(g),i=h.length,j=h.media;if(i){if(!j){b=i;break}if(e.matchesMedia(j)){b=i;break}}}if(!b)return 300;var k=e.getWidthFromLength(b);return k},e.getCandidatesFromSourceSet=function(a,b){var c,d=e.trim(a).split(/\s*,\s*/),f=[];b&&(c=e.findWidthFromSourceSize(b));for(var g=0,h=d.length;h>g;g++){var i,j=d[g],k=j.split(/\s+/),l=k[1];!l||"w"!==l.slice(-1)&&"x"!==l.slice(-1)||(l=l.slice(0,-1)),i=b?parseFloat((parseInt(l,10)/c).toFixed(2)):l?parseFloat(l,10):1;var m={url:k[0],resolution:i};f.push(m)}return f},e.dodgeSrcset=function(a){a.srcset&&(a[e.ns].srcset=a.srcset,a.removeAttribute("srcset"))},e.processSourceSet=function(a){var b=a.getAttribute("srcset"),c=a.getAttribute("sizes"),d=[];return"IMG"===a.nodeName&&a[e.ns]&&a[e.ns].srcset&&(b=a[e.ns].srcset),b&&(d=e.getCandidatesFromSourceSet(b,c)),d},e.applyBestCandidate=function(a,b){var c,d,f;a.sort(e.ascendingSort),d=a.length,f=a[d-1];for(var g=0;d>g;g++)if(c=a[g],c.resolution>=e.getDpr()){f=c;break}e.endsWith(b.src,f.url)||(b.src=f.url,b.currentSrc=b.src)},e.ascendingSort=function(a,b){return a.resolution-b.resolution},e.removeVideoShim=function(a){var b=a.getElementsByTagName("video");if(b.length){for(var c=b[0],d=c.getElementsByTagName("source");d.length;)a.insertBefore(d[0],c);c.parentNode.removeChild(c)}},e.getAllElements=function(){for(var a=b.getElementsByTagName("picture"),c=[],d=b.getElementsByTagName("img"),f=0,g=a.length+d.length;g>f;f++)if(f<a.length)c[f]=a[f];else{var h=d[f-a.length];"PICTURE"!==h.parentNode.nodeName&&(e.srcsetSupported&&h.getAttribute("sizes")||null!==h.getAttribute("srcset"))&&c.push(h)}return c},e.getMatch=function(a){for(var b,c=a.getElementsByTagName("source"),d=0,f=c.length;f>d;d++){var g=c[d],h=g.getAttribute("media");if(g.hasAttribute("srcset")&&(!h||e.matchesMedia(h))){var i=e.verifyTypeSupport(g);if(i===!0){b=g;break}if("pending"===i)return!1}}return b},d(),c._=e,"object"==typeof module&&"object"==typeof module.exports?module.exports=c:"object"==typeof define&&define.amd?define(function(){return c}):"object"==typeof a&&(a.picturefill=c)}}(this,this.document);
+
+	/*! picturePolyfill - v3.2.1 - 2014-04-21
+	 * https://github.com/verlok/picturePolyfill/
+	 * Copyright (c) 2014 Andrea "verlok" Verlicchi; Licensed MIT */
+	var picturePolyfill=function(a){"use strict";function b(){var a,b,c=document.createElement("img");if(a=document.getElementsByTagName("picture"),b=a[0],!a.length)return!1;try{return b.appendChild(c),b.removeChild(c),!0}catch(d){return!1}}var c,d,e,f=100,g=!1;return{_appendImg:function(a,b){var c=document.createElement("img");this._setAttrs(c,b),a.appendChild(c)},_setAttrs:function(a,b){for(var c in b)a.setAttribute(c,b[c])},_getAttrs:function(a,b){for(var c,d,e={},f=0,g=b.length;g>f;f+=1)c=b[f],d=a.getAttribute(c),d&&(e[c]=d);return e},_getAttrsList:function(a){for(var b=[],c=0,d=a.attributes,e=d.length;e>c;c++)b.push(d.item(c).nodeName);return b},_replacePicture:function(a,b){var c=document.createElement("picture"),d=this._getAttrs(a,this._getAttrsList(a));this._appendImg(c,b),this._setAttrs(c,d),a.parentNode.replaceChild(c,a)},_getSrcsetArray:function(a){for(var b,c,d,e=[],f=a.split(","),g=0,h=f.length;h>g;g+=1)b=f[g].trim().split(" "),d=1===b.length?1:parseFloat(b[b.length-1],10),c=b[0],e.push({pxr:d,src:c});return e.sort(function(a,b){var c=a.pxr,d=b.pxr;return d>c?-1:c>d?1:0})},_getSrcFromArray:function(a,b){var c=0,d=a.length,e=-1;if(!d)return null;do(a[c].pxr>=b||c===d-1)&&(e=c),c+=1;while(!(e>-1||c>=d));return a[e].src},_getSrcFromData:function(b){for(var c,d,e,f,g=0,h=b.length;h>g;g+=1)d=b[g],e=d.media,f=d.srcset,(!e||a.matchMedia(e).matches)&&(c=f?this._getSrcFromArray(f,this._pxRatio):d.src);return c},_resetImg:function(a){var b=a.getElementsByTagName("img");b.length&&a.removeChild(b[0])},_setImg:function(a,b){var c=a.getElementsByTagName("img");c.length?c[0].setAttribute("src",b.src):this._appendSupport?this._appendImg(a,b):this._replacePicture(a,b)},_getSourcesData:function(a){for(var b,c,d=[],e=a.getElementsByTagName("source"),f=0,g=e.length;g>f;f+=1)b=e[f],c=this._getAttrs(b,this._getAttrsList(b)),c.srcset&&(c.srcset=this._getSrcsetArray(c.srcset)),d.push(c);return d},_addListeners:function(){function b(){picturePolyfill.parse(document)}function c(){clearTimeout(e),e=setTimeout(b,f)}return!this.isUseful||g?!1:(a.addEventListener?(a.addEventListener("resize",c),a.addEventListener("DOMContentLoaded",function(){b(),a.removeEventListener("load",b)}),a.addEventListener("load",b)):a.attachEvent&&(a.attachEvent("onload",b),a.attachEvent("onresize",c)),void(g=!0))},initialize:function(){this._pxRatio=a.devicePixelRatio||1,this._mqSupport=!!a.matchMedia&&null!==a.matchMedia("only all")&&a.matchMedia("only all").matches,this._appendSupport=b(),this.isUseful=!a.HTMLPictureElement,c=[],d=0,this._addListeners()},parse:function(a){var b,e,f,g;if(!this.isUseful)return 0;f=(a||document).getElementsByTagName("picture");for(var h=0,i=f.length;i>h;h+=1)e=f[h],this._mqSupport?(b=c[e.getAttribute("data-cache-index")],b||(b=this._getSourcesData(e),c[d]=b,e.setAttribute("data-cache-index",d),d+=1),g=this._getSrcFromData(b)):g=e.getAttribute("data-default-src"),g?this._setImg(e,{src:g,alt:e.getAttribute("data-alt")}):this._resetImg(e);return h}}}(window);picturePolyfill.initialize();
+</script>
+</head>
+<body>
+
+	<h1>PicturePolyfill 3.2.1 vs Picturefill 2.0.0 performance test</h1>
+
+	<p>This test is published in jsPerf: <a href=""><span class="name">picturePolyfill 3.2.1</span> vs <span class="name">picturefill 2.0.0</span> performance test</a></p>
+	<p>See picturePolyfill <a href="https://github.com/verlok/picturePolyfill">GitHub repo page</a> and <a href="http://verlok.github.io/picturePolyfill/">online DEMO</a>.</p>
+
+	<div class="element">
+		<h3>With HD (Retina) display support</h3>
+		<picture data-alt="A beautiful responsive image" data-default-src="../img/960x960.gif">
+			<source srcset="../img/480x480.gif, ../img/480x480x2.gif 2x"/>
+			<source srcset="../img/512x512.gif, ../img/512x512x2.gif 2x" media="(min-width: 481px)"/>
+			<source srcset="../img/720x720.gif, ../img/720x720x2.gif 2x" media="(min-width: 1025px)"/>
+			<source srcset="../img/960x960.gif, ../img/960x960x2.gif 2x" media="(min-width: 1441px)"/>
+			<noscript>
+				<img src="../img/960x960.gif" alt="A beautiful responsive image"/>
+			</noscript>
+		</picture>
+	</div>
+	<div class="element">
+		<h3>Without HD (Retina) display support</h3>
+		<picture data-alt="A beautiful responsive image" data-default-src="../img/960x960.gif">
+			<source src="../img/480x480.gif"/>
+			<source src="../img/512x512.gif" media="(min-width: 481px)"/>
+			<source src="../img/720x720.gif" media="(min-width: 1025px)"/>
+			<source src="../img/960x960.gif" media="(min-width: 1441px)"/>
+			<noscript>
+				<img src="../img/960x960.gif" alt="A beautiful responsive image"/>
+			</noscript>
+		</picture>
+	</div>
+
+</body>
+</html>
