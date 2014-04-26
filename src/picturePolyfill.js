@@ -366,17 +366,10 @@ var picturePolyfill = (function(w) {
 					this._resetImg(pictureElement);
 				}
 				else {
-					var width = pictureElement.getAttribute('width'),
-						height = pictureElement.getAttribute('height'),
-						alt = pictureElement.getAttribute('data-alt'),
-						attributes = {};
-
-					if (width) { attributes.width = width; }
-					if (height) { attributes.height = height; }
-					if (alt) { attributes.alt = alt; }
-
-					attributes.src = srcAttribute;
-					this._setImg(pictureElement, attributes);
+					this._setImg(pictureElement, {
+						src: srcAttribute,
+						alt: pictureElement.getAttribute('data-alt')
+					});
 				}
 			}
 

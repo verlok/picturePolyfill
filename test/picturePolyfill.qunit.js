@@ -640,29 +640,6 @@ test("parse() after a DOM injection (without MQ support)", function(){
 
 });
 
-test('parse() copies picture "width" and "height" attributes to image', function() {
-	var image;
-
-	$('body').append('<div id="testContainer">\
-		<div id="innerA">\
-			<picture id="first" data-default-src="http://placehold.it/1x1" width="1" height="1">\
-				<source srcset="http://placehold.it/1x1, http://placehold.it/2x2 2x"/>\
-			</picture>\
-		</div>\
-	</div>');
-
-	picturePolyfill.initialize();
-
-	picturePolyfill._pxRatio = 1;
-	picturePolyfill.parse();
-
-	image = document.getElementsByTagName('img')[0];
-
-	strictEqual(image.getAttribute('src'), 'http://placehold.it/1x1');
-	strictEqual(image.getAttribute('width'), '1');
-	strictEqual(image.getAttribute('height'), '1');
-});
-
 test("call parse won't give errors when polyfill isn't required", function() {
 	this.spy(picturePolyfill, "parse");
 	picturePolyfill.initialize();
