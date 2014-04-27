@@ -208,12 +208,16 @@ var picturePolyfill = (function(w) {
 		 * @param attributes
 		 */
 		_setImg: function(pictureElement, attributes) {
-			var pictureAttributesToCopy, attributeName, attributeValue,
+			var pictureAttributesToCopy, attributeName, attributeValue, imgEl, imgSrc,
 				imageElements = pictureElement.getElementsByTagName('img');
 
 			// If image already exists, use it
 			if (imageElements.length) {
-				imageElements[0].setAttribute('src', attributes.src);
+				imgSrc = attributes.src;
+				imgEl = imageElements[0];
+				if (imgEl.getAttribute('src') !== imgSrc) {
+					imgEl.setAttribute('src', imgSrc);
+				}
 			}
 			// Else create the image
 			else {
