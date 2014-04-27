@@ -394,3 +394,4 @@ var picturePolyfill = (function(w) {
 }(window));
 
 picturePolyfill.initialize();
+picturePolyfill.parse();
