@@ -177,7 +177,7 @@ Calling `picturePolyfill.parse(element)` (where `element` is a specific DOM node
 
 ## Browser support
 
-PicturePolyfill supports all modern browsers and **down to Internet Explorer 7** (it wasn't tested on IE6).
+PicturePolyfill supports all modern browsers and **down to Internet Explorer 7**.
 
 * On **Modern Browsers, Internet Explorer 10 and above**: the images will be loaded depending on the matched media query
 * On **Internet Explorer 7 to 9**: the content of the `data-default-src` attribute will be used to reference the image source.
