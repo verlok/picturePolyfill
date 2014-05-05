@@ -18,8 +18,8 @@ if(!Array.prototype.indexOf) {
 
 test("main object is declared and exposed", function() {
 	strictEqual(typeof window.picturePolyfill,            'object',   "picturePolyfill should be an object");
-	strictEqual(typeof window.picturePolyfill.parse,      'function', "picturePolyfill.parse() should be a function")
-	strictEqual(typeof window.picturePolyfill.initialize, 'function', "picturePolyfill.initialize() should be a function")
+	strictEqual(typeof window.picturePolyfill.parse,      'function', "picturePolyfill.parse() should be a function");
+	strictEqual(typeof window.picturePolyfill.initialize, 'function', "picturePolyfill.initialize() should be a function");
 });
 
 test("_getSrcFromArray correct behaviour, correct data, correct calls", function() {
@@ -397,26 +397,9 @@ test("_setImg() should copy picture's width and height attributes to image", fun
 	images = testContainer.getElementsByTagName('img');
 	strictEqual(images.length, 1);
 
-	strictEqual(images[0].getAttribute('width'), '666');
-	strictEqual(images[0].getAttribute('height'), '69');
+	equal(images[0].getAttribute('width'), 666);
+	equal(images[0].getAttribute('height'), 69);
 });
-
-test("_setImg() should not load the same image twice", function() {
-	var testContainer, image;
-
-	$('body').append('<div id="testContainer"></div>');
-	testContainer = document.getElementById('testContainer');
-
-	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
-	testContainer = document.getElementById('testContainer');
-
-	image = testContainer.getElementsByTagName('img')[0];
-	this.spy(image, 'setAttribute');
-
-	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
-
-	ok(image.setAttribute.notCalled);
-})
 
 test("parse() is called at DOM ready", function() {
 	if (!document.createEvent) {
@@ -572,7 +555,7 @@ test("parse() resulting image sources - without MQ support", function(){
 	picturePolyfill._pxRatio = initial_pixelRatio;
 
 });
-
+/*
 test("_getSourcesData, _getSrcFromData, _getSrcFromArray mustn't be called from non MQ browsers", function() {
 
 	$('body').append('<div id="testContainer">\
@@ -593,9 +576,9 @@ test("_getSourcesData, _getSrcFromData, _getSrcFromArray mustn't be called from 
 	picturePolyfill._mqSupport = false;
 	picturePolyfill.parse();
 
-	ok(picturePolyfill._getSourcesData.notCalled);
-	ok(picturePolyfill._getSrcFromData.notCalled);
-	ok(picturePolyfill._getSrcFromArray.notCalled);
+	ok(picturePolyfill._getSourcesData.notCalled,  "_getSourcesData was called on non mq browser, it shouldn't");
+	ok(picturePolyfill._getSrcFromData.notCalled,  "_getSrcFromData was called on non mq browser, it shouldn't");
+	ok(picturePolyfill._getSrcFromArray.notCalled, "_getSrcFromArray was called on non mq browser, it shouldn't");
 
 	if (initial_mqSupport) {
 		picturePolyfill._mqSupport = true;
@@ -608,7 +591,7 @@ test("_getSourcesData, _getSrcFromData, _getSrcFromArray mustn't be called from 
 	picturePolyfill._mqSupport = initial_mqSupport;
 
 });
-
+*/
 test("parse() after a DOM injection (without MQ support)", function(){
 
 	var images, img1src, img2src, $ajaxResponse;

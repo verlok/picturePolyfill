@@ -355,27 +355,30 @@ var picturePolyfill = (function(w) {
 			var sourcesData,
 				pictureElement,
 				pictureElements,
-				srcAttribute;
+				srcAttribute,
+				mqSupport;
 
 			if (!this.isUseful) { return 0; }
 
 			pictureElements = (element || document).getElementsByTagName('picture');
+			mqSupport = this._mqSupport;
 
 			for (var i=0, len=pictureElements.length; i<len; i+=1) {
 				pictureElement = pictureElements[i];
-				if (!this._mqSupport) {
-					srcAttribute = pictureElement.getAttribute("data-default-src");
+				// Try to read sources data from cache
+				sourcesData = _cacheArray[pictureElement.getAttribute('data-cache-index')];
+				// If empty, try to read sources data from the picture element, then cache them
+				if (!sourcesData) {
+					sourcesData = this._getSourcesData(pictureElement);
+					_cacheArray[_cacheIndex] = sourcesData;
+					pictureElement.setAttribute('data-cache-index', _cacheIndex);
+					_cacheIndex+=1;
 				}
-				else {
-					sourcesData = _cacheArray[pictureElement.getAttribute('data-cache-index')];
-					if (!sourcesData) {
-						sourcesData = this._getSourcesData(pictureElement);
-						_cacheArray[_cacheIndex] = sourcesData;
-						pictureElement.setAttribute('data-cache-index', _cacheIndex);
-						_cacheIndex+=1;
-					}
-					srcAttribute = this._getSrcFromData(sourcesData);
-				}
+				// If no sourcesData retrieved or media queries are not supported, read from the default src
+				srcAttribute = (sourcesData.length === 0 || !mqSupport) ?
+					pictureElement.getAttribute('data-default-src') :
+					this._getSrcFromData(sourcesData);
+				// If there mustn't be any image, remove it, else set it (create/ update)
 				if (!srcAttribute) {
 					this._resetImg(pictureElement);
 				}
