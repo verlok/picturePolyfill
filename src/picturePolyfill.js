@@ -1,14 +1,14 @@
 /* PicturePolyfill - Responsive Images that work today. (and mimic the proposed Picture element with span elements). Author: Andrea Verlicchi | License: MIT/GPLv2 */
 
-var picturePolyfill = (function(w) {
+var picturePolyfill = (function (w) {
 
 	"use strict";
 
-	var _cacheArray,
-		_cacheIndex,
-		_resizeTimer,
-		_timeAfterResize = 100,
-		_areListenersActive = false;
+	var cacheArray,
+		cacheLatestIndex,
+		resizeTimer,
+		timeAfterResize = 100,
+		areListenersActive = false;
 
 	/**
 	 * Detects old browser checking if browser can append images to pictures
@@ -31,7 +31,7 @@ var picturePolyfill = (function(w) {
 			firstPicture.removeChild(newImg);
 			return true;
 		}
-		catch(e) {
+		catch (e) {
 			return false;
 		}
 	}
@@ -44,7 +44,7 @@ var picturePolyfill = (function(w) {
 		 * @param attributes
 		 * @private
 		 */
-		_appendImg: function(element, attributes) {
+		_appendImg: function (element, attributes) {
 			var newImg = document.createElement('img');
 			this._setAttrs(newImg, attributes);
 			element.appendChild(newImg);
@@ -56,7 +56,7 @@ var picturePolyfill = (function(w) {
 		 * @param attributes
 		 * @private
 		 */
-		_setAttrs: function(element, attributes) {
+		_setAttrs: function (element, attributes) {
 			for (var attributeName in attributes) {
 				element.setAttribute(attributeName, attributes[attributeName]);
 			}
@@ -69,9 +69,9 @@ var picturePolyfill = (function(w) {
 		 * @returns {{}}
 		 * @private
 		 */
-		_getAttrs: function(element, attributes) {
+		_getAttrs: function (element, attributes) {
 			var ret = {}, attributeName, attributeValue;
-			for (var i=0, len=attributes.length; i<len; i+=1) {
+			for (var i = 0, len = attributes.length; i < len; i += 1) {
 				attributeName = attributes[i];
 				attributeValue = element.getAttribute(attributeName);
 				if (attributeValue) {
@@ -87,9 +87,9 @@ var picturePolyfill = (function(w) {
 		 * @returns {Array}
 		 * @private
 		 */
-		_getAttrsList: function(element) {
+		_getAttrsList: function (element) {
 			var arr = [];
-			for (var i=0, attributes=element.attributes, l=attributes.length; i<l; i++){
+			for (var i = 0, attributes = element.attributes, l = attributes.length; i < l; i++) {
 				arr.push(attributes.item(i).nodeName);
 			}
 			return arr;
@@ -101,7 +101,7 @@ var picturePolyfill = (function(w) {
 		 * @param attributes
 		 * @private
 		 */
-		_replacePicture: function(picture, attributes) {
+		_replacePicture: function (picture, attributes) {
 			var newPicture = document.createElement("picture"),
 				pictureAttributes = this._getAttrs(picture, this._getAttrsList(picture));
 			this._appendImg(newPicture, attributes);
@@ -116,29 +116,33 @@ var picturePolyfill = (function(w) {
 		 * @returns {Array}
 		 * @private
 		 */
-		_getSrcsetArray: function(srcset) {
+		_getSrcsetArray: function (srcset) {
 			var srcSetElement,
 				source,
 				density,
 				ret = [],
 				srcSetElements = srcset.split(',');
 
-			for (var i=0, len=srcSetElements.length; i<len; i+=1) {
+			for (var i = 0, len = srcSetElements.length; i < len; i += 1) {
 				srcSetElement = srcSetElements[i].trim().split(' ');
 				if (srcSetElement.length === 1) {
 					density = 1;
 				}
 				else {
-					density = parseFloat(srcSetElement[srcSetElement.length-1], 10);
+					density = parseFloat(srcSetElement[srcSetElement.length - 1], 10);
 				}
 				source = srcSetElement[0];
 				ret.push({pxr: density, src: source});
 			}
 
-			return ret.sort(function(hash1, hash2) {
+			return ret.sort(function (hash1, hash2) {
 				var pxr1 = hash1.pxr, pxr2 = hash2.pxr;
-				if (pxr1 < pxr2) { return -1; }
-				if (pxr1 > pxr2) { return  1; }
+				if (pxr1 < pxr2) {
+					return -1;
+				}
+				if (pxr1 > pxr2) {
+					return  1;
+				}
 				return 0;
 			});
 		},
@@ -151,16 +155,18 @@ var picturePolyfill = (function(w) {
 		 * @returns string || null
 		 * @private
 		 */
-		_getSrcFromArray: function(array, pixelRatio) {
-			var i=0,
+		_getSrcFromArray: function (array, pixelRatio) {
+			var i = 0,
 				len = array.length,
-				breakPoint=-1;
-			if (!len) {	return null; }
+				breakPoint = -1;
+			if (!len) {
+				return null;
+			}
 			do {
-				if (array[i].pxr >= pixelRatio || i === len-1) {
+				if (array[i].pxr >= pixelRatio || i === len - 1) {
 					breakPoint = i;
 				}
-				i+=1;
+				i += 1;
 			} while (!(breakPoint > -1 || i >= len));
 			return array[breakPoint].src;
 		},
@@ -172,13 +178,13 @@ var picturePolyfill = (function(w) {
 		 * @returns {string||undefined}
 		 * @private
 		 */
-		_getSrcFromData: function(sourcesData) {
+		_getSrcFromData: function (sourcesData) {
 			var matchedSrc,
 				sourceData,
 				media,
 				srcset;
 
-			for (var i=0, len=sourcesData.length; i<len; i+=1) {
+			for (var i = 0, len = sourcesData.length; i < len; i += 1) {
 				sourceData = sourcesData[i];
 				media = sourceData.media;
 				srcset = sourceData.srcset;
@@ -194,7 +200,7 @@ var picturePolyfill = (function(w) {
 		 * @param pictureElement
 		 * @private
 		 */
-		_resetImg: function(pictureElement) {
+		_resetImg: function (pictureElement) {
 			var imageElements = pictureElement.getElementsByTagName('img');
 			if (imageElements.length) {
 				pictureElement.removeChild(imageElements[0]);
@@ -207,15 +213,29 @@ var picturePolyfill = (function(w) {
 		 * @param pictureElement {Node}
 		 * @param attributes
 		 */
-		_setImg: function(pictureElement, attributes) {
-			var imageElements = pictureElement.getElementsByTagName('img');
+		_setImg: function (pictureElement, attributes) {
+			var pictureAttributesToCopy, attributeName, attributeValue, imgEl, imgSrc,
+				imageElements = pictureElement.getElementsByTagName('img');
 
 			// If image already exists, use it
 			if (imageElements.length) {
-				imageElements[0].setAttribute('src', attributes.src);
+				imgSrc = attributes.src;
+				imgEl = imageElements[0];
+				if (imgEl.getAttribute('src') !== imgSrc) {
+					imgEl.setAttribute('src', imgSrc);
+				}
 			}
 			// Else create the image
 			else {
+				// Adding picture's attributes to the image (e.g. width, height)
+				pictureAttributesToCopy = ['width', 'height'];
+				for (var i = 0, len = pictureAttributesToCopy.length; i < len; i += 1) {
+					attributeName = pictureAttributesToCopy[i];
+					attributeValue = pictureElement.getAttribute(attributeName);
+					if (attributeValue) {
+						attributes[attributeName] = attributeValue;
+					}
+				}
 				if (this._appendSupport) {
 					this._appendImg(pictureElement, attributes);
 				}
@@ -230,13 +250,13 @@ var picturePolyfill = (function(w) {
 		 * generate the array or string for the SrcSetArray
 		 * @param {Array} pictureElement the starting element to parse DOM into. If not passed, it parses the whole document.
 		 */
-		_getSourcesData: function(pictureElement) {
+		_getSourcesData: function (pictureElement) {
 			var sourcesData = [],
 				sourceElement,
 				sourceData,
 				foundSources = pictureElement.getElementsByTagName('source');
 
-			for (var i=0, len = foundSources.length; i<len; i+=1) {
+			for (var i = 0, len = foundSources.length; i < len; i += 1) {
 				sourceElement = foundSources[i];
 				sourceData = this._getAttrs(sourceElement, this._getAttrsList(sourceElement));
 				if (sourceData.srcset) {
@@ -251,9 +271,11 @@ var picturePolyfill = (function(w) {
 		 * Adds listeners to load and resize event
 		 * @private
 		 */
-		_addListeners: function() {
+		_addListeners: function () {
 
-			if (!this.isUseful || _areListenersActive) { return false; }
+			if (!this.isUseful || areListenersActive) {
+				return false;
+			}
 
 			function parseDocument() {
 				picturePolyfill.parse(document);
@@ -262,13 +284,13 @@ var picturePolyfill = (function(w) {
 			// Manage resize event only if they've passed 100 milliseconds between a resize event and another
 			// to avoid the script to slow down browsers that animate resize or when browser edge is being manually dragged
 			function parseDocumentAfterTimeout() {
-				clearTimeout(_resizeTimer);
-				_resizeTimer = setTimeout(parseDocument, _timeAfterResize);
+				clearTimeout(resizeTimer);
+				resizeTimer = setTimeout(parseDocument, timeAfterResize);
 			}
 
 			if (w.addEventListener) {
 				w.addEventListener('resize', parseDocumentAfterTimeout);
-				w.addEventListener('DOMContentLoaded', function(){
+				w.addEventListener('DOMContentLoaded', function () {
 					parseDocument();
 					w.removeEventListener('load', parseDocument);
 				});
@@ -279,13 +301,13 @@ var picturePolyfill = (function(w) {
 				w.attachEvent('onresize', parseDocumentAfterTimeout);
 			}
 
-			_areListenersActive = true;
+			areListenersActive = true;
 		},
 
 		/**
 		 * Initialize  and resize event handlers
 		 */
-		initialize: function() {
+		initialize: function () {
 
 			/**
 			 * The device pixel ratio. 1 for standard displays, 2+ for HD displays
@@ -319,14 +341,14 @@ var picturePolyfill = (function(w) {
 			 * @type {Array}
 			 * @private
 			 */
-			_cacheArray = [];
+			cacheArray = [];
 
 			/**
 			 * Cache index, incremental
 			 * @type {number}
 			 * @private
 			 */
-			_cacheIndex = 0;
+			cacheLatestIndex = 0;
 
 			// Add listeners (listeners are added once)
 			this._addListeners();
@@ -337,31 +359,50 @@ var picturePolyfill = (function(w) {
 		 * generate the images or updates their src attribute.
 		 * @param {Node} element (the starting element to parse DOM into. REQUIRED)
 		 */
-		parse: function(element) {
+		parse: function (element, readFromCache) {
 			var sourcesData,
 				pictureElement,
 				pictureElements,
-				srcAttribute;
+				srcAttribute,
+				mqSupport,
+				cacheIndex;
 
-			if (!this.isUseful) { return 0; }
+			// Do nothing if picture is supported
+			if (!this.isUseful) {
+				return 0;
+			}
+
+			// Default readFromCache parameter value
+			if (readFromCache === null) {
+				readFromCache = true;
+			}
 
 			pictureElements = (element || document).getElementsByTagName('picture');
+			mqSupport = this._mqSupport;
 
-			for (var i=0, len=pictureElements.length; i<len; i+=1) {
+			for (var i = 0, len = pictureElements.length; i < len; i += 1) {
+				sourcesData = null;
 				pictureElement = pictureElements[i];
-				if (!this._mqSupport) {
-					srcAttribute = pictureElement.getAttribute("data-default-src");
-				}
-				else {
-					sourcesData = _cacheArray[pictureElement.getAttribute('data-cache-index')];
-					if (!sourcesData) {
-						sourcesData = this._getSourcesData(pictureElement);
-						_cacheArray[_cacheIndex] = sourcesData;
-						pictureElement.setAttribute('data-cache-index', _cacheIndex);
-						_cacheIndex+=1;
+				// Try to read sources data from cache
+				if (readFromCache) {
+					cacheIndex = pictureElement.getAttribute('data-cache-index');
+					if (cacheIndex !== null) {
+						sourcesData = cacheArray[cacheIndex];
 					}
-					srcAttribute = this._getSrcFromData(sourcesData);
 				}
+				// If no sources are found in cache, try to read sources data from the picture element, then cache them
+				if (!sourcesData) {
+					sourcesData = this._getSourcesData(pictureElement);
+					// Write in cache
+					cacheArray[cacheLatestIndex] = sourcesData;
+					pictureElement.setAttribute('data-cache-index', cacheLatestIndex);
+					cacheLatestIndex += 1;
+				}
+				// If no sourcesData retrieved or media queries are not supported, read from the default src
+				srcAttribute = (sourcesData.length === 0 || !mqSupport) ?
+					pictureElement.getAttribute('data-default-src') :
+					this._getSrcFromData(sourcesData);
+				// If there mustn't be any image, remove it, else set it (create/ update)
 				if (!srcAttribute) {
 					this._resetImg(pictureElement);
 				}
@@ -380,3 +421,4 @@ var picturePolyfill = (function(w) {
 }(window));
 
 picturePolyfill.initialize();
+picturePolyfill.parse();
