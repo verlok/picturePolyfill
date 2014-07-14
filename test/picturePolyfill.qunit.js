@@ -555,43 +555,7 @@ test("parse() resulting image sources - without MQ support", function(){
 	picturePolyfill._pxRatio = initial_pixelRatio;
 
 });
-/*
-test("_getSourcesData, _getSrcFromData, _getSrcFromArray mustn't be called from non MQ browsers", function() {
 
-	$('body').append('<div id="testContainer">\
-		<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
-			<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-			<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
-		</picture>\
-	</div>');
-
-	this.spy(picturePolyfill, "_getSourcesData");
-	this.spy(picturePolyfill, "_getSrcFromData");
-	this.spy(picturePolyfill, "_getSrcFromArray");
-
-	picturePolyfill.initialize();
-
-	var initial_mqSupport = picturePolyfill._mqSupport;
-
-	picturePolyfill._mqSupport = false;
-	picturePolyfill.parse();
-
-	ok(picturePolyfill._getSourcesData.notCalled,  "_getSourcesData was called on non mq browser, it shouldn't");
-	ok(picturePolyfill._getSrcFromData.notCalled,  "_getSrcFromData was called on non mq browser, it shouldn't");
-	ok(picturePolyfill._getSrcFromArray.notCalled, "_getSrcFromArray was called on non mq browser, it shouldn't");
-
-	if (initial_mqSupport) {
-		picturePolyfill._mqSupport = true;
-		picturePolyfill.parse();
-		ok(picturePolyfill._getSourcesData.called);
-		ok(picturePolyfill._getSrcFromData.called);
-		ok(picturePolyfill._getSrcFromArray.called);
-	}
-
-	picturePolyfill._mqSupport = initial_mqSupport;
-
-});
-*/
 test("parse() after a DOM injection (without MQ support)", function(){
 
 	var images, img1src, img2src, $ajaxResponse;
@@ -643,6 +607,64 @@ test("parse() after a DOM injection (without MQ support)", function(){
 	images = document.getElementsByTagName('img');
 	strictEqual(images.length, 2);
 
+	img1src = images[0].getAttribute('src');
+	img2src = images[1].getAttribute('src');
+
+	strictEqual(img1src, 'http://placehold.it/1x1');
+	strictEqual(img2src, 'http://placehold.it/2x2');
+
+	// Restoring initial values
+
+	picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
+	picturePolyfill._pxRatio = initial_pixelRatio;
+
+});
+
+test("parse() with readFromCache true, then false", function() {
+
+	var images, img1src, img2src;
+
+	$('body').append('<div id="testContainer">\
+		<div id="innerA">\
+			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
+				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
+				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+			</picture>\
+		</div>\
+		<div id="innerB">\
+			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
+				<source src="http://placehold.it/4x4"/>\
+				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+			</picture>\
+		</div>\
+	</div>');
+
+	picturePolyfill.initialize();
+
+	// Media query support: no, pixel density: indifferent
+
+	var initial_areMediaQueriesSupported = picturePolyfill._mqSupport,
+		initial_pixelRatio = picturePolyfill._pxRatio;
+
+	picturePolyfill._pxRatio = null;
+	picturePolyfill._mqSupport = false;
+
+	// Parse with readFromCache true (default value)
+
+	picturePolyfill.parse(document);
+
+	images = document.getElementsByTagName('img');
+	img1src = images[0].getAttribute('src');
+	img2src = images[1].getAttribute('src');
+
+	strictEqual(img1src, 'http://placehold.it/1x1');
+	strictEqual(img2src, 'http://placehold.it/2x2');
+
+	// Parse with readFromCache false
+
+	picturePolyfill.parse(document, false);
+
+	images = document.getElementsByTagName('img');
 	img1src = images[0].getAttribute('src');
 	img2src = images[1].getAttribute('src');
 
