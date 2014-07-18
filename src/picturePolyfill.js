@@ -179,8 +179,7 @@ var picturePolyfill = (function (w) {
 		 * @private
 		 */
 		_getSrcFromData: function (sourcesData) {
-			var matchedSrc,
-				sourceData,
+			var sourceData,
 				media,
 				srcset;
 
@@ -189,10 +188,10 @@ var picturePolyfill = (function (w) {
 				media = sourceData.media;
 				srcset = sourceData.srcset;
 				if (!media || w.matchMedia(media).matches) {
-					matchedSrc = srcset ? this._getSrcFromArray(srcset, this._pxRatio) : sourceData.src;
+					return (srcset) ? this._getSrcFromArray(srcset, this._pxRatio) : sourceData.src;
 				}
 			}
-			return matchedSrc;
+			return null;
 		},
 
 		/**
