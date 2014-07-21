@@ -1,5 +1,13 @@
 /* PicturePolyfill - Responsive Images that work today. (and mimic the proposed Picture element with span elements). Author: Andrea Verlicchi | License: MIT/GPLv2 */
 
+/*
+ * TODO:
+ * ALSO MANAGE SRCSET, IT MIGHT BE ALREADY SUPPORTED BY THE BROWSER
+ * SO NO NEED TO SET SRC INDIVIDUALLY
+ * 1. TEST SRCSET SUPPORT SOMEHOW
+ * 2. IF SRCSET IS SUPPORTED, SET BOTH SRC AND SRCSET IN THE IMG TAG, ELSE SRC ONLY
+ * */
+
 var picturePolyfill = (function (w) {
 
 	"use strict";
@@ -10,57 +18,7 @@ var picturePolyfill = (function (w) {
 		timeAfterResize = 100,
 		areListenersActive = false;
 
-	/**
-	 * Detects old browser checking if browser can append images to pictures
-	 * @returns {boolean}
-	 */
-	function _detectAppendImageSupport() {
-		var newImg = document.createElement('img'),
-			pictures, firstPicture;
-
-		pictures = document.getElementsByTagName('picture');
-		firstPicture = pictures[0];
-
-		if (!pictures.length) {
-			// Can't determine support if no pictures are in the page. Worst case will do.
-			return false;
-		}
-
-		try {
-			firstPicture.appendChild(newImg);
-			firstPicture.removeChild(newImg);
-			return true;
-		}
-		catch (e) {
-			return false;
-		}
-	}
-
 	return {
-
-		/**
-		 * Appends an image element to a picture element
-		 * @param element
-		 * @param attributes
-		 * @private
-		 */
-		_appendImg: function (element, attributes) {
-			var newImg = document.createElement('img');
-			this._setAttrs(newImg, attributes);
-			element.appendChild(newImg);
-		},
-
-		/**
-		 * Set all the "attributes" to an "element"
-		 * @param element
-		 * @param attributes
-		 * @private
-		 */
-		_setAttrs: function (element, attributes) {
-			for (var attributeName in attributes) {
-				element.setAttribute(attributeName, attributes[attributeName]);
-			}
-		},
 
 		/**
 		 * Get all the "attributes" from an "element" and returns them as a hash
@@ -93,20 +51,6 @@ var picturePolyfill = (function (w) {
 				arr.push(attributes.item(i).nodeName);
 			}
 			return arr;
-		},
-
-		/**
-		 * Replaces the existing picture element with another picture element containing an image with the imgSrc source
-		 * @param picture
-		 * @param attributes
-		 * @private
-		 */
-		_replacePicture: function (picture, attributes) {
-			var newPicture = document.createElement("picture"),
-				pictureAttributes = this._getAttrs(picture, this._getAttrsList(picture));
-			this._appendImg(newPicture, attributes);
-			this._setAttrs(newPicture, pictureAttributes);
-			picture.parentNode.replaceChild(newPicture, picture);
 		},
 
 		/**
@@ -195,53 +139,50 @@ var picturePolyfill = (function (w) {
 		},
 
 		/**
-		 * Removes the image from the picture, when it doesn't have to be shown
-		 * @param pictureElement
-		 * @private
-		 */
-		_resetImg: function (pictureElement) {
-			var imageElements = pictureElement.getElementsByTagName('img');
-			if (imageElements.length) {
-				pictureElement.removeChild(imageElements[0]);
-			}
-		},
-
-		/**
 		 * Set the src attribute of the first image element inside passed pictureElement
 		 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
 		 * @param pictureElement {Node}
 		 * @param attributes
 		 */
-		_setImg: function (pictureElement, attributes) {
-			var pictureAttributesToCopy, attributeName, attributeValue, imgEl, imgSrc,
-				imageElements = pictureElement.getElementsByTagName('img');
+		_setImgSrc: function (pictureElement, attributes) {
+			var imageElements = pictureElement.getElementsByTagName('img'),
+				imgEl, originalImgSrc, originalImgSrcset, givenSrcAttribute,
+				srcToSet, srcsetToSet;
 
-			// If image already exists, use it
-			if (imageElements.length) {
-				imgSrc = attributes.src;
-				imgEl = imageElements[0];
-				if (imgEl.getAttribute('src') !== imgSrc) {
-					imgEl.setAttribute('src', imgSrc);
-				}
+			if (imageElements.length === 0) {
+				return false;
 			}
-			// Else create the image
+
+			imgEl = imageElements[0];
+			originalImgSrc = imgEl.getAttribute('data-original-src');
+			originalImgSrcset = imgEl.getAttribute('data-original-srcset');
+			givenSrcAttribute = attributes.src;
+
+			// Set original img tag's src and srcset in a data attribute
+			if (!originalImgSrc) {
+				imgEl.setAttribute('data-original-src', imgEl.getAttribute('src'));
+				imgEl.setAttribute('data-original-srcset', imgEl.getAttribute('srcset'));
+			}
+
+			// Set srcToSet and srcsetToSet depending on the given src attribute
+			// If the given src is empty, use the original img src and srcset
+			if (!givenSrcAttribute) {
+				srcToSet = originalImgSrc;
+				srcsetToSet = originalImgSrcset;
+			}
 			else {
-				// Adding picture's attributes to the image (e.g. width, height)
-				pictureAttributesToCopy = ['width', 'height'];
-				for (var i = 0, len = pictureAttributesToCopy.length; i < len; i += 1) {
-					attributeName = pictureAttributesToCopy[i];
-					attributeValue = pictureElement.getAttribute(attributeName);
-					if (attributeValue) {
-						attributes[attributeName] = attributeValue;
-					}
-				}
-				if (this._appendSupport) {
-					this._appendImg(pictureElement, attributes);
-				}
-				else {
-					this._replacePicture(pictureElement, attributes);
-				}
+				srcToSet = givenSrcAttribute;
+				srcsetToSet = attributes.srcset;
 			}
+
+			if (imgEl.getAttribute('src') !== srcToSet) {
+				imgEl.setAttribute('src', srcToSet);
+			}
+			if (!!srcsetToSet && imgEl.getAttribute('srcset') !== srcsetToSet) {
+				imgEl.setAttribute('srcset', srcsetToSet);
+			}
+
+
 		},
 
 		/**
@@ -323,13 +264,6 @@ var picturePolyfill = (function (w) {
 			this._mqSupport = !!w.matchMedia && w.matchMedia("only all") !== null && w.matchMedia("only all").matches;
 
 			/**
-			 * Detect if append image to picture is possible
-			 * @type {boolean}
-			 * @private
-			 */
-			this._appendSupport = _detectAppendImageSupport();
-
-			/**
 			 * Detect if polyfill is necessary
 			 * @type {boolean}
 			 */
@@ -401,16 +335,11 @@ var picturePolyfill = (function (w) {
 				srcAttribute = (sourcesData.length === 0 || !mqSupport) ?
 					pictureElement.getAttribute('data-default-src') :
 					this._getSrcFromData(sourcesData);
-				// If there mustn't be any image, remove it, else set it (create/ update)
-				if (!srcAttribute) {
-					this._resetImg(pictureElement);
-				}
-				else {
-					this._setImg(pictureElement, {
-						src: srcAttribute,
-						alt: pictureElement.getAttribute('data-alt')
-					});
-				}
+				// Set the img source
+				this._setImgSrc(pictureElement, {
+					src: srcAttribute,
+					alt: pictureElement.getAttribute('data-alt')
+				});
 			}
 
 			return i;

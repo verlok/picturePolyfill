@@ -297,7 +297,7 @@ test("_getSourcesData correctly parses sources", function () {
 					<source srcset="http://placehold.it/7x7, http://placehold.it/14x14 2x" media="(min-width: 1025px)"/>\
 					<source srcset="http://placehold.it/5x5, http://placehold.it/10x10 2x" media="(min-width: 481px)"/>\
 					<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-					<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+					<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 				</picture>\
 			</div>\
 			<div id="innerB">\
@@ -306,7 +306,7 @@ test("_getSourcesData correctly parses sources", function () {
 					<source src="http://placehold.it/7x7" media="(min-width: 1025px)"/>\
 					<source src="http://placehold.it/5x5" media="(min-width: 481px)"/>\
 					<source src="http://placehold.it/4x4"/>\
-					<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+					<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 				</picture>\
 			</div>\
 		</div>');
@@ -353,33 +353,6 @@ test("_getSourcesData correctly parses sources", function () {
 	}
 });
 
-
-test("_appendImg() actually appends an image", function () {
-	var target, newImg;
-	$('body').append('<div id="testContainer"></div>');
-	target = document.getElementById('testContainer');
-	picturePolyfill._appendImg(target, {
-		src: 'http://placehold.it/1x1',
-		alt: 'A brand new image'
-	});
-	newImg = target.getElementsByTagName('img')[0];
-	strictEqual(newImg.getAttribute('src'), 'http://placehold.it/1x1');
-	strictEqual(newImg.getAttribute('alt'), 'A brand new image');
-});
-
-test("_setAttrs adds all the attributes to an element", function () {
-	var target, attributes;
-	$('body').append('<div id="testContainer"></div>');
-	target = document.getElementById('testContainer');
-	attributes = {
-		"title": "Hey!",
-		"data-foo": "Bar"
-	};
-	picturePolyfill._setAttrs(target, attributes);
-	strictEqual(target.getAttribute('title'), "Hey!");
-	strictEqual(target.getAttribute('data-foo'), "Bar");
-});
-
 test("_getAttrsList and _getAttrs do their thing", function () {
 	var source, attributesList, attributes;
 	$('body').append('<div id="testContainer" title="Hey!" data-foo="Bar"></div>');
@@ -394,73 +367,6 @@ test("_getAttrsList and _getAttrs do their thing", function () {
 	strictEqual(attributes['id'], "testContainer");
 	strictEqual(attributes['title'], "Hey!");
 	strictEqual(attributes['data-foo'], "Bar");
-});
-
-test("_replacePicture creates a picture and the right image", function () {
-	var original, pictures, images;
-	$('body').append('<div id="testContainer">\
-		<picture id="myPic" title="A title" data-foo="Bar">\
-		<source src="http://placehold.it/2x2" />\
-		</picture>\
-	</div>');
-	original = document.getElementById('myPic');
-	picturePolyfill._replacePicture(original, {
-		src: 'http://placehold.it/1x1',
-		alt: 'Hey!'
-	});
-	pictures = document.getElementsByTagName('picture');
-	strictEqual(pictures.length, 1);
-	strictEqual(pictures[0].getAttribute('title'), "A title");
-	strictEqual(pictures[0].getAttribute('data-foo'), "Bar");
-	images = pictures[0].getElementsByTagName('img');
-	strictEqual(images.length, 1);
-	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/1x1');
-	strictEqual(images[0].getAttribute('alt'), 'Hey!');
-});
-
-
-test("_setImg should first create then update an image", function () {
-	var testContainer, images;
-
-	$('body').append('<div id="testContainer"></div>');
-	testContainer = document.getElementById('testContainer');
-
-	// No images at start
-	strictEqual(testContainer.getElementsByTagName('img').length, 0);
-
-	// First creation check
-	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
-	testContainer = document.getElementById('testContainer'); // retrieve again, might have been replaced
-	images = testContainer.getElementsByTagName('img');
-	strictEqual(images.length, 1);
-	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/1x1');
-	strictEqual(images[0].getAttribute('alt'), 'An image');
-
-	// Update check
-	testContainer = document.getElementById('testContainer');
-	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/2x2', alt: 'Another image'});
-	testContainer = document.getElementById('testContainer'); // retrieve again, might have been replaced
-	images = testContainer.getElementsByTagName('img');
-	strictEqual(images.length, 1); // length is always 1
-	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/2x2'); //src is changes
-	strictEqual(images[0].getAttribute('alt'), 'An image'); //alt didn't change
-
-});
-
-test("_setImg() should copy picture's width and height attributes to image", function () {
-	var testContainer, images;
-
-	$('body').append('<picture id="testContainer" width="666" height="69"></picture>');
-	testContainer = document.getElementById('testContainer');
-
-	// Check img width and height
-	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
-	testContainer = document.getElementById('testContainer');
-	images = testContainer.getElementsByTagName('img');
-	strictEqual(images.length, 1);
-
-	equal(images[0].getAttribute('width'), 666);
-	equal(images[0].getAttribute('height'), 69);
 });
 
 test("parse() is called at DOM ready", function () {
@@ -490,18 +396,35 @@ test("parse() is called at resize", function () {
 	}
 });
 
+test("parse() won't do anything if img tag is missing", function () {
+	$('body').append('<div id="testContainer">\
+		<div id="innerA">\
+			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
+				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
+			</picture>\
+		</div>\
+	</div>');
+
+	picturePolyfill.initialize();
+	picturePolyfill.parse();
+
+	var images = $('picture').find('img');
+	strictEqual(images.length, 0, "No images should be in the document")
+});
+
+
 test("parse() only parses passed element", function () {
 	$('body').append('<div id="testContainer">\
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 				<source src="http://placehold.it/4x4"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 	</div>');
@@ -510,17 +433,17 @@ test("parse() only parses passed element", function () {
 
 	// Setting spies
 
-	this.spy(picturePolyfill, "_setImg");
+	this.spy(picturePolyfill, "_setImgSrc");
 
 	// Testing number of calls when calling parse() on the whole document or on a single element
 
 	picturePolyfill.parse();
-	ok(picturePolyfill._setImg.calledTwice);
+	ok(picturePolyfill._setImgSrc.calledTwice);
 
-	picturePolyfill._setImg.reset();
+	picturePolyfill._setImgSrc.reset();
 
 	picturePolyfill.parse(document.getElementById('innerA'));
-	ok(picturePolyfill._setImg.calledOnce);
+	ok(picturePolyfill._setImgSrc.calledOnce);
 });
 
 test("parse() resulting image sources - with MQ support", function () {
@@ -531,13 +454,13 @@ test("parse() resulting image sources - with MQ support", function () {
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 				<source src="http://placehold.it/4x4"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 	</div>');
@@ -582,13 +505,13 @@ test("parse() resulting image sources - without MQ support", function () {
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 				<source src="http://placehold.it/4x4"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 	</div>');
@@ -626,7 +549,7 @@ test("parse() after a DOM injection (without MQ support)", function () {
 		<div id="staticPictures">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="ajaxSection">\
@@ -635,7 +558,7 @@ test("parse() after a DOM injection (without MQ support)", function () {
 
 	$ajaxResponse = $('<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 		<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-		<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+		<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 	</picture>');
 
 	this.spy(picturePolyfill, "parse");
@@ -690,13 +613,13 @@ test("parse() with readFromCache true, then false", function () {
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 				<source src="http://placehold.it/4x4"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 	</div>');

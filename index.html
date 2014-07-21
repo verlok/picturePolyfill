@@ -20,101 +20,101 @@
 	</style>
 </head>
 <body>
-	<div id="container">
+<div id="container">
 
-		<h1>Responsive images using <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> - Demo</h1>
+	<h1>Responsive images using <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> - Demo</h1>
 
-		<a href="https://twitter.com/picturePolyfill" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @picturePolyfill</a>
+	<a href="https://twitter.com/picturePolyfill" class="twitter-follow-button" data-show-count="false"
+	   data-size="large">Follow @picturePolyfill</a>
 
-		<p>The following are some <strong>responsive images</strong> created using a real <code>&lt;picture&gt;</code> element, and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
-		<p>Real time server side scaling in this demo is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
+	<p>The following are some <strong>responsive images</strong> created using a real <code>&lt;picture&gt;</code>
+		element, and the <a href="https://github.com/verlok/picturePolyfill">picturePolyfill</a> script.</p>
 
-		<h2>Full width server-side scaled image</h2>
+	<p>Real time server side scaling in this demo is provided by <a href="http://www.pixtulate.com">Pixtulate</a>.</p>
 
-		<picture data-alt="A beautiful responsive image" data-default-src="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1440">
-			<source media="(min-width: 1441px)" srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1920, http://demo.api.pixtulate.com/demo/large-1.jpg?w=3840 2x"/>
-			<source media="(min-width: 1025px)" srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1440, http://demo.api.pixtulate.com/demo/large-1.jpg?w=2880 2x"/>
-			<source media="(min-width: 481px)"  srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1024, http://demo.api.pixtulate.com/demo/large-1.jpg?w=2048 2x"/>
-			<source srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=480, http://demo.api.pixtulate.com/demo/large-1.jpg?w=960 2x"/>
-			<noscript>
+	<h2>Full width server-side scaled image</h2>
+
+	<picture data-alt="A beautiful responsive image"
+	         data-default-src="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1440">
+		<source media="(min-width: 1441px)"
+		        srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1920, http://demo.api.pixtulate.com/demo/large-1.jpg?w=3840 2x"/>
+		<source media="(min-width: 1025px)"
+		        srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1440, http://demo.api.pixtulate.com/demo/large-1.jpg?w=2880 2x"/>
+		<source media="(min-width: 481px)"
+		        srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=1024, http://demo.api.pixtulate.com/demo/large-1.jpg?w=2048 2x"/>
+		<source srcset="http://demo.api.pixtulate.com/demo/large-1.jpg?w=480, http://demo.api.pixtulate.com/demo/large-1.jpg?w=960 2x"/>
+		<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
+	</picture>
+
+	<h2>Half width server-side scaled images</h2>
+
+	<div class="cf">
+		<div class="element">
+			<h3>With HD (Retina) display support</h3>
+			<picture data-alt="A beautiful responsive image"
+			         data-default-src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440">
+				<source media="(min-width: 1441px)"
+				        srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920 2x"/>
+				<source media="(min-width: 1025px)"
+				        srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440 2x"/>
+				<source media="(min-width: 481px)"
+				        srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x"/>
+				<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x"/>
 				<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
-			</noscript>
-		</picture>
-
-		<h2>Half width server-side scaled images</h2>
-
-		<div class="cf">
-			<div class="element">
-				<h3>With HD (Retina) display support</h3>
-				<picture data-alt="A beautiful responsive image" data-default-src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440">
-					<source media="(min-width: 1441px)" srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920 2x"/>
-					<source media="(min-width: 1025px)" srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440 2x"/>
-					<source media="(min-width: 481px)"  srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x"/>
-					<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x"/>
-					<noscript>
-						<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
-					</noscript>
-				</picture>
-			</div>
-			<div class="element">
-				<h3>Without HD (Retina) display support</h3>
-				<picture data-alt="A beautiful responsive image" data-default-src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720">
-					<source media="(min-width: 1441px)" src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"/>
-					<source media="(min-width: 1025px)" src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720"/>
-					<source media="(min-width: 481px)"  src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512"/>
-					<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
-					<noscript>
-						<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720" alt="A beautiful responsive image"/>
-					</noscript>
-				</picture>
-			</div>
+			</picture>
 		</div>
-
-		<h2>Half width pre-scaled images</h2>
-
-		<div class="cf">
-			<div class="element">
-				<h3>With HD (Retina) display support</h3>
-				<picture data-alt="A beautiful responsive image" data-default-src="img/960x960.gif">
-					<source media="(min-width: 1441px)" srcset="img/960x960.gif, img/960x960x2.gif 2x"/>
-					<source media="(min-width: 1025px)" srcset="img/720x720.gif, img/720x720x2.gif 2x"/>
-					<source media="(min-width: 481px)"  srcset="img/512x512.gif,  img/512x512x2.gif 2x"/>
-					<source srcset="img/480x480.gif, img/480x480x2.gif 2x"/>
-					<noscript>
-						<img src="img/960x960.gif" alt="A beautiful responsive image"/>
-					</noscript>
-				</picture>
-			</div>
-			<div class="element">
-				<h3>Without HD (Retina) display support</h3>
-				<picture data-alt="A beautiful responsive image" data-default-src="img/960x960.gif">
-					<source media="(min-width: 1441px)" src="img/960x960.gif"/>
-					<source media="(min-width: 1025px)" src="img/720x720.gif"/>
-					<source media="(min-width: 481px)"  src="img/512x512.gif"/>
-					<source src="img/480x480.gif"/>
-					<noscript>
-						<img src="img/960x960.gif" alt="A beautiful responsive image"/>
-					</noscript>
-				</picture>
-			</div>
+		<div class="element">
+			<h3>Without HD (Retina) display support</h3>
+			<picture data-alt="A beautiful responsive image"
+			         data-default-src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720">
+				<source media="(min-width: 1441px)" src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960"/>
+				<source media="(min-width: 1025px)" src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720"/>
+				<source media="(min-width: 481px)" src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512"/>
+				<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
+				<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720" alt="A beautiful responsive image"/>
+			</picture>
 		</div>
-
-		<h2>Full width pre-scaled image, with HD (Retina) display support</h2>
-
-		<picture data-alt="A beautiful responsive image" data-default-src="img/1440x1440.gif">
-			<source srcset="img/1920x1920.gif, img/1920x1920x2.gif 2x" media="(min-width: 1441px)"/>
-			<source srcset="img/1440x1440.gif, img/1440x1440x2.gif 2x" media="(min-width: 1025px)"/>
-			<source srcset="img/1024x1024.gif, img/1024x1024x2.gif 2x" media="(min-width: 481px)"/>
-			<source srcset="img/480x480.gif,   img/480x480x2.gif 2x"/>
-			<noscript>
-				<img src="img/1440x1440.gif" alt="A beautiful responsive image"/>
-			</noscript>
-		</picture>
-
 	</div>
 
-	<script src="dist/picturePolyfill.min.js"></script>
-	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+	<h2>Half width pre-scaled images</h2>
+
+	<div class="cf">
+		<div class="element">
+			<h3>With HD (Retina) display support</h3>
+			<picture data-alt="A beautiful responsive image" data-default-src="img/960x960.gif">
+				<source media="(min-width: 1441px)" srcset="img/960x960.gif, img/960x960x2.gif 2x"/>
+				<source media="(min-width: 1025px)" srcset="img/720x720.gif, img/720x720x2.gif 2x"/>
+				<source media="(min-width: 481px)" srcset="img/512x512.gif,  img/512x512x2.gif 2x"/>
+				<source srcset="img/480x480.gif, img/480x480x2.gif 2x"/>
+				<img src="img/960x960.gif" alt="A beautiful responsive image"/>
+			</picture>
+		</div>
+		<div class="element">
+			<h3>Without HD (Retina) display support</h3>
+			<picture data-alt="A beautiful responsive image" data-default-src="img/960x960.gif">
+				<source media="(min-width: 1441px)" src="img/960x960.gif"/>
+				<source media="(min-width: 1025px)" src="img/720x720.gif"/>
+				<source media="(min-width: 481px)" src="img/512x512.gif"/>
+				<source src="img/480x480.gif"/>
+				<img src="img/960x960.gif" alt="A beautiful responsive image"/>
+			</picture>
+		</div>
+	</div>
+
+	<h2>Full width pre-scaled image, with HD (Retina) display support</h2>
+
+	<picture data-alt="A beautiful responsive image" data-default-src="img/1440x1440.gif">
+		<source srcset="img/1920x1920.gif, img/1920x1920x2.gif 2x" media="(min-width: 1441px)"/>
+		<source srcset="img/1440x1440.gif, img/1440x1440x2.gif 2x" media="(min-width: 1025px)"/>
+		<source srcset="img/1024x1024.gif, img/1024x1024x2.gif 2x" media="(min-width: 481px)"/>
+		<source srcset="img/480x480.gif,   img/480x480x2.gif 2x"/>
+		<img src="img/1440x1440.gif" alt="A beautiful responsive image"/>
+	</picture>
+
+</div>
+
+<script src="dist/picturePolyfill.min.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 </body>
 </html>
