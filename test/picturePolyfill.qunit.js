@@ -1,3 +1,9 @@
+/*
+* TODO: Add test on readFromCache parameter of parse()
+*
+* TODO: Test cases with <img src="..." srcset="..."> and sources matching or not matching
+* */
+
 module("picturePolyfill", {
 	setup: function () {
 		// Nothing here!
@@ -198,7 +204,7 @@ test("_getSrcsetArray correct behaviour, messy srcset format", function () {
 	}
 });
 
-test("_getSrcFromData behaves correctly", function () {
+test("_getSrcsetFromData behaves correctly", function () {
 	if (!picturePolyfill._mqSupport) {
 		ok(true);
 	}
@@ -246,38 +252,34 @@ test("_getSrcFromData behaves correctly", function () {
 		matchMediaStub.withArgs("(min-width: 200px)").returns(negative);
 		matchMediaStub.withArgs("(min-width: 100px)").returns(negative);
 		matchMediaStub.withArgs(null).returns(positive);
-
-		picturePolyfill._pxRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "50.gif");
-		picturePolyfill._pxRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "100.gif");
+		deepEqual(picturePolyfill._getSrcsetFromData(sourcesData), [
+			{pxr: 1, src: "50.gif"},
+			{pxr: 2, src: "100.gif"}
+		]);
 
 		// Testing width @ 100px
 
 		matchMediaStub.withArgs("(min-width: 100px)").returns(positive);
-
-		picturePolyfill._pxRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "100.gif");
-		picturePolyfill._pxRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "200.gif");
+		deepEqual(picturePolyfill._getSrcsetFromData(sourcesData), [
+			{pxr: 1, src: "100.gif"},
+			{pxr: 2, src: "200.gif"}
+		]);
 
 		// Testing width @ 200px
 
 		matchMediaStub.withArgs("(min-width: 200px)").returns(positive);
-
-		picturePolyfill._pxRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "200.gif");
-		picturePolyfill._pxRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "400.gif");
+		deepEqual(picturePolyfill._getSrcsetFromData(sourcesData), [
+			{pxr: 1, src: "200.gif"},
+			{pxr: 2, src: "400.gif"}
+		]);
 
 		// Testing width @ 300px
 
 		matchMediaStub.withArgs("(min-width: 300px)").returns(positive);
-
-		picturePolyfill._pxRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "300.gif");
-		picturePolyfill._pxRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "600.gif");
+		deepEqual(picturePolyfill._getSrcsetFromData(sourcesData), [
+			{pxr: 1, src: "300.gif"},
+			{pxr: 2, src: "600.gif"}
+		]);
 
 
 	}
@@ -433,17 +435,17 @@ test("parse() only parses passed element", function () {
 
 	// Setting spies
 
-	this.spy(picturePolyfill, "_setImgSrc");
+	this.spy(picturePolyfill, "_setImgAttributes");
 
 	// Testing number of calls when calling parse() on the whole document or on a single element
 
 	picturePolyfill.parse();
-	ok(picturePolyfill._setImgSrc.calledTwice);
+	ok(picturePolyfill._setImgAttributes.calledTwice);
 
-	picturePolyfill._setImgSrc.reset();
+	picturePolyfill._setImgAttributes.reset();
 
 	picturePolyfill.parse(document.getElementById('innerA'));
-	ok(picturePolyfill._setImgSrc.calledOnce);
+	ok(picturePolyfill._setImgAttributes.calledOnce);
 });
 
 test("parse() resulting image sources - with MQ support", function () {

@@ -1,12 +1,10 @@
-/* PicturePolyfill - Responsive Images that work today. (and mimic the proposed Picture element with span elements). Author: Andrea Verlicchi | License: MIT/GPLv2 */
-
 /*
- * TODO:
- * ALSO MANAGE SRCSET, IT MIGHT BE ALREADY SUPPORTED BY THE BROWSER
- * SO NO NEED TO SET SRC INDIVIDUALLY
- * 1. TEST SRCSET SUPPORT SOMEHOW
- * 2. IF SRCSET IS SUPPORTED, SET BOTH SRC AND SRCSET IN THE IMG TAG, ELSE SRC ONLY
- * */
+	PicturePolyfill
+	Responsive Images that work today (and mimic the proposed Picture element with span elements)
+	Author: Andrea Verlicchi
+	License: MIT/GPLv2
+	Please "/dist/picturePolyfill.min.js" for production purposes
+*/
 
 var picturePolyfill = (function (w) {
 
@@ -117,12 +115,12 @@ var picturePolyfill = (function (w) {
 
 		/**
 		 * Loop through every element of the sourcesData array, check if the media query applies and,
-		 * if so, get the src element from the srcSet property based depending on pixel ratio
+		 * if so, get the matching srcset attribute, if any
 		 * @param sourcesData
 		 * @returns {string||undefined}
 		 * @private
 		 */
-		_getSrcFromData: function (sourcesData) {
+		_getSrcsetFromData: function (sourcesData) {
 			var sourceData,
 				media,
 				srcset;
@@ -132,7 +130,7 @@ var picturePolyfill = (function (w) {
 				media = sourceData.media;
 				srcset = sourceData.srcset;
 				if (!media || w.matchMedia(media).matches) {
-					return (srcset) ? this._getSrcFromArray(srcset, this._pxRatio) : sourceData.src;
+					return (srcset) ? srcset : [{pxr: 1, src: sourceData.src}];
 				}
 			}
 			return null;
@@ -144,44 +142,47 @@ var picturePolyfill = (function (w) {
 		 * @param pictureElement {Node}
 		 * @param attributes
 		 */
-		_setImgSrc: function (pictureElement, attributes) {
+		_setImgAttributes: function (pictureElement, attributes) {
 			var imageElements = pictureElement.getElementsByTagName('img'),
-				imgEl, originalImgSrc, originalImgSrcset, givenSrcAttribute,
+				imgEl, originalImgSrc, originalImgSrcset,
+				givenSrcAttribute, givenSrcsetAttribute,
 				srcToSet, srcsetToSet;
+
+			function _setAttributeIfDifferent(element, attribute, value) {
+				if (element.getAttribute(attribute) !== value) {
+					element.setAttribute(attribute, value);
+				}
+			}
 
 			if (imageElements.length === 0) {
 				return false;
 			}
 
+			// Setting repeated usage variables
 			imgEl = imageElements[0];
 			originalImgSrc = imgEl.getAttribute('data-original-src');
 			originalImgSrcset = imgEl.getAttribute('data-original-srcset');
 			givenSrcAttribute = attributes.src;
+			givenSrcsetAttribute = attributes.src;
 
 			// Set original img tag's src and srcset in a data attribute
 			if (!originalImgSrc) {
-				imgEl.setAttribute('data-original-src', imgEl.getAttribute('src'));
-				imgEl.setAttribute('data-original-srcset', imgEl.getAttribute('srcset'));
+				_setAttributeIfDifferent(imgEl, 'data-original-src', imgEl.getAttribute('src'));
+				_setAttributeIfDifferent(imgEl, 'data-original-srcset', imgEl.getAttribute('srcset'));
 			}
 
-			// Set srcToSet and srcsetToSet depending on the given src attribute
-			// If the given src is empty, use the original img src and srcset
-			if (!givenSrcAttribute) {
+			// Set srcToSet and srcsetToSet depending on the given src/srcset attributes
+			// If none are given, use original ones
+			// If both ore one are given, them (even if one is null)
+			if (!givenSrcAttribute && !givenSrcsetAttribute) {
 				srcToSet = originalImgSrc;
 				srcsetToSet = originalImgSrcset;
-			}
-			else {
+			} else {
 				srcToSet = givenSrcAttribute;
-				srcsetToSet = attributes.srcset;
+				srcsetToSet = givenSrcsetAttribute;
 			}
-
-			if (imgEl.getAttribute('src') !== srcToSet) {
-				imgEl.setAttribute('src', srcToSet);
-			}
-			if (!!srcsetToSet && imgEl.getAttribute('srcset') !== srcsetToSet) {
-				imgEl.setAttribute('srcset', srcsetToSet);
-			}
-
+			_setAttributeIfDifferent(imgEl, 'src', srcToSet);
+			_setAttributeIfDifferent(imgEl, 'srcset', srcsetToSet);
 
 		},
 
@@ -297,6 +298,7 @@ var picturePolyfill = (function (w) {
 				pictureElement,
 				pictureElements,
 				srcAttribute,
+				srcsetAttribute,
 				mqSupport,
 				cacheIndex;
 
@@ -306,7 +308,7 @@ var picturePolyfill = (function (w) {
 			}
 
 			// Default readFromCache parameter value
-			if (readFromCache === null) {
+			if (typeof readFromCache === 'undefined') {
 				readFromCache = true;
 			}
 
@@ -332,12 +334,18 @@ var picturePolyfill = (function (w) {
 					cacheLatestIndex += 1;
 				}
 				// If no sourcesData retrieved or media queries are not supported, read from the default src
-				srcAttribute = (sourcesData.length === 0 || !mqSupport) ?
-					pictureElement.getAttribute('data-default-src') :
-					this._getSrcFromData(sourcesData);
+				if (sourcesData.length === 0 || !mqSupport) {
+					srcAttribute = pictureElement.getAttribute('data-default-src');
+					srcsetAttribute = pictureElement.getAttribute('data-default-srcset');
+				}
+				else {
+					srcsetAttribute = this._getSrcsetFromData(sourcesData);
+					srcAttribute = this._getSrcFromArray(srcsetAttribute, this._pxRatio);
+				}
 				// Set the img source
-				this._setImgSrc(pictureElement, {
+				this._setImgAttributes(pictureElement, {
 					src: srcAttribute,
+					srcset: srcsetAttribute,
 					alt: pictureElement.getAttribute('data-alt')
 				});
 			}
