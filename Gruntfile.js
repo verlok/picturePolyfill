@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		// Metadata.
 		meta: {
-			version: '4.1.0'
+			version: '4.1.1'
 		},
 		banner: '/*! picturePolyfill - v<%= meta.version %> - ' +
 			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -24,6 +24,17 @@ module.exports = function(grunt) {
 		},
 		jshint: {
 			options: {
+				es3: true,
+				devel: false,
+				node: false,
+				smarttabs: true,
+				multistr: true,
+				nonew: true,
+				bitwise: true,
+				passfail: true,
+				evil: true,
+				forin: true,
+				onevar: false,
 				curly: true,
 				eqeqeq: true,
 				immed: true,
@@ -36,6 +47,10 @@ module.exports = function(grunt) {
 				boss: true,
 				eqnull: true,
 				browser: true,
+				laxbreak: false,
+				noempty: true,
+				nonstandard: true,
+				trailing: false,
 				globals: {
 					jQuery: true
 				}

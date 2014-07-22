@@ -1,10 +1,10 @@
 /*
-	PicturePolyfill
-	Responsive Images that work today (and mimic the proposed Picture element with span elements)
-	Author: Andrea Verlicchi
-	License: MIT/GPLv2
-	Please "/dist/picturePolyfill.min.js" for production purposes
-*/
+ PicturePolyfill
+ Responsive Images that work today (and mimic the proposed Picture element with span elements)
+ Author: Andrea Verlicchi
+ License: MIT/GPLv2
+ Please "/dist/picturePolyfill.min.js" for production purposes
+ */
 
 var picturePolyfill = (function (w) {
 
@@ -63,7 +63,13 @@ var picturePolyfill = (function (w) {
 				source,
 				density,
 				ret = [],
-				srcSetElements = srcset.split(',');
+				srcSetElements;
+
+			if (srcset === null || srcset === '' || typeof srcset === 'undefined') {
+				return ret;
+			}
+
+			srcSetElements = srcset.split(',');
 
 			for (var i = 0, len = srcSetElements.length; i < len; i += 1) {
 				srcSetElement = srcSetElements[i].trim().split(' ');
@@ -90,26 +96,33 @@ var picturePolyfill = (function (w) {
 		},
 
 		/**
-		 * Returns the proper src from the srcset array obtained by _getSrcsetArray
+		 * Returns the proper src from the given srcset
 		 * Get the first valid element from passed position to the left
-		 * @param array
+		 * @param srcset
 		 * @param pixelRatio
 		 * @returns string || null
 		 * @private
 		 */
-		_getSrcFromArray: function (array, pixelRatio) {
+		_getSrcFromSrcset: function (srcset, pixelRatio) {
 			var i = 0,
-				len = array.length,
+				array,
+				len,
 				breakPoint = -1;
-			if (!len) {
+
+			if (srcset === null || srcset === '' || typeof srcset === 'undefined') {
 				return null;
 			}
+
+			array = this._getSrcsetArray(srcset);
+			len = array.length;
+
 			do {
 				if (array[i].pxr >= pixelRatio || i === len - 1) {
 					breakPoint = i;
 				}
 				i += 1;
 			} while (!(breakPoint > -1 || i >= len));
+
 			return array[breakPoint].src;
 		},
 
@@ -123,17 +136,25 @@ var picturePolyfill = (function (w) {
 		_getSrcsetFromData: function (sourcesData) {
 			var sourceData,
 				media,
+				src,
 				srcset;
 
 			for (var i = 0, len = sourcesData.length; i < len; i += 1) {
 				sourceData = sourcesData[i];
 				media = sourceData.media;
 				srcset = sourceData.srcset;
+				src = sourceData.src;
 				if (!media || w.matchMedia(media).matches) {
-					return (srcset) ? srcset : [{pxr: 1, src: sourceData.src}];
+					if (!!srcset) {
+						return srcset;
+					}
+					if (!!src) {
+						return src;
+					}
+					return "";
 				}
 			}
-			return null;
+			return "";
 		},
 
 		/**
@@ -163,7 +184,7 @@ var picturePolyfill = (function (w) {
 			originalImgSrc = imgEl.getAttribute('data-original-src');
 			originalImgSrcset = imgEl.getAttribute('data-original-srcset');
 			givenSrcAttribute = attributes.src;
-			givenSrcsetAttribute = attributes.src;
+			givenSrcsetAttribute = attributes.srcset;
 
 			// Set original img tag's src and srcset in a data attribute
 			if (!originalImgSrc) {
@@ -200,9 +221,6 @@ var picturePolyfill = (function (w) {
 			for (var i = 0, len = foundSources.length; i < len; i += 1) {
 				sourceElement = foundSources[i];
 				sourceData = this._getAttrs(sourceElement, this._getAttrsList(sourceElement));
-				if (sourceData.srcset) {
-					sourceData.srcset = this._getSrcsetArray(sourceData.srcset);
-				}
 				sourcesData.push(sourceData);
 			}
 			return sourcesData;
@@ -340,7 +358,7 @@ var picturePolyfill = (function (w) {
 				}
 				else {
 					srcsetAttribute = this._getSrcsetFromData(sourcesData);
-					srcAttribute = this._getSrcFromArray(srcsetAttribute, this._pxRatio);
+					srcAttribute = this._getSrcFromSrcset(srcsetAttribute, this._pxRatio);
 				}
 				// Set the img source
 				this._setImgAttributes(pictureElement, {
