@@ -352,7 +352,7 @@ var picturePolyfill = (function (w) {
 					cacheLatestIndex += 1;
 				}
 				// If no sourcesData retrieved or media queries are not supported, read from the default src
-				if (sourcesData.length === 0 || !mqSupport) {
+				if (!mqSupport || sourcesData.length === 0) {
 					srcAttribute = pictureElement.getAttribute('data-default-src');
 					srcsetAttribute = pictureElement.getAttribute('data-default-srcset');
 				}

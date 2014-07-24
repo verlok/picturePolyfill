@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		// Metadata.
 		meta: {
-			version: '4.1.1'
+			version: '4.1.2'
 		},
 		banner: '/*! picturePolyfill - v<%= meta.version %> - ' +
 			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
