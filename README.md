@@ -1,4 +1,4 @@
-# picturePolyfill 3
+# picturePolyfill 4
 
 A Responsive Images approach that you can use today that uses the **[real `picture` element](http://www.w3.org/TR/2013/WD-html-picture-element-20130226/)** along with children `source` elements with `media`, `src` and `srcset` attributes.
 
@@ -17,16 +17,15 @@ PicturePolyfill is fast and easy to use because:
     * it **doesn't execute repeatedly** while a smooth/animated browser resize is in progress, avoiding useless DOM parsing and useless HTTP requests to mid-breakpoints images that the user might not need)
 	* it **caches che `source` elements data**, making the script much more perfoming [see tests](http://jsperf.com/picturepolyfill-test-cached-vs-not-cached) 
 * **support to HD (Retina) displays** easily made via the `srcset` attribute of `source` tags
+* it's **solid**, because its code is all covered by tests
 
 ### Differences with picturefill
 
 picturePolyfill is better than picturefill because:
 
-* it uses the **real `picture` markup**
 * it's **15x faster** on IE 10, **8x faster** on mobile Safari, **6x faster** on Firefox and Safari, **4x faster** on Chrome and Opera [see performance test](http://jsperf.com/picturepolyfill-300-vs-picturefill-121-performance-test/2)
 * it **better handles AJAX calls** because it lets you parse only a section of your DOM, passing the parent element to the `parse` method
 * it gives you the ability to **choose a default image** that you want to show on Internet Explorer desktop, without the need to add any comment
-* it's **solid**, since its code is all covered by tests
 
 
 ## Markup pattern and explanation
@@ -36,13 +35,13 @@ picturePolyfill is better than picturefill because:
 To support HD (Retina) images, mark up your responsive images like this.
 
 ```html
-<picture data-alt="A beautiful responsive image" data-default-src="img/1440x1440.gif">
-	<source srcset="img/480x480.gif,   img/480x480x2.gif 2x"/>
-	<source srcset="img/768x768.gif,   img/768x768x2.gif 2x"   media="(min-width: 481px)"/>
-	<source srcset="img/1440x1440.gif, img/1440x1440x2.gif 2x" media="(min-width: 1025px)"/>
-	<source srcset="img/1920x1920.gif, img/1920x1920x2.gif 2x" media="(min-width: 1441px)"/>
+<picture data-alt="A beautiful responsive image" data-default-src="img/960x960.gif">
+	<source media="(min-width: 1441px)" srcset="img/960x960.gif, img/960x960x2.gif 2x"/>
+	<source media="(min-width: 1025px)" srcset="img/720x720.gif, img/720x720x2.gif 2x"/>
+	<source media="(min-width: 481px)"  srcset="img/512x512.gif,  img/512x512x2.gif 2x"/>
+	<source srcset="img/480x480.gif, img/480x480x2.gif 2x"/>
 	<noscript>
-		<img src="img/768x768.gif" alt="A beautiful responsive image"/>
+		<img src="img/960x960.gif" alt="A beautiful responsive image"/>
 	</noscript>
 </picture>
 ```
@@ -52,30 +51,31 @@ To support HD (Retina) images, mark up your responsive images like this.
 If you don't need to support HD (Retina) images, you can mark up your responsive images like this.
 
 ```html
-<picture data-alt="A beautiful responsive image" data-default-src="img/1440x1440.gif">
+<picture data-alt="A beautiful responsive image" data-default-src="img/960x960.gif">
+	<source media="(min-width: 1441px)" src="img/960x960.gif"/>
+	<source media="(min-width: 1025px)" src="img/720x720.gif"/>
+	<source media="(min-width: 481px)"  src="img/512x512.gif"/>
 	<source src="img/480x480.gif"/>
-	<source src="img/768x768.gif"   media="(min-width: 481px)"/>
-	<source src="img/1440x1440.gif" media="(min-width: 1025px)"/>
-	<source src="img/1920x1920.gif" media="(min-width: 1441px)"/>
 	<noscript>
-		<img src="img/768x768.gif" alt="A beautiful responsive image"/>
+		<img src="img/960x960.gif" alt="A beautiful responsive image"/>
 	</noscript>
 </picture>
 ```
 
 ### Notes about the markup
 
-`picture` tag:
-* `data-default-src` attribute: the image URL that you want to load in IE Desktop < 10.
-* `data-alt` attribute: the alternative text that will be set in the `img` tag
+* `picture` tag:
+ * `data-default-src` attribute: the image URL that you want to load in IE Desktop < 10.
+ * `data-alt` attribute: the alternative text that will be set in the `img` tag
 
-`source` tags:
-* `media` attribute: any media query, but it's adviced to use a `min-width` media query to follow the "mobile first" approach.
-* `src` attribute: the image URL at the corresponding `media`
-* `srcset` attribute: comma separated URLs and scale at the corresponding `media`, e.g. `img/768x768.gif, img/768x768x2.gif 2x`
+* `source` tags:
+ * `media` attribute: any media query, but it's adviced to use a `min-width` media query to follow the "mobile first" approach.
+ * `src` attribute: the image URL at the corresponding `media`
+ * `srcset` attribute: comma separated URLs and scale at the corresponding `media`, e.g. `img/768x768.gif, img/768x768x2.gif 2x`
+ * **NEW in version 4.0.0**! The **`source` tags order** is important! The parser exits at first matching `media` so be sure to place the higher `min-width` queries at the begin of the tags list!
 
-`noscript` tag:
-* This should wrap the fallback image for non-JavaScript environments and search engines. You *could* avoid wrapping the `img` tag in `noscript`, but this will make browsers to fetch the fallback image during page load, causing unnecessary overhead.
+* `noscript` tag:
+ * This should wrap the fallback image for non-JavaScript environments and search engines. You *could* avoid wrapping the `img` tag in `noscript`, but this will make browsers to fetch the fallback image during page load, causing unnecessary overhead.
 
 ### How the `img` is appended and updated
 
@@ -92,10 +92,10 @@ If you want to use an image server, you can code your HTML like the following:
 
 ```html
 <picture data-alt="A beautiful responsive image" data-default-src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440">
-	<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480"/>
-	<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512" media="(min-width: 481px)"/>
-	<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720" media="(min-width: 1025px)"/>
-	<source src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960" media="(min-width: 1441px)"/>
+	<source media="(min-width: 1441px)" srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=960, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1920 2x"/>
+	<source media="(min-width: 1025px)" srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440 2x"/>
+	<source media="(min-width: 481px)"  srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x"/>
+	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x"/>
 	<noscript>
 		<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
 	</noscript>

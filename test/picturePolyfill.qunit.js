@@ -1,3 +1,11 @@
+/*
+* TODO: Test cases with <img src="..." srcset="..."> and sources matching or not matching
+*
+* TODO: Also read the srcset property on the img tag, in every test!
+*
+* TODO: Test no double ajax calls: IMG with empty src="" + data-default-src set
+* */
+
 module("picturePolyfill", {
 	setup: function () {
 		// Nothing here!
@@ -24,66 +32,72 @@ test("main object is declared and exposed", function () {
 	strictEqual(typeof window.picturePolyfill.initialize, 'function', "picturePolyfill.initialize() should be a function");
 });
 
-test("_getSrcFromArray correct behaviour, correct data, correct calls", function () {
-	var srcsetArray;
-	// Get 1, 2 or 3 from 1x, 2x, 3x hash
-	srcsetArray = [
-		{"pxr": 0.25, "src": "http://placehold.it/1x1"},
-		{"pxr": 0.5, "src": "http://placehold.it/2x2"},
-		{"pxr": 1, "src": "http://placehold.it/4x4"},
-		{"pxr": 1.5, "src": "http://placehold.it/6x6"},
-		{"pxr": 2, "src": "http://placehold.it/8x8"},
-		{"pxr": 2.5, "src": "http://placehold.it/10x10"},
-		{"pxr": 3, "src": "http://placehold.it/12x12"}
-	];
-	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 1), 'http://placehold.it/4x4', "Single density element doesn't match");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 1.5), 'http://placehold.it/6x6', "1.5 density element doesn't match");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 2), 'http://placehold.it/8x8', "Double density element doesn't match");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 3), 'http://placehold.it/12x12', "Triple density element doesn't match");
+test("_getSrcFromSrcset correct behaviour, correct data, correct calls", function () {
+	var srcset = "http://placehold.it/1x1 0.25x, http://placehold.it/2x2 0.5x, http://placehold.it/4x4, " +
+		"http://placehold.it/6x6 1.5x, http://placehold.it/8x8 2x, http://placehold.it/10x10 2.5x, " +
+		"http://placehold.it/12x12 3x";
+	// Skipping tests on browsers that doesn't support trim
+	if (typeof "".trim === "undefined") {
+		ok(true);
+	}
+	else {
+		// Correct calls
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 1), 'http://placehold.it/4x4', "Single density element doesn't match");
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 1.5), 'http://placehold.it/6x6', "1.5 density element doesn't match");
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 2), 'http://placehold.it/8x8', "Double density element doesn't match");
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 3), 'http://placehold.it/12x12', "Triple density element doesn't match");
+	}
 });
 
-test("_getSrcFromArray correct behaviour, correct data, out of bound calls", function () {
-	var srcsetArray;
-	// Get 1, 2 or 3 from 1x, 3x hash
-	srcsetArray = [
-		{"pxr": 1, "src": "http://placehold.it/4x4"},
-		{"pxr": 2, "src": "http://placehold.it/8x8"},
-		{"pxr": 3, "src": "http://placehold.it/12x12"}
-	];
-	// Extra bounds calls
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 3.5), 'http://placehold.it/12x12', "Out of upper bound call should return upper in-bound value");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 4), 'http://placehold.it/12x12', "Out of upper bound call should return upper in-bound value");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, .11), 'http://placehold.it/4x4', "Out of lower bound call should return lower in-bound value");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, -1), 'http://placehold.it/4x4', "Out or lower bound call should return lower in-bound value");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 0), 'http://placehold.it/4x4', "Out or lower bound call should return lower in-bound value");
+test("_getSrcFromSrcset correct behaviour, correct data, out of bounds and infra-bounds calls", function () {
+	var errMsg, srcset = "http://placehold.it/4x4, http://placehold.it/8x8 2x, http://placehold.it/12x12 3x";
+
+	// Skipping tests on browsers that doesn't support trim
+	if (typeof "".trim === "undefined") {
+		ok(true);
+	}
+	else {
+		// Extra bounds calls
+		errMsg = "Out of upper bound call should return upper in-bound value";
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 3.5), 'http://placehold.it/12x12', errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 4), 'http://placehold.it/12x12', errMsg);
+
+		errMsg = "Out of lower bound call should return lower in-bound value";
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, .11), 'http://placehold.it/4x4', errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, -1), 'http://placehold.it/4x4', errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 0), 'http://placehold.it/4x4', errMsg);
+
+		// Infra-bound calls
+		errMsg = "Infra-bound call should return immediate upper value";
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 1.5), 'http://placehold.it/8x8', errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 1.75), 'http://placehold.it/8x8', errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 2.5), 'http://placehold.it/12x12', errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 2.25), 'http://placehold.it/12x12', errMsg);
+	}
 });
 
-test("_getSrcFromArray correct behaviour, correct data, infra-bound calls", function () {
-	var srcsetArray;
-	// Get 1, 2 or 3 from 1x, 3x hash
-	srcsetArray = [
-		{"pxr": 1, "src": "http://placehold.it/4x4"},
-		{"pxr": 2, "src": "http://placehold.it/8x8"},
-		{"pxr": 3, "src": "http://placehold.it/12x12"}
-	];
-	// Infra-bound calls
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 1.5), 'http://placehold.it/8x8', "Infra-bound call should return immediate upper value");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 1.75), 'http://placehold.it/8x8', "Infra-bound call should return immediate upper value");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 2.5), 'http://placehold.it/12x12', "Infra-bound call should return immediate upper value");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, 2.25), 'http://placehold.it/12x12', "Infra-bound call should return immediate upper value");
+test("_getSrcFromSrcset correct behaviour, empty srcset", function () {
+	var errMsg, srcset;
+
+	// Skipping tests on browsers that doesn't support trim
+	if (typeof "".trim === "undefined") {
+		ok(true);
+	}
+	else {
+		srcset = "";
+		errMsg = "If srcset is empty, empty value must be returned";
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, -1), null, errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 0), null, errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 1), null, errMsg);
+
+		srcset = null;
+		errMsg = "If srcset is null, null value must be returned";
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, -1), null, errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 0), null, errMsg);
+		strictEqual(picturePolyfill._getSrcFromSrcset(srcset, 1), null, errMsg);
+	}
 });
 
-test("_getSrcFromArray correct behaviour, empty array", function () {
-	var srcsetArray;
-	// Get 1, 2 or 3 from 1x, 3x hash
-	srcsetArray = [];
-	// Correct calls
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray, -1), null, "If array is empty, null value must be returned");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray,  0), null, "If array is empty, null value must be returned");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray,  1), null, "If array is empty, null value must be returned");
-	strictEqual(picturePolyfill._getSrcFromArray(srcsetArray,  2), null, "If array is empty, null value must be returned");
-});
 
 test("_getSrcsetArray correct behaviour, correct srcset format", function () {
 	if (!picturePolyfill._mqSupport) {
@@ -198,7 +212,25 @@ test("_getSrcsetArray correct behaviour, messy srcset format", function () {
 	}
 });
 
-test("_getSrcFromData behaves correctly", function () {
+test("_getSrcsetArray correct behaviour, empty srcset value", function () {
+	if (!picturePolyfill._mqSupport) {
+		ok(true);
+	}
+	else {
+		var srcset, expected;
+
+		// Empty srcset
+		srcset = "";
+		deepEqual(picturePolyfill._getSrcsetArray(srcset), []);
+
+		// Null srcset
+		srcset = null;
+		deepEqual(picturePolyfill._getSrcsetArray(srcset), []);
+	}
+});
+
+
+test("_getSrcsetFromData behaves correctly", function () {
 	if (!picturePolyfill._mqSupport) {
 		ok(true);
 	}
@@ -246,38 +278,34 @@ test("_getSrcFromData behaves correctly", function () {
 		matchMediaStub.withArgs("(min-width: 200px)").returns(negative);
 		matchMediaStub.withArgs("(min-width: 100px)").returns(negative);
 		matchMediaStub.withArgs(null).returns(positive);
-
-		picturePolyfill._pxRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "50.gif");
-		picturePolyfill._pxRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "100.gif");
+		deepEqual(picturePolyfill._getSrcsetFromData(sourcesData), [
+			{pxr: 1, src: "50.gif"},
+			{pxr: 2, src: "100.gif"}
+		]);
 
 		// Testing width @ 100px
 
 		matchMediaStub.withArgs("(min-width: 100px)").returns(positive);
-
-		picturePolyfill._pxRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "100.gif");
-		picturePolyfill._pxRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "200.gif");
+		deepEqual(picturePolyfill._getSrcsetFromData(sourcesData), [
+			{pxr: 1, src: "100.gif"},
+			{pxr: 2, src: "200.gif"}
+		]);
 
 		// Testing width @ 200px
 
 		matchMediaStub.withArgs("(min-width: 200px)").returns(positive);
-
-		picturePolyfill._pxRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "200.gif");
-		picturePolyfill._pxRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "400.gif");
+		deepEqual(picturePolyfill._getSrcsetFromData(sourcesData), [
+			{pxr: 1, src: "200.gif"},
+			{pxr: 2, src: "400.gif"}
+		]);
 
 		// Testing width @ 300px
 
 		matchMediaStub.withArgs("(min-width: 300px)").returns(positive);
-
-		picturePolyfill._pxRatio = 1;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "300.gif");
-		picturePolyfill._pxRatio = 2;
-		strictEqual(picturePolyfill._getSrcFromData(sourcesData), "600.gif");
+		deepEqual(picturePolyfill._getSrcsetFromData(sourcesData), [
+			{pxr: 1, src: "300.gif"},
+			{pxr: 2, src: "600.gif"}
+		]);
 
 
 	}
@@ -297,7 +325,7 @@ test("_getSourcesData correctly parses sources", function () {
 					<source srcset="http://placehold.it/7x7, http://placehold.it/14x14 2x" media="(min-width: 1025px)"/>\
 					<source srcset="http://placehold.it/5x5, http://placehold.it/10x10 2x" media="(min-width: 481px)"/>\
 					<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-					<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+					<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 				</picture>\
 			</div>\
 			<div id="innerB">\
@@ -306,7 +334,7 @@ test("_getSourcesData correctly parses sources", function () {
 					<source src="http://placehold.it/7x7" media="(min-width: 1025px)"/>\
 					<source src="http://placehold.it/5x5" media="(min-width: 481px)"/>\
 					<source src="http://placehold.it/4x4"/>\
-					<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+					<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 				</picture>\
 			</div>\
 		</div>');
@@ -319,22 +347,10 @@ test("_getSourcesData correctly parses sources", function () {
 
 		// Set expectations
 		expected1 = [
-			{"srcset": [
-				{"pxr": 1, "src": "http://placehold.it/9x9"},
-				{"pxr": 2, "src": "http://placehold.it/18x18"}
-			], "media": "(min-width: 1441px)"},
-			{"srcset": [
-				{"pxr": 1, "src": "http://placehold.it/7x7"},
-				{"pxr": 2, "src": "http://placehold.it/14x14"}
-			], "media": "(min-width: 1025px)"},
-			{"srcset": [
-				{"pxr": 1, "src": "http://placehold.it/5x5"},
-				{"pxr": 2, "src": "http://placehold.it/10x10"}
-			], "media": "(min-width: 481px)"},
-			{"srcset": [
-				{"pxr": 1, "src": "http://placehold.it/4x4"},
-				{"pxr": 2, "src": "http://placehold.it/8x8"}
-			]}
+			{"srcset": "http://placehold.it/9x9, http://placehold.it/18x18 2x", "media": "(min-width: 1441px)"},
+			{"srcset": "http://placehold.it/7x7, http://placehold.it/14x14 2x", "media": "(min-width: 1025px)"},
+			{"srcset": "http://placehold.it/5x5, http://placehold.it/10x10 2x", "media": "(min-width: 481px)"},
+			{"srcset": "http://placehold.it/4x4, http://placehold.it/8x8 2x"}
 		];
 		expected2 = [
 			{"src": "http://placehold.it/9x9", "media": "(min-width: 1441px)"},
@@ -353,33 +369,6 @@ test("_getSourcesData correctly parses sources", function () {
 	}
 });
 
-
-test("_appendImg() actually appends an image", function () {
-	var target, newImg;
-	$('body').append('<div id="testContainer"></div>');
-	target = document.getElementById('testContainer');
-	picturePolyfill._appendImg(target, {
-		src: 'http://placehold.it/1x1',
-		alt: 'A brand new image'
-	});
-	newImg = target.getElementsByTagName('img')[0];
-	strictEqual(newImg.getAttribute('src'), 'http://placehold.it/1x1');
-	strictEqual(newImg.getAttribute('alt'), 'A brand new image');
-});
-
-test("_setAttrs adds all the attributes to an element", function () {
-	var target, attributes;
-	$('body').append('<div id="testContainer"></div>');
-	target = document.getElementById('testContainer');
-	attributes = {
-		"title": "Hey!",
-		"data-foo": "Bar"
-	};
-	picturePolyfill._setAttrs(target, attributes);
-	strictEqual(target.getAttribute('title'), "Hey!");
-	strictEqual(target.getAttribute('data-foo'), "Bar");
-});
-
 test("_getAttrsList and _getAttrs do their thing", function () {
 	var source, attributesList, attributes;
 	$('body').append('<div id="testContainer" title="Hey!" data-foo="Bar"></div>');
@@ -394,73 +383,6 @@ test("_getAttrsList and _getAttrs do their thing", function () {
 	strictEqual(attributes['id'], "testContainer");
 	strictEqual(attributes['title'], "Hey!");
 	strictEqual(attributes['data-foo'], "Bar");
-});
-
-test("_replacePicture creates a picture and the right image", function () {
-	var original, pictures, images;
-	$('body').append('<div id="testContainer">\
-		<picture id="myPic" title="A title" data-foo="Bar">\
-		<source src="http://placehold.it/2x2" />\
-		</picture>\
-	</div>');
-	original = document.getElementById('myPic');
-	picturePolyfill._replacePicture(original, {
-		src: 'http://placehold.it/1x1',
-		alt: 'Hey!'
-	});
-	pictures = document.getElementsByTagName('picture');
-	strictEqual(pictures.length, 1);
-	strictEqual(pictures[0].getAttribute('title'), "A title");
-	strictEqual(pictures[0].getAttribute('data-foo'), "Bar");
-	images = pictures[0].getElementsByTagName('img');
-	strictEqual(images.length, 1);
-	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/1x1');
-	strictEqual(images[0].getAttribute('alt'), 'Hey!');
-});
-
-
-test("_setImg should first create then update an image", function () {
-	var testContainer, images;
-
-	$('body').append('<div id="testContainer"></div>');
-	testContainer = document.getElementById('testContainer');
-
-	// No images at start
-	strictEqual(testContainer.getElementsByTagName('img').length, 0);
-
-	// First creation check
-	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
-	testContainer = document.getElementById('testContainer'); // retrieve again, might have been replaced
-	images = testContainer.getElementsByTagName('img');
-	strictEqual(images.length, 1);
-	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/1x1');
-	strictEqual(images[0].getAttribute('alt'), 'An image');
-
-	// Update check
-	testContainer = document.getElementById('testContainer');
-	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/2x2', alt: 'Another image'});
-	testContainer = document.getElementById('testContainer'); // retrieve again, might have been replaced
-	images = testContainer.getElementsByTagName('img');
-	strictEqual(images.length, 1); // length is always 1
-	strictEqual(images[0].getAttribute('src'), 'http://placehold.it/2x2'); //src is changes
-	strictEqual(images[0].getAttribute('alt'), 'An image'); //alt didn't change
-
-});
-
-test("_setImg() should copy picture's width and height attributes to image", function () {
-	var testContainer, images;
-
-	$('body').append('<picture id="testContainer" width="666" height="69"></picture>');
-	testContainer = document.getElementById('testContainer');
-
-	// Check img width and height
-	picturePolyfill._setImg(testContainer, {src: 'http://placehold.it/1x1', alt: 'An image'});
-	testContainer = document.getElementById('testContainer');
-	images = testContainer.getElementsByTagName('img');
-	strictEqual(images.length, 1);
-
-	equal(images[0].getAttribute('width'), 666);
-	equal(images[0].getAttribute('height'), 69);
 });
 
 test("parse() is called at DOM ready", function () {
@@ -490,18 +412,35 @@ test("parse() is called at resize", function () {
 	}
 });
 
+test("parse() won't do anything if img tag is missing", function () {
+	$('body').append('<div id="testContainer">\
+		<div id="innerA">\
+			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
+				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
+			</picture>\
+		</div>\
+	</div>');
+
+	picturePolyfill.initialize();
+	picturePolyfill.parse();
+
+	var images = $('picture').find('img');
+	strictEqual(images.length, 0, "No images should be in the document")
+});
+
+
 test("parse() only parses passed element", function () {
 	$('body').append('<div id="testContainer">\
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 				<source src="http://placehold.it/4x4"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 	</div>');
@@ -510,17 +449,17 @@ test("parse() only parses passed element", function () {
 
 	// Setting spies
 
-	this.spy(picturePolyfill, "_setImg");
+	this.spy(picturePolyfill, "_setImgAttributes");
 
 	// Testing number of calls when calling parse() on the whole document or on a single element
 
 	picturePolyfill.parse();
-	ok(picturePolyfill._setImg.calledTwice);
+	ok(picturePolyfill._setImgAttributes.calledTwice);
 
-	picturePolyfill._setImg.reset();
+	picturePolyfill._setImgAttributes.reset();
 
 	picturePolyfill.parse(document.getElementById('innerA'));
-	ok(picturePolyfill._setImg.calledOnce);
+	ok(picturePolyfill._setImgAttributes.calledOnce);
 });
 
 test("parse() resulting image sources - with MQ support", function () {
@@ -531,13 +470,13 @@ test("parse() resulting image sources - with MQ support", function () {
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 				<source src="http://placehold.it/4x4"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 	</div>');
@@ -582,39 +521,46 @@ test("parse() resulting image sources - without MQ support", function () {
 		<div id="innerA">\
 			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 				<source src="http://placehold.it/4x4"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 	</div>');
 
-	picturePolyfill.initialize();
+	if (!picturePolyfill._mqSupport) { // EXCLUDING OLD IE FROM THIS TESTS
+		ok(true);
+	}
+	else {
+		picturePolyfill.initialize();
 
-	// Media query support: no, pixel density: indifferent
+		// Media query support: no, pixel density: indifferent
 
-	var initial_areMediaQueriesSupported = picturePolyfill._mqSupport,
-		initial_pixelRatio = picturePolyfill._pxRatio;
+		var initial_areMediaQueriesSupported = picturePolyfill._mqSupport,
+			initial_pixelRatio = picturePolyfill._pxRatio;
 
-	picturePolyfill._pxRatio = null;
-	picturePolyfill._mqSupport = false;
-	picturePolyfill.parse();
+		picturePolyfill._pxRatio = null;
+		picturePolyfill._mqSupport = false;
+		picturePolyfill.parse();
 
-	images = document.getElementsByTagName('img');
-	img1src = images[0].getAttribute('src');
-	img2src = images[1].getAttribute('src');
+		images = document.getElementsByTagName('img');
+		img1src = images[0].getAttribute('src');
+		img2src = images[1].getAttribute('src');
 
-	strictEqual(img1src, 'http://placehold.it/1x1');
-	strictEqual(img2src, 'http://placehold.it/2x2');
+		strictEqual(img1src, 'http://placehold.it/1x1');
+		strictEqual(img2src, 'http://placehold.it/2x2');
 
-	// Restoring initial values
+		// Restoring initial values
 
-	picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
-	picturePolyfill._pxRatio = initial_pixelRatio;
+		picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
+		picturePolyfill._pxRatio = initial_pixelRatio;
+
+	}
+
 
 });
 
@@ -624,18 +570,18 @@ test("parse() after a DOM injection (without MQ support)", function () {
 
 	$('body').append('<div id="testContainer">\
 		<div id="staticPictures">\
-			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
+			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/4x4">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/4x4" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="ajaxSection">\
 		</div>\
 	</div>');
 
-	$ajaxResponse = $('<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
-		<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-		<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+	$ajaxResponse = $('<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/4x4/B15">\
+		<source srcset="http://placehold.it/4x4/B15, http://placehold.it/8x8/B15 2x"/>\
+		<img src="http://placehold.it/4x4/B15" alt="A beautiful responsive image"/>\
 	</picture>');
 
 	this.spy(picturePolyfill, "parse");
@@ -657,7 +603,7 @@ test("parse() after a DOM injection (without MQ support)", function () {
 	strictEqual(images.length, 1);
 
 	img1src = images[0].getAttribute('src');
-	strictEqual(img1src, 'http://placehold.it/1x1');
+	strictEqual(img1src, 'http://placehold.it/4x4');
 
 	$('#ajaxSection').append($ajaxResponse);
 
@@ -672,8 +618,8 @@ test("parse() after a DOM injection (without MQ support)", function () {
 	img1src = images[0].getAttribute('src');
 	img2src = images[1].getAttribute('src');
 
-	strictEqual(img1src, 'http://placehold.it/1x1');
-	strictEqual(img2src, 'http://placehold.it/2x2');
+	strictEqual(img1src, 'http://placehold.it/4x4');
+	strictEqual(img2src, 'http://placehold.it/4x4/B15');
 
 	// Restoring initial values
 
@@ -684,59 +630,111 @@ test("parse() after a DOM injection (without MQ support)", function () {
 
 test("parse() with readFromCache true, then false", function () {
 
-	var images, img1src, img2src;
+	var images, img1src, img2src, img1srcset, img2srcset;
 
 	$('body').append('<div id="testContainer">\
 		<div id="innerA">\
-			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
+			<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 				<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
 				<source src="http://placehold.it/4x4"/>\
-				<noscript><img src="http://placehold.it/1x1" alt="A beautiful responsive image"/></noscript>\
+				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
 	</div>');
 
-	picturePolyfill.initialize();
+	if (!picturePolyfill._mqSupport) { // EXCLUDING OLD IE FROM THIS TESTS
+		ok(true);
+	}
+	else {
+		picturePolyfill.initialize();
 
-	// Media query support: no, pixel density: indifferent
+		// Media query support: no, pixel density: indifferent
 
-	var initial_areMediaQueriesSupported = picturePolyfill._mqSupport,
-		initial_pixelRatio = picturePolyfill._pxRatio;
+		var initial_areMediaQueriesSupported = picturePolyfill._mqSupport,
+			initial_pixelRatio = picturePolyfill._pxRatio;
 
-	picturePolyfill._pxRatio = null;
-	picturePolyfill._mqSupport = false;
+		picturePolyfill._pxRatio = 2;
+		//picturePolyfill._mqSupport = true;
 
-	// Parse with readFromCache true (default value)
+		// Parse with readFromCache true (default value)
 
-	picturePolyfill.parse(document);
+		picturePolyfill.parse(document);
 
-	images = document.getElementsByTagName('img');
-	img1src = images[0].getAttribute('src');
-	img2src = images[1].getAttribute('src');
+		images = document.getElementsByTagName('img');
 
-	strictEqual(img1src, 'http://placehold.it/1x1');
-	strictEqual(img2src, 'http://placehold.it/2x2');
+		img1src = images[0].getAttribute('src');
+		img2src = images[1].getAttribute('src');
+		img1srcset = images[0].getAttribute('srcset');
+		img2srcset = images[1].getAttribute('srcset');
 
-	// Parse with readFromCache false
+		var errMsg = "Parsing the first time readFromCache true should give the expected results";
+		if (picturePolyfill._mqSupport) {
+			strictEqual(img1src, 'http://placehold.it/8x8', errMsg);
+			strictEqual(img2src, 'http://placehold.it/4x4', errMsg);
+			strictEqual(img1srcset, 'http://placehold.it/4x4, http://placehold.it/8x8 2x', errMsg);
+			strictEqual(img2srcset, 'http://placehold.it/4x4', errMsg);
+		}
+		else {
+			strictEqual(img1src, 'http://placehold.it/2x2', errMsg);
+			strictEqual(img2src, 'http://placehold.it/2x2', errMsg);
+			strictEqual(img1srcset, 'http://placehold.it/2x2', errMsg);
+			strictEqual(img2srcset, 'http://placehold.it/2x2', errMsg);
+		}
 
-	picturePolyfill.parse(document, false);
+		// CHANGING THE DOM
 
-	images = document.getElementsByTagName('img');
-	img1src = images[0].getAttribute('src');
-	img2src = images[1].getAttribute('src');
+		var $sources = $('picture').find('source');
+		$sources.eq(0).attr('srcset', 'http://placehold.it/333x333, http://placehold.it/666x666 2x');
+		$sources.eq(1).attr('src', 'http://placehold.it/222x222');
 
-	strictEqual(img1src, 'http://placehold.it/1x1');
-	strictEqual(img2src, 'http://placehold.it/2x2');
+		// Parsing again with readFromCache true should present the same results of before
 
-	// Restoring initial values
+		picturePolyfill.parse(document);
 
-	picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
-	picturePolyfill._pxRatio = initial_pixelRatio;
+		img1src = images[0].getAttribute('src');
+		img2src = images[1].getAttribute('src');
+		img1srcset = images[0].getAttribute('srcset');
+		img2srcset = images[1].getAttribute('srcset');
+
+		errMsg = "Parsing again with readFromCache true should present the same img src and srcset of before";
+		if (picturePolyfill._mqSupport) {
+			strictEqual(img1src, 'http://placehold.it/8x8', errMsg);
+			strictEqual(img2src, 'http://placehold.it/4x4', errMsg);
+			strictEqual(img1srcset, 'http://placehold.it/4x4, http://placehold.it/8x8 2x', errMsg);
+			strictEqual(img2srcset, 'http://placehold.it/4x4', errMsg);
+		}
+		else {
+			strictEqual(img1src, 'http://placehold.it/2x2', errMsg);
+			strictEqual(img2src, 'http://placehold.it/2x2', errMsg);
+			strictEqual(img1srcset, 'http://placehold.it/2x2', errMsg);
+			strictEqual(img2srcset, 'http://placehold.it/2x2', errMsg);
+		}
+
+
+		// Parse with readFromCache false should change the value of the images src attribute
+
+		picturePolyfill.parse(document, false);
+
+		img1src = images[0].getAttribute('src');
+		img2src = images[1].getAttribute('src');
+		img1srcset = images[0].getAttribute('srcset');
+		img2srcset = images[1].getAttribute('srcset');
+
+		errMsg = "Parsing again with readFromCache false should refresh the resulting img src and srcset";
+		strictEqual(img1src, 'http://placehold.it/666x666', errMsg);
+		strictEqual(img2src, 'http://placehold.it/222x222', errMsg);
+		strictEqual(img1srcset, 'http://placehold.it/333x333, http://placehold.it/666x666 2x', errMsg);
+		strictEqual(img2srcset, 'http://placehold.it/222x222');
+		// Restoring initial values
+
+		picturePolyfill._mqSupport = initial_areMediaQueriesSupported;
+		picturePolyfill._pxRatio = initial_pixelRatio;
+	}
 
 });
 
@@ -753,4 +751,3 @@ test("call parse won't give errors when polyfill isn't required", function () {
 
 	picturePolyfill.isUseful = initial_isNecessary;
 });
-
