@@ -110,7 +110,7 @@ var picturePolyfill = (function (w) {
 				breakPoint = -1;
 
 			if (srcset === null || srcset === '' || typeof srcset === 'undefined') {
-				return null;
+				return "";
 			}
 
 			array = this._getSrcsetArray(srcset);
@@ -165,8 +165,7 @@ var picturePolyfill = (function (w) {
 		 */
 		_setImgAttributes: function (pictureElement, attributes) {
 			var imageElements = pictureElement.getElementsByTagName('img'),
-				imgEl, originalImgSrc, originalImgSrcset,
-				givenSrcAttribute, givenSrcsetAttribute,
+				imgEl, givenSrcAttribute, givenSrcsetAttribute,
 				srcToSet, srcsetToSet;
 
 			function _setAttributeIfDifferent(element, attribute, value) {
@@ -179,25 +178,21 @@ var picturePolyfill = (function (w) {
 				return false;
 			}
 
-			// Setting repeated usage variables
-			imgEl = imageElements[0];
-			originalImgSrc = imgEl.getAttribute('data-original-src');
-			originalImgSrcset = imgEl.getAttribute('data-original-srcset');
-			givenSrcAttribute = attributes.src;
-			givenSrcsetAttribute = attributes.srcset;
-
 			// Set original img tag's src and srcset in a data attribute
-			if (!originalImgSrc) {
+			imgEl = imageElements[0];
+			if (!imgEl.getAttribute('data-original-src')) {
 				_setAttributeIfDifferent(imgEl, 'data-original-src', imgEl.getAttribute('src'));
 				_setAttributeIfDifferent(imgEl, 'data-original-srcset', imgEl.getAttribute('srcset'));
 			}
 
 			// Set srcToSet and srcsetToSet depending on the given src/srcset attributes
 			// If none are given, use original ones
-			// If both ore one are given, them (even if one is null)
+			// If both ore one are given, use them (even if one is null)
+			givenSrcAttribute = attributes.src;
+			givenSrcsetAttribute = attributes.srcset;
 			if (!givenSrcAttribute && !givenSrcsetAttribute) {
-				srcToSet = originalImgSrc;
-				srcsetToSet = originalImgSrcset;
+				srcToSet = imgEl.getAttribute('data-original-src');
+				srcsetToSet = imgEl.getAttribute('data-original-srcset');
 			} else {
 				srcToSet = givenSrcAttribute;
 				srcsetToSet = givenSrcsetAttribute;
