@@ -68,7 +68,13 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
  * `media` attribute: any media query, but it's advised to use a `min-width` media query to follow the "mobile first" approach.
  * `src` attribute: the image URL at the corresponding `media`
  * `srcset` attribute: comma separated URLs and scale at the corresponding `media`, e.g. `img/768x768.gif, img/768x768x2.gif 2x`
- * **NEW in version 4.0.0**! The **`source` tags order** is important! The parser exits at first matching `media` so be sure to place the higher `min-width` queries at the begin of the tags list!
+
+* `img` tag:
+ * one `img` tag inside the `picture` tag is required by the [specs](http://www.w3.org/html/wg/drafts/html/master/embedded-content.html#the-picture-element)
+ * you can still use an empty `src` in the `img` to avoid a double http call in browsers that don't natively support the `picture` tag.
+
+
+**NEW in version 4.0.0**! The **`source` tags order** is important! The parser exits at first matching `media` so be sure to place the higher `min-width` queries at the begin of the tags list!
 
 ### How the `img` is updated
 
