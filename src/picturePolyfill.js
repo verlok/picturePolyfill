@@ -159,7 +159,7 @@ var picturePolyfill = (function (w) {
 
 		/**
 		 * Set the src attribute of the first image element inside passed pictureElement
-		 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
+		 * please not that the img is required in the markup, as stated in the specs
 		 * @param pictureElement {Node}
 		 * @param attributes
 		 */
