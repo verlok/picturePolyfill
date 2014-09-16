@@ -304,9 +304,77 @@ test("_getSrcsetFromData behaves correctly", function () {
 			{pxr: 1, src: "300.gif"},
 			{pxr: 2, src: "600.gif"}
 		]);
-
-
 	}
+});
+
+test("_getImgTagsInPicture always returns the img tag, standard picture DOM", function () {
+
+	var pictureEl1, returned1;
+
+	// PREPARE THE DOM
+	$('body').append('<div id="testContainer">\
+		<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
+			<source srcset="http://placehold.it/9x9, http://placehold.it/18x18 2x" media="(min-width: 1441px)"/>\
+			<source srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
+			<img src="http://placehold.it/666x666" alt="A beautiful responsive image"/>\
+		</picture>\
+	</div>');
+
+	picturePolyfill.initialize();
+
+	pictureEl1 = document.getElementsByTagName('picture')[0];
+	returned1 = picturePolyfill._getImgTagsInPicture(pictureEl1);
+
+	notEqual(typeof returned1.length, "undefuned", "Returned value should have a length");
+	equal(returned1.length, 1, "Returned array should be 1 element long");
+	equal(returned1[0].getAttribute("src"), "http://placehold.it/666x666", "Returned src doesn't match");
+});
+
+test("_getImgTagsInPicture always returns the img tag, no sources in picture DOM", function () {
+
+	var pictureEl1, returned1;
+
+	// PREPARE THE DOM
+	$('body').append('<div id="testContainer">\
+		<picture id="first" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
+			<img src="http://placehold.it/666x666" alt="A beautiful responsive image"/>\
+		</picture>\
+	</div>');
+
+	//picturePolyfill.initialize();
+
+	pictureEl1 = document.getElementsByTagName('picture')[0];
+	returned1 = picturePolyfill._getImgTagsInPicture(pictureEl1);
+
+	notEqual(typeof returned1.length, "undefuned", "Returned value should have a length");
+	equal(returned1.length, 1, "Returned array should be 1 element long");
+	equal(returned1[0].getAttribute("src"), "http://placehold.it/666x666", "Returned src doesn't match");
+});
+
+test("_setImgAttributes correctly set img attributes", function () {
+	var pictureEl1, theImage;
+
+	// PREPARE THE DOM
+	$('body').append('<div id="testContainer">\
+		<picture>\
+			<img id="theImage" src="http://placehold.it/666x666" alt="A beautiful responsive image" />\
+		</picture>\
+	</div>');
+
+	//picturePolyfill.initialize();
+
+	pictureEl1 = document.getElementsByTagName('picture')[0];
+
+	picturePolyfill._setImgAttributes(pictureEl1, {
+		"src": "http://placehold.it/69x69",
+		"srcset": "http://placehold.it/69x69, http://placehold.it/138x139 2x"
+	});
+
+	theImage = document.getElementById('theImage');
+
+	equal(theImage.getAttribute("src"), "http://placehold.it/69x69");
+	equal(theImage.getAttribute("srcset"), "http://placehold.it/69x69, http://placehold.it/138x139 2x");
+
 });
 
 test("_getSourcesData correctly parses sources", function () {
@@ -425,7 +493,6 @@ test("parse() won't do anything if img tag is missing", function () {
 	var images = $('picture').find('img');
 	strictEqual(images.length, 0, "No images should be in the document")
 });
-
 
 test("parse() only parses passed element", function () {
 	$('body').append('<div id="testContainer">\
@@ -766,28 +833,26 @@ test("parse() with contained img having both src and srcset attributes set", fun
 
 	errMsg = "Img src and srcset should have changed";
 	if (picturePolyfill._mqSupport) {
-		strictEqual(img1src, 'http://placehold.it/8x8', errMsg);
-		strictEqual(img1srcset, 'http://placehold.it/4x4, http://placehold.it/8x8 2x', errMsg);
+		strictEqual(img1src, 'http://placehold.it/8x8', errMsg + ' - test 1');
+		strictEqual(img1srcset, 'http://placehold.it/4x4, http://placehold.it/8x8 2x', errMsg + ' - test 2');
 	}
 	else {
-		strictEqual(img1src, 'http://placehold.it/2x2', errMsg);
-		strictEqual(img1srcset, null, errMsg);
+		strictEqual(img1src, 'http://placehold.it/2x2', errMsg + ' - test 3');
+		strictEqual(img1srcset.toString(), 'null', errMsg + ' - test 4');
 	}
 
 	// Not matching sources
 	img2src = images[1].getAttribute('src');
 	img2srcset = images[1].getAttribute('srcset');
 
-	// TODO: FIX - CURRENTLY RETURNS NULL SRC AND SRCSET
-
 	errMsg = "Img src and srcset shouldn't have changed";
 	if (picturePolyfill._mqSupport) {
-		strictEqual(img2src, 'http://placehold.it/2x2', errMsg);
-		strictEqual(img2srcset, 'http://placehold.it/2x2, http://placehold.it/4x4 2x', errMsg);
+		strictEqual(img2src, 'http://placehold.it/2x2', errMsg + ' - test 1');
+		strictEqual(img2srcset, 'http://placehold.it/2x2, http://placehold.it/4x4 2x', errMsg + ' - test 2');
 	}
 	else {
-		strictEqual(img2src, 'http://placehold.it/2x2', errMsg);
-		strictEqual(img2srcset, null, errMsg);
+		strictEqual(img2src, 'http://placehold.it/2x2', errMsg + ' - test 3');
+		strictEqual(img2srcset.toString(), 'null', errMsg + ' - test 4');
 	}
 
 	picturePolyfill._pxRatio = initial_pixelRatio;

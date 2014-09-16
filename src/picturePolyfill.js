@@ -170,15 +170,17 @@ var picturePolyfill = (function (w) {
 			if (imgTags.length > 0) {
 				return imgTags;
 			}
-			// Didn't find anything? Since img is required inside picture, the only case in which it cannot be found is: IE8!
-			// So, keep searching in next siblings to find the img tag, then push it in imgTags
+			// Didn't find anything?
+			// IE8 reads the img tag AFTER the picture tag...
+			// So keep searching in next siblings, and when found it push it in imgTags
 			do {
 				currentElement = currentElement.nextSibling;
+				if (currentElement === null) {
+					return [];
+				}
 			} while (currentElement.tagName !== 'IMG');
-			if (currentElement.tagName === 'IMG') {
-				imgTags = [currentElement];
-			}
-			return imgTags;
+			// Found, return currentElement in a 1 element array
+			return [currentElement];
 		},
 
 		/**
