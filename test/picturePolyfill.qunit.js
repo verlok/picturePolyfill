@@ -13,17 +13,6 @@ module("picturePolyfill", {
 	}
 });
 
-if (!Array.prototype.indexOf) {
-	Array.prototype.indexOf = function (obj, start) {
-		for (var i = (start || 0), j = this.length; i < j; i++) {
-			if (this[i] === obj) {
-				return i;
-			}
-		}
-		return -1;
-	}
-}
-
 test("main object is declared and exposed", function () {
 	strictEqual(typeof window.picturePolyfill, 'object', "picturePolyfill should be an object");
 	strictEqual(typeof window.picturePolyfill.parse, 'function', "picturePolyfill.parse() should be a function");
@@ -436,14 +425,22 @@ test("_getSourcesData correctly parses sources", function () {
 });
 
 test("_getAttrsList and _getAttrs do their thing", function () {
+	function indexOf (array, obj, start) {
+		for (var i = (start || 0), j = array.length; i < j; i++) {
+			if (array[i] === obj) {
+				return i;
+			}
+		}
+		return -1;
+	}
 	var source, attributesList, attributes;
 	$('body').append('<div id="testContainer" title="Hey!" data-foo="Bar"></div>');
 	source = document.getElementById('testContainer');
 	// Check attrs list
 	attributesList = picturePolyfill._getAttrsList(source);
-	ok(attributesList.indexOf('id') > -1);
-	ok(attributesList.indexOf('title') > -1);
-	ok(attributesList.indexOf('data-foo') > -1);
+	ok(indexOf(attributesList, 'id') > -1);
+	ok(indexOf(attributesList, 'title') > -1);
+	ok(indexOf(attributesList, 'data-foo') > -1);
 	// Check attrs values
 	attributes = picturePolyfill._getAttrs(source, attributesList);
 	strictEqual(attributes['id'], "testContainer");
