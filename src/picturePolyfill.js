@@ -110,7 +110,7 @@ var picturePolyfill = (function (w) {
 				breakPoint = -1;
 
 			if (srcset === null || srcset === '' || typeof srcset === 'undefined') {
-				return null;
+				return "";
 			}
 
 			array = this._getSrcsetArray(srcset);
@@ -130,7 +130,7 @@ var picturePolyfill = (function (w) {
 		 * Loop through every element of the sourcesData array, check if the media query applies and,
 		 * if so, get the matching srcset attribute, if any
 		 * @param sourcesData
-		 * @returns {string||undefined}
+		 * @returns string
 		 * @private
 		 */
 		_getSrcsetFromData: function (sourcesData) {
@@ -158,15 +158,40 @@ var picturePolyfill = (function (w) {
 		},
 
 		/**
+		 * Get the img tag inside picture, even in IE9 and IE8
+		 * @param pictureElement
+		 * @returns Array
+		 * @private
+		 */
+		_getImgTagsInPicture: function (pictureElement) {
+			var currentElement = pictureElement,
+				imgTags;
+			imgTags = pictureElement.getElementsByTagName('img');
+			if (imgTags.length > 0) {
+				return imgTags;
+			}
+			// Didn't find anything?
+			// IE8 reads the img tag AFTER the picture tag...
+			// So keep searching in next siblings, and when found it push it in imgTags
+			do {
+				currentElement = currentElement.nextSibling;
+				if (currentElement === null) {
+					return [];
+				}
+			} while (currentElement.tagName !== 'IMG');
+			// Found, return currentElement in a 1 element array
+			return [currentElement];
+		},
+
+		/**
 		 * Set the src attribute of the first image element inside passed pictureElement
-		 * if the image doesn't exist, creates it, sets its alt attribute, and appends it to pictureElement
+		 * please not that the img is required in the markup, as stated in the specs
 		 * @param pictureElement {Node}
 		 * @param attributes
 		 */
 		_setImgAttributes: function (pictureElement, attributes) {
-			var imageElements = pictureElement.getElementsByTagName('img'),
-				imgEl, originalImgSrc, originalImgSrcset,
-				givenSrcAttribute, givenSrcsetAttribute,
+			var imageElements = this._getImgTagsInPicture(pictureElement),
+				imgEl, givenSrcAttribute, givenSrcsetAttribute,
 				srcToSet, srcsetToSet;
 
 			function _setAttributeIfDifferent(element, attribute, value) {
@@ -179,25 +204,21 @@ var picturePolyfill = (function (w) {
 				return false;
 			}
 
-			// Setting repeated usage variables
-			imgEl = imageElements[0];
-			originalImgSrc = imgEl.getAttribute('data-original-src');
-			originalImgSrcset = imgEl.getAttribute('data-original-srcset');
-			givenSrcAttribute = attributes.src;
-			givenSrcsetAttribute = attributes.srcset;
-
 			// Set original img tag's src and srcset in a data attribute
-			if (!originalImgSrc) {
+			imgEl = imageElements[0];
+			if (!imgEl.getAttribute('data-original-src')) {
 				_setAttributeIfDifferent(imgEl, 'data-original-src', imgEl.getAttribute('src'));
 				_setAttributeIfDifferent(imgEl, 'data-original-srcset', imgEl.getAttribute('srcset'));
 			}
 
 			// Set srcToSet and srcsetToSet depending on the given src/srcset attributes
 			// If none are given, use original ones
-			// If both ore one are given, them (even if one is null)
+			// If both ore one are given, use them (even if one is null)
+			givenSrcAttribute = attributes.src;
+			givenSrcsetAttribute = attributes.srcset;
 			if (!givenSrcAttribute && !givenSrcsetAttribute) {
-				srcToSet = originalImgSrc;
-				srcsetToSet = originalImgSrcset;
+				srcToSet = imgEl.getAttribute('data-original-src');
+				srcsetToSet = imgEl.getAttribute('data-original-srcset');
 			} else {
 				srcToSet = givenSrcAttribute;
 				srcsetToSet = givenSrcsetAttribute;

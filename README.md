@@ -11,11 +11,11 @@ A Responsive Images approach that you can use today that uses the **[real `pictu
 
 PicturePolyfill is fast and easy to use because:
 
-* **markup & go**: it uses the picture tag, easy to markup, and futureproof
+* **markup & go**: it uses the picture tag, easy to markup, and future-proof
 * **loading performance**: it serves only one image to your website users, no double HTTP requests are made
 * **computing performance**: it's designed and coded keeping performance in mind. For example:
     * it **doesn't execute repeatedly** while a smooth/animated browser resize is in progress, avoiding useless DOM parsing and useless HTTP requests to mid-breakpoints images that the user might not need)
-	* it **caches che `source` elements data**, making the script much more perfoming [see tests](http://jsperf.com/picturepolyfill-test-cached-vs-not-cached) 
+	* it **caches che `source` elements data**, making the script much more performing [see tests](http://jsperf.com/picturepolyfill-test-cached-vs-not-cached) 
 * **support to HD (Retina) displays** easily made via the `srcset` attribute of `source` tags
 * it's **solid**, because its code is all covered by tests
 
@@ -40,9 +40,7 @@ To support HD (Retina) images, mark up your responsive images like this.
 	<source media="(min-width: 1025px)" srcset="img/720x720.gif, img/720x720x2.gif 2x"/>
 	<source media="(min-width: 481px)"  srcset="img/512x512.gif,  img/512x512x2.gif 2x"/>
 	<source srcset="img/480x480.gif, img/480x480x2.gif 2x"/>
-	<noscript>
-		<img src="img/960x960.gif" alt="A beautiful responsive image"/>
-	</noscript>
+	<img src="" alt="A beautiful responsive image"/>
 </picture>
 ```
 
@@ -56,9 +54,7 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
 	<source media="(min-width: 1025px)" src="img/720x720.gif"/>
 	<source media="(min-width: 481px)"  src="img/512x512.gif"/>
 	<source src="img/480x480.gif"/>
-	<noscript>
-		<img src="img/960x960.gif" alt="A beautiful responsive image"/>
-	</noscript>
+	<img src="" alt="A beautiful responsive image"/>
 </picture>
 ```
 
@@ -69,17 +65,21 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
  * `data-alt` attribute: the alternative text that will be set in the `img` tag
 
 * `source` tags:
- * `media` attribute: any media query, but it's adviced to use a `min-width` media query to follow the "mobile first" approach.
+ * `media` attribute: any media query, but it's advised to use a `min-width` media query to follow the "mobile first" approach.
  * `src` attribute: the image URL at the corresponding `media`
  * `srcset` attribute: comma separated URLs and scale at the corresponding `media`, e.g. `img/768x768.gif, img/768x768x2.gif 2x`
- * **NEW in version 4.0.0**! The **`source` tags order** is important! The parser exits at first matching `media` so be sure to place the higher `min-width` queries at the begin of the tags list!
 
-* `noscript` tag:
- * This should wrap the fallback image for non-JavaScript environments and search engines. You *could* avoid wrapping the `img` tag in `noscript`, but this will make browsers to fetch the fallback image during page load, causing unnecessary overhead.
+* `img` tag:
+ * one `img` tag inside the `picture` tag is required by the [specs](http://www.w3.org/html/wg/drafts/html/master/embedded-content.html#the-picture-element)
+ * you can still use an empty `src` in the `img` to avoid a double http call in browsers that don't natively support the `picture` tag.
 
-### How the `img` is appended and updated
 
-The script searches in the `source` tags and selects the last matching `media`'s `src` or `srcset`. When found, picturePolyfill will generate an `img` element inside the `picture` tag, with the corresponding `src` and `alt` attributes. 
+**NEW in version 4.0.0**! The **`source` tags order** is important! The parser exits at first matching `media` so be sure to place the higher `min-width` queries at the begin of the tags list!
+
+### How the `img` is updated
+
+The script searches in the `source` tags and selects the last matching `media`'s `src` or `srcset`. 
+When found, picturePolyfill will update the `img` element's `src` and `srcset` attributes inside the `picture` tag, with the matching ones. 
 The `img`'s `src` attribute is then updated at browser resize (see _computing performance_ section above to read about performance at browser resize).
 
 ## Server-side scaling/cropping tool
@@ -96,9 +96,7 @@ If you want to use an image server, you can code your HTML like the following:
 	<source media="(min-width: 1025px)" srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440 2x"/>
 	<source media="(min-width: 481px)"  srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x"/>
 	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x"/>
-	<noscript>
-		<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
-	</noscript>
+	<img src="" alt="A beautiful responsive image"/>
 </picture>
 ```
 
