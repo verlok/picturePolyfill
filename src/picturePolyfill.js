@@ -130,7 +130,7 @@ var picturePolyfill = (function (w) {
 		 * Loop through every element of the sourcesData array, check if the media query applies and,
 		 * if so, get the matching srcset attribute, if any
 		 * @param sourcesData
-		 * @returns {string||undefined}
+		 * @returns string
 		 * @private
 		 */
 		_getSrcsetFromData: function (sourcesData) {
@@ -158,13 +158,37 @@ var picturePolyfill = (function (w) {
 		},
 
 		/**
+		 * Get the img tag inside picture, even in IE9 and IE8
+		 * @param pictureElement
+		 * @returns Array
+		 * @private
+		 */
+		_getImgTagsInPicture: function (pictureElement) {
+			var currentElement = pictureElement,
+				imgTags;
+			imgTags = pictureElement.getElementsByTagName('img');
+			if (imgTags.length > 0) {
+				return imgTags;
+			}
+			// Didn't find anything? Since img is required inside picture, the only case in which it cannot be found is: IE8!
+			// So, keep searching in next siblings to find the img tag, then push it in imgTags
+			do {
+				currentElement = currentElement.nextSibling;
+			} while (currentElement.tagName !== 'IMG');
+			if (currentElement.tagName === 'IMG') {
+				imgTags = [currentElement];
+			}
+			return imgTags;
+		},
+
+		/**
 		 * Set the src attribute of the first image element inside passed pictureElement
 		 * please not that the img is required in the markup, as stated in the specs
 		 * @param pictureElement {Node}
 		 * @param attributes
 		 */
 		_setImgAttributes: function (pictureElement, attributes) {
-			var imageElements = pictureElement.getElementsByTagName('img'),
+			var imageElements = this._getImgTagsInPicture(pictureElement),
 				imgEl, givenSrcAttribute, givenSrcsetAttribute,
 				srcToSet, srcsetToSet;
 

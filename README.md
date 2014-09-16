@@ -40,7 +40,7 @@ To support HD (Retina) images, mark up your responsive images like this.
 	<source media="(min-width: 1025px)" srcset="img/720x720.gif, img/720x720x2.gif 2x"/>
 	<source media="(min-width: 481px)"  srcset="img/512x512.gif,  img/512x512x2.gif 2x"/>
 	<source srcset="img/480x480.gif, img/480x480x2.gif 2x"/>
-	<img src="img/960x960.gif" alt="A beautiful responsive image"/>
+	<img src="" alt="A beautiful responsive image"/>
 </picture>
 ```
 
@@ -54,7 +54,7 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
 	<source media="(min-width: 1025px)" src="img/720x720.gif"/>
 	<source media="(min-width: 481px)"  src="img/512x512.gif"/>
 	<source src="img/480x480.gif"/>
-	<img src="img/960x960.gif" alt="A beautiful responsive image"/>
+	<img src="" alt="A beautiful responsive image"/>
 </picture>
 ```
 
@@ -96,7 +96,7 @@ If you want to use an image server, you can code your HTML like the following:
 	<source media="(min-width: 1025px)" srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=720, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440 2x"/>
 	<source media="(min-width: 481px)"  srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=512, http://demo.api.pixtulate.com/demo/large-2.jpg?w=1024 2x"/>
 	<source srcset="http://demo.api.pixtulate.com/demo/large-2.jpg?w=480, http://demo.api.pixtulate.com/demo/large-2.jpg?w=960 2x"/>
-	<img src="http://demo.api.pixtulate.com/demo/large-2.jpg?w=1440" alt="A beautiful responsive image"/>
+	<img src="" alt="A beautiful responsive image"/>
 </picture>
 ```
 
