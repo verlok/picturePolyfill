@@ -385,10 +385,10 @@ test("_getSourcesData correctly parses sources", function () {
 			</div>\
 			<div id="innerB">\
 				<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/1x1">\
-					<source src="http://placehold.it/9x9" media="(min-width: 1441px)"/>\
-					<source src="http://placehold.it/7x7" media="(min-width: 1025px)"/>\
-					<source src="http://placehold.it/5x5" media="(min-width: 481px)"/>\
-					<source src="http://placehold.it/4x4"/>\
+					<source srcset="http://placehold.it/9x9" media="(min-width: 1441px)"/>\
+					<source srcset="http://placehold.it/7x7" media="(min-width: 1025px)"/>\
+					<source srcset="http://placehold.it/5x5" media="(min-width: 481px)"/>\
+					<source srcset="http://placehold.it/4x4"/>\
 					<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 				</picture>\
 			</div>\
@@ -501,7 +501,7 @@ test("parse() only parses passed element", function () {
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
-				<source src="http://placehold.it/4x4"/>\
+				<source srcset="http://placehold.it/4x4"/>\
 				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
@@ -537,7 +537,7 @@ test("parse() resulting image sources - with MQ support", function () {
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
-				<source src="http://placehold.it/4x4"/>\
+				<source srcset="http://placehold.it/4x4"/>\
 				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
@@ -588,7 +588,7 @@ test("parse() resulting image sources - without MQ support", function () {
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
-				<source src="http://placehold.it/4x4"/>\
+				<source srcset="http://placehold.it/4x4"/>\
 				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
@@ -703,7 +703,7 @@ test("parse() with readFromCache true, then false", function () {
 		</div>\
 		<div id="innerB">\
 			<picture id="second" data-alt="A beautiful responsive image" data-default-src="http://placehold.it/2x2">\
-				<source src="http://placehold.it/4x4"/>\
+				<source srcset="http://placehold.it/4x4"/>\
 				<img src="http://placehold.it/1x1" alt="A beautiful responsive image"/>\
 			</picture>\
 		</div>\
@@ -805,11 +805,11 @@ test("parse() with contained img having both src and srcset attributes set", fun
 
 	$('body').append('<div id="testContainer">\
 		<picture id="first" data-alt="A" data-default-src="http://placehold.it/2x2">\
-			<source media="(min-width:1px)" src="http://placehold.it/4x4" srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
+			<source media="(min-width:1px)" srcset="http://placehold.it/4x4" srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
 			<img src="http://placehold.it/2x2" srcset="http://placehold.it/2x2, http://placehold.it/4x4 2x" alt="A"/>\
 		</picture>\
 		<picture id="second" data-alt="A" data-default-src="http://placehold.it/2x2">\
-			<source media="(min-width:9999px)" src="http://placehold.it/4x4" srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
+			<source media="(min-width:9999px)" srcset="http://placehold.it/4x4" srcset="http://placehold.it/4x4, http://placehold.it/8x8 2x"/>\
 			<img src="http://placehold.it/2x2" srcset="http://placehold.it/2x2, http://placehold.it/4x4 2x" alt="A"/>\
 		</picture>\
 	</div>');

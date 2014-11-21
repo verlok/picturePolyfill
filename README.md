@@ -50,10 +50,10 @@ If you don't need to support HD (Retina) images, you can mark up your responsive
 
 ```html
 <picture data-alt="A beautiful responsive image" data-default-src="img/960x960.gif">
-	<source media="(min-width: 1441px)" src="img/960x960.gif"/>
-	<source media="(min-width: 1025px)" src="img/720x720.gif"/>
-	<source media="(min-width: 481px)"  src="img/512x512.gif"/>
-	<source src="img/480x480.gif"/>
+	<source media="(min-width: 1441px)" srcset="img/960x960.gif"/>
+	<source media="(min-width: 1025px)" srcset="img/720x720.gif"/>
+	<source media="(min-width: 481px)"  srcset="img/512x512.gif"/>
+	<source srcset="img/480x480.gif"/>
 	<img src="" alt="A beautiful responsive image"/>
 </picture>
 ```
