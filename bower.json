@@ -1,7 +1,7 @@
 {
 	"name": "picturePolyfill",
 	"version": "4.2.0",
-	"main": "picturePolyfill.js",
+	"main": "dist/picturePolyfill.min.js",
 	"ignore": [
 		".idea",
 		".gitignore",
