@@ -21,12 +21,7 @@ PicturePolyfill is fast and easy to use because:
 
 ### Differences with picturefill
 
-picturePolyfill is better than picturefill because:
-
-* it's **15x faster** on IE 10, **8x faster** on mobile Safari, **6x faster** on Firefox and Safari, **4x faster** on Chrome and Opera [see performance test](http://jsperf.com/picturepolyfill-300-vs-picturefill-121-performance-test/2)
-* it **better handles AJAX calls** because it lets you parse only a section of your DOM, passing the parent element to the `parse` method
-* it gives you the ability to **choose a default image** that you want to show on Internet Explorer desktop, without the need to add any comment
-
+picturePolyfill only polyfills the `picture` tag, whereas picturefill polyfills also the `img` tag with `srcset` + `sizes` attributes. Go for picturefill if you need to polyfill that too. If you don't, stick with picturePolyfill because it's a much smaller and faster script.
 
 ## Markup pattern and explanation
 
